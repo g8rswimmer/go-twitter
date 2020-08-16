@@ -53,7 +53,7 @@ type Tweet struct {
 	ContextAnnotations []TweetContextAnnotation `json:"context_annotations"`
 	ConversationID     string                   `json:"conversation_id"`
 	CreatedAt          string                   `json:"created_at"`
-	Entities           Entities                 `json:"entities"`
+	Entities           EntitiesObj              `json:"entities"`
 	Geo                TweetGeo                 `json:"geo"`
 	InReplyToUserID    string                   `json:"in_reply_to_user_id"`
 	Language           string                   `json:"lang"`
@@ -64,7 +64,7 @@ type Tweet struct {
 	PublicMetrics      TweetMetrics             `json:"public_metrics"`
 	ReferencedTweets   []TweetReferencedTweet   `json:"referenced_tweets"`
 	Source             string                   `json:"source"`
-	WithHeld           WithHeld                 `json:"withheld"`
+	WithHeld           WithHeldObj              `json:"withheld"`
 }
 
 // TweetAttachments specifics the type of attachment present in the tweet

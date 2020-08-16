@@ -41,7 +41,7 @@ type User struct {
 	UserName        string      `json:"username"`
 	CreatedAt       string      `json:"created_at"`
 	Description     string      `json:"description"`
-	Entities        Entities    `json:"entities"`
+	Entities        EntitiesObj `json:"entities"`
 	Location        string      `json:"location"`
 	PinnedTweetID   string      `json:"pinned_tweet_id"`
 	ProfileImageURL string      `json:"profile_image_url"`
@@ -49,7 +49,7 @@ type User struct {
 	PublicMetrics   UserMetrics `json:"public_metrics"`
 	URL             string      `json:"url"`
 	Verified        bool        `json:"verified"`
-	WithHeld        WithHeld    `json:"withheld"`
+	WithHeld        WithHeldObj `json:"withheld"`
 }
 
 // UserMetrics contains details about activity for this user
