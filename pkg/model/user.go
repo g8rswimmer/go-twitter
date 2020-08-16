@@ -1,5 +1,39 @@
 package model
 
+// UserField defines the twitter user account metadata fields
+type UserField string
+
+const (
+	// UserFieldCreatedAt is the UTC datetime that the user account was created on Twitter.
+	UserFieldCreatedAt UserField = "created_at"
+	// UserFieldDescription is the text of this user's profile description (also known as bio), if the user provided one.
+	UserFieldDescription UserField = "description"
+	// UserFieldEntities contains details about text that has a special meaning in the user's description.
+	UserFieldEntities UserField = "entities"
+	// UserFieldID is the unique identifier of this user.
+	UserFieldID UserField = "id"
+	// UserFieldLocation is the location specified in the user's profile, if the user provided one.
+	UserFieldLocation UserField = "location"
+	// UserFieldName is the name of the user, as they’ve defined it on their profile
+	UserFieldName UserField = "name"
+	// UserFieldPinnedTweetID is the unique identifier of this user's pinned Tweet.
+	UserFieldPinnedTweetID UserField = "pinned_tweet_id"
+	// UserFieldProfileImageURL is the URL to the profile image for this user, as shown on the user's profile.
+	UserFieldProfileImageURL UserField = "profile_image_url"
+	// UserFieldProtected indicates if this user has chosen to protect their Tweets (in other words, if this user's Tweets are private).
+	UserFieldProtected UserField = "protected"
+	// UserFieldPublicMetrics contains details about activity for this user.
+	UserFieldPublicMetrics UserField = "public_metrics"
+	// UserFieldURL is the URL specified in the user's profile, if present.
+	UserFieldURL UserField = "url"
+	// UserFieldUserName is the Twitter screen name, handle, or alias that this user identifies themselves with
+	UserFieldUserName UserField = "username"
+	// UserFieldVerified indicates if this user is a verified Twitter User.
+	UserFieldVerified UserField = "verified"
+	// UserFieldWithHeld contains withholding details
+	UserFieldWithHeld UserField = "withheld"
+)
+
 // User contains Twitter user account metadata describing the referenced user
 type User struct {
 	ID              string      `json:"id"`

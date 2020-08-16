@@ -1,5 +1,21 @@
 package model
 
+// PollField defines the fields of the expanded tweet
+type PollField string
+
+const (
+	// PollFieldDurationMinutes specifies the total duration of this poll.
+	PollFieldDurationMinutes PollField = "duration_minutes"
+	// PollFieldEndDateTime specifies the end date and time for this poll.
+	PollFieldEndDateTime PollField = "end_datetime"
+	// PollFieldID is unique identifier of the expanded poll.
+	PollFieldID PollField = "id"
+	// PollFieldOptions contains objects describing each choice in the referenced poll.
+	PollFieldOptions PollField = "options"
+	// PollFieldVotingStatus indicates if this poll is still active and can receive votes, or if the voting is now closed.
+	PollFieldVotingStatus PollField = "voting_status"
+)
+
 // Poll included in a Tweet is not a primary object on any endpoint
 type Poll struct {
 	ID              string       `json:"id"`
