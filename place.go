@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // PlaceField can expand the tweet primary object
 type PlaceField string

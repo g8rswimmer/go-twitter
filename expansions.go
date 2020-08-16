@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // Expansion can expand objects referenced in the payload
 type Expansion string

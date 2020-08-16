@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // UserField defines the twitter user account metadata fields
 type UserField string

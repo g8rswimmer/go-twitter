@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // Entities contains details about text that has a special meaning.
 type Entities struct {

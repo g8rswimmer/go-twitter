@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // PollField defines the fields of the expanded tweet
 type PollField string

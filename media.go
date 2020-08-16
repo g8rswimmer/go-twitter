@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // MediaField can expand the fields that are returned in the media object
 type MediaField string

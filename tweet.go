@@ -1,4 +1,4 @@
-package model
+package twitter
 
 // TweetField defines the fields of the basic building block of all things twitter
 type TweetField string
