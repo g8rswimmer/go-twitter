@@ -34,26 +34,26 @@ const (
 	UserFieldWithHeld UserField = "withheld"
 )
 
-// User contains Twitter user account metadata describing the referenced user
-type User struct {
-	ID              string      `json:"id"`
-	Name            string      `json:"name"`
-	UserName        string      `json:"username"`
-	CreatedAt       string      `json:"created_at"`
-	Description     string      `json:"description"`
-	Entities        EntitiesObj `json:"entities"`
-	Location        string      `json:"location"`
-	PinnedTweetID   string      `json:"pinned_tweet_id"`
-	ProfileImageURL string      `json:"profile_image_url"`
-	Protected       bool        `json:"protected"`
-	PublicMetrics   UserMetrics `json:"public_metrics"`
-	URL             string      `json:"url"`
-	Verified        bool        `json:"verified"`
-	WithHeld        WithHeldObj `json:"withheld"`
+// UserObj contains Twitter user account metadata describing the referenced user
+type UserObj struct {
+	ID              string         `json:"id"`
+	Name            string         `json:"name"`
+	UserName        string         `json:"username"`
+	CreatedAt       string         `json:"created_at"`
+	Description     string         `json:"description"`
+	Entities        EntitiesObj    `json:"entities"`
+	Location        string         `json:"location"`
+	PinnedTweetID   string         `json:"pinned_tweet_id"`
+	ProfileImageURL string         `json:"profile_image_url"`
+	Protected       bool           `json:"protected"`
+	PublicMetrics   UserMetricsObj `json:"public_metrics"`
+	URL             string         `json:"url"`
+	Verified        bool           `json:"verified"`
+	WithHeld        WithHeldObj    `json:"withheld"`
 }
 
-// UserMetrics contains details about activity for this user
-type UserMetrics struct {
+// UserMetricsObj contains details about activity for this user
+type UserMetricsObj struct {
 	Followers int `json:"followers_count"`
 	Following int `json:"following_count"`
 	Tweets    int `json:"tweet_count"`
