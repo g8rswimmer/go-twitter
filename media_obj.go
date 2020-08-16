@@ -28,23 +28,23 @@ const (
 	MediaFieldPromotedMetrics MediaField = "promoted_metrics"
 )
 
-// Media refers to any image, GIF, or video attached to a Tweet
-type Media struct {
-	Key              string       `json:"media_key"`
-	Type             string       `json:"type"`
-	URL              string       `json:"url"`
-	DurationMS       int          `json:"duration_ms"`
-	Height           int          `json:"height"`
-	NonPublicMetrics MediaMetrics `json:"non_public_metrics"`
-	OrganicMetrics   MediaMetrics `json:"organic_metrics"`
-	PreviewImageURL  string       `json:"preview_image_url"`
-	PromotedMetrics  MediaMetrics `json:"promoted_metrics"`
-	PublicMetrics    MediaMetrics `json:"public_metrics"`
-	Width            int          `json:"width"`
+// MediaObj refers to any image, GIF, or video attached to a Tweet
+type MediaObj struct {
+	Key              string          `json:"media_key"`
+	Type             string          `json:"type"`
+	URL              string          `json:"url"`
+	DurationMS       int             `json:"duration_ms"`
+	Height           int             `json:"height"`
+	NonPublicMetrics MediaMetricsObj `json:"non_public_metrics"`
+	OrganicMetrics   MediaMetricsObj `json:"organic_metrics"`
+	PreviewImageURL  string          `json:"preview_image_url"`
+	PromotedMetrics  MediaMetricsObj `json:"promoted_metrics"`
+	PublicMetrics    MediaMetricsObj `json:"public_metrics"`
+	Width            int             `json:"width"`
 }
 
-// MediaMetrics engagement metrics for the media content at the time of the request
-type MediaMetrics struct {
+// MediaMetricsObj engagement metrics for the media content at the time of the request
+type MediaMetricsObj struct {
 	Playback0   int `json:"playback_0_count"`
 	Playback100 int `json:"playback_100_count"`
 	Playback25  int `json:"playback_25_count"`
