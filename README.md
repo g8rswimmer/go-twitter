@@ -1,5 +1,5 @@
-# go-tweet
-This is a go library for tweet API integration.  It supports Twitter API v2 APIs.
+# go-twitter
+This is a go library for Twitter v2 API integration.
 
 In order to use or demo this library, you need a developer account with twitter.  If you do not have an account, please go [here](https://developer.twitter.com/en).  Please understand that by using this library, you are using under the terms which twitter has defined.
 
