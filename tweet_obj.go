@@ -44,6 +44,14 @@ const (
 	TweetFieldWithHeld TweetField = "withheld"
 )
 
+func tweetFieldStringArray(arr []TweetField) []string {
+	strs := make([]string, len(arr))
+	for i, field := range arr {
+		strs[i] = string(field)
+	}
+	return strs
+}
+
 // TweetObj is the primary object on the tweets endpoints
 type TweetObj struct {
 	ID                 string                      `json:"id"`

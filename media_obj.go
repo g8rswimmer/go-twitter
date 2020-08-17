@@ -28,6 +28,14 @@ const (
 	MediaFieldPromotedMetrics MediaField = "promoted_metrics"
 )
 
+func mediaFieldStringArray(arr []MediaField) []string {
+	strs := make([]string, len(arr))
+	for i, field := range arr {
+		strs[i] = string(field)
+	}
+	return strs
+}
+
 // MediaObj refers to any image, GIF, or video attached to a Tweet
 type MediaObj struct {
 	Key              string          `json:"media_key"`

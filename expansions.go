@@ -23,3 +23,11 @@ const (
 	// ExpansionPinnedTweetID returns a Tweet object representing the Tweet pinned to the top of the user’s profile
 	ExpansionPinnedTweetID Expansion = "pinned_tweet_id"
 )
+
+func expansionStringArray(arr []Expansion) []string {
+	strs := make([]string, len(arr))
+	for i, expansion := range arr {
+		strs[i] = string(expansion)
+	}
+	return strs
+}

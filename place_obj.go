@@ -22,6 +22,14 @@ const (
 	PlaceFieldPlaceType PlaceField = "place_type"
 )
 
+func placeFieldStringArray(arr []PlaceField) []string {
+	strs := make([]string, len(arr))
+	for i, field := range arr {
+		strs[i] = string(field)
+	}
+	return strs
+}
+
 // PlaceObj tagged in a Tweet is not a primary object on any endpoint
 type PlaceObj struct {
 	FullName        string      `json:"full_name"`
