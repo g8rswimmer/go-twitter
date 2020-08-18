@@ -34,6 +34,14 @@ const (
 	UserFieldWithHeld UserField = "withheld"
 )
 
+func userFieldStringArray(arr []UserField) []string {
+	strs := make([]string, len(arr))
+	for i, field := range arr {
+		strs[i] = string(field)
+	}
+	return strs
+}
+
 // UserObj contains Twitter user account metadata describing the referenced user
 type UserObj struct {
 	ID              string         `json:"id"`

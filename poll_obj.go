@@ -16,6 +16,14 @@ const (
 	PollFieldVotingStatus PollField = "voting_status"
 )
 
+func pollFieldStringArray(arr []PollField) []string {
+	strs := make([]string, len(arr))
+	for i, field := range arr {
+		strs[i] = string(field)
+	}
+	return strs
+}
+
 // PollObj included in a Tweet is not a primary object on any endpoint
 type PollObj struct {
 	ID              string          `json:"id"`

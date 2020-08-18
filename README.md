@@ -8,3 +8,6 @@ The library is based off of [version 2](https://developer.twitter.com/en/docs/tw
 
 ## Examples
 To run all examples, the user is required to provide their developer account credentials.  The library does not share any credentials.
+
+### Tweet Lookup
+The tweet lookup API example is located [here](./_examples/tweet/lookup).  
