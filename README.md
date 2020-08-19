@@ -11,3 +11,6 @@ To run all examples, the user is required to provide their developer account cre
 
 ### Tweet Lookup
 The tweet lookup API example is located [here](./_examples/tweet/lookup).  
+
+### Tweet Recent Search 
+The tweet recent search API example is locate [here](./_examples/tweet/recent-search).  
