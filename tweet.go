@@ -1,16 +1,20 @@
 package twitter
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 const (
-	tweetLookupEndpoint = "2/tweets"
-	tweetMaxIDs         = 100
+	tweetLookupEndpoint       = "2/tweets"
+	tweetRecentSearchEndpoint = "2/tweets/search/recent"
+	tweetMaxIDs               = 100
+	tweetQuerySize            = 512
 )
 
 // TweetLookups is a map of tweet lookups
@@ -98,6 +102,37 @@ type TweetLookup struct {
 	User  *UserObj
 }
 
+// TweetRecentSearchMeta is the media data returned from the recent search
+type TweetRecentSearchMeta struct {
+	NewestID    string `json:"newest_id"`
+	OldestID    string `json:"oldest_id"`
+	ResultCount int    `json:"result_count"`
+	NextToken   string `json:"next_token"`
+}
+
+// TweetRecentSearch is what is returned from the callout
+type TweetRecentSearch struct {
+	LookUps TweetLookups
+	Meta    TweetRecentSearchMeta
+}
+
+// UnmarshalJSON will unmarshal the byte array
+func (t *TweetRecentSearch) UnmarshalJSON(b []byte) error {
+	type meta struct {
+		Meta TweetRecentSearchMeta `json:"meta"`
+	}
+	m := &meta{}
+	if err := json.Unmarshal(b, m); err != nil {
+		return err
+	}
+	t.Meta = m.Meta
+
+	tl := TweetLookups{}
+	tl.lookups(json.NewDecoder(bytes.NewReader(b)))
+	t.LookUps = tl
+	return nil
+}
+
 // TweetError is the group of errors in a response
 type TweetError struct {
 	Parameters interface{} `json:"parameters"`
@@ -132,6 +167,68 @@ func (t TweetLookupParameters) encode(req *http.Request) {
 	q := req.URL.Query()
 	if len(t.ids) > 0 {
 		q.Add("ids", strings.Join(t.ids, ","))
+	}
+	if len(t.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
+	}
+	if len(t.MediaFields) > 0 {
+		q.Add("media.fields", strings.Join(mediaFieldStringArray(t.MediaFields), ","))
+	}
+	if len(t.PlaceFields) > 0 {
+		q.Add("place.fields", strings.Join(placeFieldStringArray(t.PlaceFields), ","))
+	}
+	if len(t.PollFields) > 0 {
+		q.Add("poll.fields", strings.Join(pollFieldStringArray(t.PollFields), ","))
+	}
+	if len(t.TweetFields) > 0 {
+		q.Add("tweet.fields", strings.Join(tweetFieldStringArray(t.TweetFields), ","))
+	}
+	if len(t.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(t.UserFields), ","))
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+// TweetRecentSearchParameters handles all of the recent search parameters
+type TweetRecentSearchParameters struct {
+	query       string
+	StartTime   time.Time
+	EndTime     time.Time
+	MaxResult   int
+	NextToken   string
+	SinceID     string
+	UntilID     string
+	Expansions  []Expansion
+	MediaFields []MediaField
+	PlaceFields []PlaceField
+	PollFields  []PollField
+	TweetFields []TweetField
+	UserFields  []UserField
+}
+
+func (t TweetRecentSearchParameters) encode(req *http.Request) {
+	q := req.URL.Query()
+	q.Add("query", t.query)
+
+	if t.StartTime.IsZero() == false {
+		q.Add("start_time", t.StartTime.Format(time.RFC3339))
+	}
+	if t.EndTime.IsZero() == false {
+		q.Add("end_time", t.EndTime.Format(time.RFC3339))
+	}
+	if t.MaxResult >= 10 {
+		q.Add("max_results", fmt.Sprintf("%d", t.MaxResult))
+	}
+	if len(t.NextToken) > 0 {
+		q.Add("next_token", t.NextToken)
+	}
+	if len(t.SinceID) > 0 {
+		q.Add("since_id", t.SinceID)
+	}
+	if len(t.UntilID) > 0 {
+		q.Add("until_id", t.UntilID)
 	}
 	if len(t.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
@@ -214,4 +311,49 @@ func (t *Tweet) Lookup(ctx context.Context, ids []string, parameters TweetLookup
 		return nil, err
 	}
 	return tl, nil
+}
+
+// RecentSearch will query the recent search
+func (t *Tweet) RecentSearch(ctx context.Context, query string, parameters TweetRecentSearchParameters) (*TweetRecentSearch, error) {
+	switch {
+	case len(query) == 0:
+		return nil, fmt.Errorf("tweet recent search query must be present")
+	case len(query) > tweetQuerySize:
+		return nil, fmt.Errorf("tweet recent search query size %d greater than max %d", len(query), tweetQuerySize)
+	case parameters.MaxResult > 0 && (parameters.MaxResult < 10 || parameters.MaxResult > 100):
+		return nil, fmt.Errorf("tweet resent search max result needs to be between 10 -100 (%d", parameters.MaxResult)
+	default:
+		parameters.query = query
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetRecentSearchEndpoint), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent search request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	t.Authorizer.Add(req)
+	parameters.encode(req)
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent search response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet recent search response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tr := &TweetRecentSearch{}
+	if err := decoder.Decode(tr); err != nil {
+		return nil, fmt.Errorf("tweet recent search response decode: %w", err)
+	}
+	return tr, nil
 }
