@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestTweetLookupParameters_encode(t *testing.T) {
@@ -284,6 +285,313 @@ func TestTweet_Lookup(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Tweet.Lookup() = %v, want %v", got, tt.want)
+			}
+			var tweetErr *TweetErrorResponse
+			if errors.As(err, &tweetErr) {
+				if !reflect.DeepEqual(tweetErr, tt.wantTweetError) {
+					t.Errorf("Tweet.Lookup() Error = %+v, want %+v", tweetErr, tt.wantTweetError)
+				}
+			}
+		})
+	}
+}
+
+func TestTweetRecentSearchParameters_encode(t *testing.T) {
+	type fields struct {
+		query       string
+		StartTime   time.Time
+		EndTime     time.Time
+		MaxResult   int
+		NextToken   string
+		SinceID     string
+		UntilID     string
+		Expansions  []Expansion
+		MediaFields []MediaField
+		PlaceFields []PlaceField
+		PollFields  []PollField
+		TweetFields []TweetField
+		UserFields  []UserField
+	}
+	type args struct {
+		req *http.Request
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   url.Values
+	}{
+		{
+			name: "no queries",
+			fields: fields{
+				query: "python",
+			},
+			args: args{
+				req: httptest.NewRequest(http.MethodGet, "https://www.go-twitter.com", nil),
+			},
+			want: url.Values{
+				"query": []string{"python"},
+			},
+		},
+		{
+			name: "queries",
+			fields: fields{
+				query:       "python",
+				NextToken:   "112233445566",
+				StartTime:   time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+				EndTime:     time.Date(2020, time.February, 20, 0, 0, 0, 0, time.UTC),
+				Expansions:  []Expansion{ExpansionAuthorID},
+				MediaFields: []MediaField{MediaFieldType, MediaFieldWidth},
+				PlaceFields: []PlaceField{PlaceFieldID, PlaceFieldPlaceType},
+				PollFields:  []PollField{PollFieldOptions},
+				TweetFields: []TweetField{TweetFieldPossiblySensitve, TweetFieldNonPublicMetrics},
+				UserFields:  []UserField{UserFieldProfileImageURL, UserFieldUserName},
+			},
+			args: args{
+				req: httptest.NewRequest(http.MethodGet, "https://www.go-twitter.com", nil),
+			},
+			want: url.Values{
+				"query":        []string{"python"},
+				"next_token":   []string{"112233445566"},
+				"end_time":     []string{"2020-02-20T00:00:00Z"},
+				"start_time":   []string{"2020-01-01T00:00:00Z"},
+				"expansions":   []string{strings.Join(expansionStringArray([]Expansion{ExpansionAuthorID}), ",")},
+				"media.fields": []string{strings.Join(mediaFieldStringArray([]MediaField{MediaFieldType, MediaFieldWidth}), ",")},
+				"place.fields": []string{strings.Join(placeFieldStringArray([]PlaceField{PlaceFieldID, PlaceFieldPlaceType}), ",")},
+				"poll.fields":  []string{strings.Join(pollFieldStringArray([]PollField{PollFieldOptions}), ",")},
+				"tweet.fields": []string{strings.Join(tweetFieldStringArray([]TweetField{TweetFieldPossiblySensitve, TweetFieldNonPublicMetrics}), ",")},
+				"user.fields":  []string{strings.Join(userFieldStringArray([]UserField{UserFieldProfileImageURL, UserFieldUserName}), ",")},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			trs := TweetRecentSearchParameters{
+				query:       tt.fields.query,
+				StartTime:   tt.fields.StartTime,
+				EndTime:     tt.fields.EndTime,
+				MaxResult:   tt.fields.MaxResult,
+				NextToken:   tt.fields.NextToken,
+				SinceID:     tt.fields.SinceID,
+				UntilID:     tt.fields.UntilID,
+				Expansions:  tt.fields.Expansions,
+				MediaFields: tt.fields.MediaFields,
+				PlaceFields: tt.fields.PlaceFields,
+				PollFields:  tt.fields.PollFields,
+				TweetFields: tt.fields.TweetFields,
+				UserFields:  tt.fields.UserFields,
+			}
+			trs.encode(tt.args.req)
+			if reflect.DeepEqual(tt.args.req.URL.Query(), tt.want) == false {
+				t.Errorf("TweetRecentSearchParameters.encode() got %v want %v", tt.args.req.URL.Query(), tt.want)
+			}
+		})
+	}
+}
+
+func TestTweet_RecentSearch(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		query      string
+		parameters TweetRecentSearchParameters
+	}
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		want           *TweetRecentSearch
+		wantErr        bool
+		wantTweetError *TweetErrorResponse
+	}{
+		{
+			name: "success query",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"data": [
+						  {
+							"id": "1279990139888918528",
+							"text": "Python now online for you !!\n\nWith the advent and acceptance of AI, Robotics, Python has become an inevitable factor in software development industry and most looked out skill both Nationally and Internationally. \n\nCoupon code: GVUP9\nCall: 9482303905/9482163905 https://t.co/ZFXCDJedAh"
+						  },
+						  {
+							"id": "1279990133463429120",
+							"text": "RT @McQubit: Building Neural Networks with Python Code and Math in Detail — II https://t.co/l6PKTTFGkv #machine_learning #programming #math…"
+						  },
+						  {
+							"id": "1279990118355476480",
+							"text": "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…"
+						  },
+						  {
+							"id": "1279990114584875009",
+							"text": "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…"
+						  },
+						  {
+							"id": "1279990108968665088",
+							"text": "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…"
+						  },
+						  {
+							"id": "1279990090828320769",
+							"text": "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…"
+						  },
+						  {
+							"id": "1279990084398387201",
+							"text": "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…"
+						  },
+						  {
+							"id": "1279990076748038145",
+							"text": "RT @gp_pulipaka: Best Machine Learning and Data Science #Books 2020. #BigData #Analytics #DataScience #IoT #IIoT #PyTorch #Python #RStats #…"
+						  },
+						  {
+							"id": "1279990069105917952",
+							"text": "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…"
+						  },
+						  {
+							"id": "1279990063888076800",
+							"text": "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…"
+						  }
+						],
+						"meta": {
+						  "newest_id": "1279990139888918528",
+						  "oldest_id": "1279990063888076800",
+						  "result_count": 10,
+						  "next_token": "b26v89c19zqg8o3fo7gghep0wmpt92c0wn0jiqwtc7tdp"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				query: "python",
+				parameters: TweetRecentSearchParameters{
+					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
+				},
+			},
+			want: &TweetRecentSearch{
+				LookUps: TweetLookups{
+					"1279990139888918528": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990139888918528",
+							Text: "Python now online for you !!\n\nWith the advent and acceptance of AI, Robotics, Python has become an inevitable factor in software development industry and most looked out skill both Nationally and Internationally. \n\nCoupon code: GVUP9\nCall: 9482303905/9482163905 https://t.co/ZFXCDJedAh",
+						},
+					},
+					"1279990133463429120": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990133463429120",
+							Text: "RT @McQubit: Building Neural Networks with Python Code and Math in Detail — II https://t.co/l6PKTTFGkv #machine_learning #programming #math…",
+						},
+					},
+					"1279990118355476480": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990118355476480",
+							Text: "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…",
+						},
+					},
+					"1279990114584875009": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990114584875009",
+							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
+						},
+					},
+					"1279990108968665088": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990108968665088",
+							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
+						},
+					},
+					"1279990090828320769": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990090828320769",
+							Text: "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…",
+						},
+					},
+					"1279990084398387201": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990084398387201",
+							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
+						},
+					},
+					"1279990076748038145": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990076748038145",
+							Text: "RT @gp_pulipaka: Best Machine Learning and Data Science #Books 2020. #BigData #Analytics #DataScience #IoT #IIoT #PyTorch #Python #RStats #…",
+						},
+					},
+					"1279990069105917952": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990069105917952",
+							Text: "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…",
+						},
+					},
+					"1279990063888076800": TweetLookup{
+						Tweet: TweetObj{
+							ID:   "1279990063888076800",
+							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
+						},
+					},
+				},
+				Meta: TweetRecentSearchMeta{
+					NewestID:    "1279990139888918528",
+					OldestID:    "1279990063888076800",
+					ResultCount: 10,
+					NextToken:   "b26v89c19zqg8o3fo7gghep0wmpt92c0wn0jiqwtc7tdp",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "tweet error",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"title": "Invalid Request",
+						"detail": "One or more parameters to your request was invalid.",
+						"type": "https://api.twitter.com/2/problems/invalid-request"
+					}`
+					return &http.Response{
+						StatusCode: http.StatusBadRequest,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				query:      "python",
+				parameters: TweetRecentSearchParameters{},
+			},
+			want:    nil,
+			wantErr: true,
+			wantTweetError: &TweetErrorResponse{
+				StatusCode: http.StatusBadRequest,
+				Title:      "Invalid Request",
+				Detail:     "One or more parameters to your request was invalid.",
+				Type:       "https://api.twitter.com/2/problems/invalid-request",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tweet := &Tweet{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := tweet.RecentSearch(context.Background(), tt.args.query, tt.args.parameters)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Tweet.RecentSearch() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Tweet.RecentSearch() = %v, want %v", got, tt.want)
 			}
 			var tweetErr *TweetErrorResponse
 			if errors.As(err, &tweetErr) {
