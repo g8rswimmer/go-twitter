@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,10 +12,11 @@ import (
 )
 
 const (
-	tweetLookupEndpoint       = "2/tweets"
-	tweetRecentSearchEndpoint = "2/tweets/search/recent"
-	tweetMaxIDs               = 100
-	tweetQuerySize            = 512
+	tweetLookupEndpoint            = "2/tweets"
+	tweetRecentSearchEndpoint      = "2/tweets/search/recent"
+	tweetSearchStreamRulesEndpoint = "/2/tweets/search/stream/rules"
+	tweetMaxIDs                    = 100
+	tweetQuerySize                 = 512
 )
 
 // TweetLookups is a map of tweet lookups
@@ -253,6 +255,50 @@ func (t TweetRecentSearchParameters) encode(req *http.Request) {
 	}
 }
 
+// TweetSearchStreamAddRule are the rules to add the search stream
+type TweetSearchStreamAddRule struct {
+	Value string `json:"value"`
+	Tag   string `json:"tag,omitempty"`
+}
+
+// TweetSearchStreamDeleteRule lists the search rule ids to remove
+type TweetSearchStreamDeleteRule struct {
+	IDs []string `json:"ids"`
+}
+
+// TweetSearchStreamRule are the rules to add and/or delete
+type TweetSearchStreamRule struct {
+	Add    []*TweetSearchStreamAddRule  `json:"add,omitempty"`
+	Delete *TweetSearchStreamDeleteRule `json:"delete,omitempty"`
+}
+
+// TweetSearchStreamRuleData are the rules that where added
+type TweetSearchStreamRuleData struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
+	Tag   string `json:"tag"`
+}
+
+// TweetSearchStreamRuleMeta is the meta data for the search rules
+type TweetSearchStreamRuleMeta struct {
+	Sent    string                       `json:"sent"`
+	Summary TweetSearchStreamRuleSummary `json:"summary"`
+}
+
+// TweetSearchStreamRuleSummary is the summary of the rules
+type TweetSearchStreamRuleSummary struct {
+	Created    int `json:"created"`
+	NotCreated int `json:"not_created"`
+	Deleted    int `json:"deleted"`
+	NotDeleted int `json:"not_deleted"`
+}
+
+// TweetSearchStreamRules is the returned set of rules
+type TweetSearchStreamRules struct {
+	Data []TweetSearchStreamRuleData `json:"data"`
+	Meta TweetSearchStreamRuleMeta   `json:"meta"`
+}
+
 // Tweet represents the Tweet v2 APIs
 type Tweet struct {
 	Authorizer Authorizer
@@ -354,6 +400,62 @@ func (t *Tweet) RecentSearch(ctx context.Context, query string, parameters Tweet
 	tr := &TweetRecentSearch{}
 	if err := decoder.Decode(tr); err != nil {
 		return nil, fmt.Errorf("tweet recent search response decode: %w", err)
+	}
+	return tr, nil
+}
+
+// UpdateSearchStreamRules will add and/or remove rules from the seach stream
+func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchStreamRule, validate bool) (*TweetSearchStreamRules, error) {
+	if len(rules.Add) == 0 && rules.Delete == nil {
+		return nil, errors.New("tweet search stream rules: there must be add or delete rules")
+	}
+	for _, add := range rules.Add {
+		if len(add.Value) == 0 {
+			return nil, errors.New("tweet search stream rules: add value is required")
+		}
+	}
+	if rules.Delete != nil && len(rules.Delete.IDs) == 0 {
+		return nil, errors.New("tweet search stream rules: delete ids are required")
+	}
+	enc, err := json.Marshal(rules)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules: rules encoding %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamRulesEndpoint), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet rsearch stream rules request: %w", err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-type", "application/json")
+	t.Authorizer.Add(req)
+	if validate {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet search stream rules response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tr := &TweetSearchStreamRules{}
+	if err := decoder.Decode(tr); err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response decode: %w", err)
 	}
 	return tr, nil
 }

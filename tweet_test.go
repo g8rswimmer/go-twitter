@@ -602,3 +602,229 @@ func TestTweet_RecentSearch(t *testing.T) {
 		})
 	}
 }
+
+func TestTweet_UpdateSearchStreamRules(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		rules    TweetSearchStreamRule
+		validate bool
+	}
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		want           *TweetSearchStreamRules
+		wantErr        bool
+		wantTweetError *TweetErrorResponse
+	}{
+		{
+			name: "Add rules",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"data": [
+							{
+								"value": "meme",
+								"tag": "funny things",
+								"id": "1166895166390583299"
+							},
+							{
+								"value": "cats has:media -grumpy",
+								"tag": "happy cats with media",
+								"id": "1166895166390583296"
+							},
+							{
+								"value": "cat has:media",
+								"tag": "cats with media",
+								"id": "1166895166390583297"
+							},
+							{
+								"value": "meme has:images",
+								"id": "1166895166390583298"
+							}
+					
+						],
+						"meta": {
+							"sent": "2019-08-29T02:07:42.205Z",
+							"summary": {
+								"created": 4,
+								"not_created": 0
+							}
+						}
+					}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				rules: TweetSearchStreamRule{
+					Add: []*TweetSearchStreamAddRule{
+						{
+							Value: "cats has:media",
+							Tag:   "cats with media",
+						},
+						{
+							Value: "cats has:media -grumpy",
+							Tag:   "happy cats with media",
+						},
+						{
+							Value: "meme",
+							Tag:   "funny things",
+						},
+						{
+							Value: "meme has:images",
+						},
+					},
+				},
+			},
+			want: &TweetSearchStreamRules{
+				Data: []TweetSearchStreamRuleData{
+					{
+						Value: "meme",
+						Tag:   "funny things",
+						ID:    "1166895166390583299",
+					},
+					{
+						Value: "cats has:media -grumpy",
+						Tag:   "happy cats with media",
+						ID:    "1166895166390583296",
+					},
+					{
+						Value: "cat has:media",
+						Tag:   "cats with media",
+						ID:    "1166895166390583297",
+					},
+					{
+						Value: "meme has:images",
+						ID:    "1166895166390583298",
+					},
+				},
+				Meta: TweetSearchStreamRuleMeta{
+					Sent: "2019-08-29T02:07:42.205Z",
+					Summary: TweetSearchStreamRuleSummary{
+						Created:    4,
+						NotCreated: 0,
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Delete rules",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"meta": {
+						  "sent": "2019-08-29T01:48:54.633Z",
+						  "summary": {
+							"deleted": 1,
+							"not_deleted": 0
+						  }
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				rules: TweetSearchStreamRule{
+					Delete: &TweetSearchStreamDeleteRule{
+						IDs: []string{"1165037377523306498"},
+					},
+				},
+			},
+			want: &TweetSearchStreamRules{
+				Meta: TweetSearchStreamRuleMeta{
+					Sent: "2019-08-29T01:48:54.633Z",
+					Summary: TweetSearchStreamRuleSummary{
+						Deleted:    1,
+						NotDeleted: 0,
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "tweet error",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"title": "Invalid Request",
+						"detail": "One or more parameters to your request was invalid.",
+						"type": "https://api.twitter.com/2/problems/invalid-request"
+					}`
+					return &http.Response{
+						StatusCode: http.StatusBadRequest,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				rules: TweetSearchStreamRule{
+					Add: []*TweetSearchStreamAddRule{
+						{
+							Value: "cats has:media",
+							Tag:   "cats with media",
+						},
+						{
+							Value: "cats has:media -grumpy",
+							Tag:   "happy cats with media",
+						},
+						{
+							Value: "meme",
+							Tag:   "funny things",
+						},
+						{
+							Value: "meme has:images",
+						},
+					},
+				},
+			},
+			want:    nil,
+			wantErr: true,
+			wantTweetError: &TweetErrorResponse{
+				StatusCode: http.StatusBadRequest,
+				Title:      "Invalid Request",
+				Detail:     "One or more parameters to your request was invalid.",
+				Type:       "https://api.twitter.com/2/problems/invalid-request",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tweet := &Tweet{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := tweet.UpdateSearchStreamRules(context.Background(), tt.args.rules, tt.args.validate)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Tweet.UpdateSearchStreamRules() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Tweet.UpdateSearchStreamRules() = %+v, want %+v", got, tt.want)
+			}
+			var tweetErr *TweetErrorResponse
+			if errors.As(err, &tweetErr) {
+				if !reflect.DeepEqual(tweetErr, tt.wantTweetError) {
+					t.Errorf("Tweet.Lookup() Error = %+v, want %+v", tweetErr, tt.wantTweetError)
+				}
+			}
+		})
+	}
+}
