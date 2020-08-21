@@ -459,3 +459,45 @@ func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchSt
 	}
 	return tr, nil
 }
+
+// SearchStreamRules will return the rules from the ids
+func (t *Tweet) SearchStreamRules(ctx context.Context, ids []string) (*TweetSearchStreamRules, error) {
+	if len(ids) == 0 {
+		return nil, errors.New("tweet search stream rules: there must be ids")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamRulesEndpoint), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet rsearch stream rules request: %w", err)
+	}
+
+	q := req.URL.Query()
+	q.Add("ids", strings.Join(ids, ","))
+	req.URL.RawQuery = q.Encode()
+
+	req.Header.Add("Accept", "application/json")
+	t.Authorizer.Add(req)
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet search stream rules response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tr := &TweetSearchStreamRules{}
+	if err := decoder.Decode(tr); err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response decode: %w", err)
+	}
+	return tr, nil
+}
