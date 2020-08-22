@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	tweetLookupEndpoint            = "2/tweets"
-	tweetRecentSearchEndpoint      = "2/tweets/search/recent"
-	tweetSearchStreamRulesEndpoint = "/2/tweets/search/stream/rules"
-	tweetSearchStreamEndpoint      = "/2/tweets/search/stream"
-	tweetMaxIDs                    = 100
-	tweetQuerySize                 = 512
+	tweetLookupEndpoint              = "2/tweets"
+	tweetRecentSearchEndpoint        = "2/tweets/search/recent"
+	tweetFilteredStreamRulesEndpoint = "/2/tweets/search/stream/rules"
+	tweetFilteredStreamEndpoint      = "/2/tweets/search/stream"
+	tweetMaxIDs                      = 100
+	tweetQuerySize                   = 512
 )
 
 // TweetLookups is a map of tweet lookups
@@ -194,8 +194,8 @@ func (t TweetLookupParameters) encode(req *http.Request) {
 	}
 }
 
-// TweetStreamSearchParameters are the search tweet get parameters
-type TweetStreamSearchParameters struct {
+// TweetFilteredSearchParameters are the search tweet get parameters
+type TweetFilteredSearchParameters struct {
 	Expansions  []Expansion
 	MediaFields []MediaField
 	PlaceFields []PlaceField
@@ -204,7 +204,7 @@ type TweetStreamSearchParameters struct {
 	UserFields  []UserField
 }
 
-func (t TweetStreamSearchParameters) encode(req *http.Request) {
+func (t TweetFilteredSearchParameters) encode(req *http.Request) {
 	q := req.URL.Query()
 	if len(t.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
@@ -440,8 +440,8 @@ func (t *Tweet) RecentSearch(ctx context.Context, query string, parameters Tweet
 	return tr, nil
 }
 
-// UpdateSearchStreamRules will add and/or remove rules from the seach stream
-func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchStreamRule, validate bool) (*TweetSearchStreamRules, error) {
+// ApplyFilteredStreamRules will add and/or remove rules from the seach stream
+func (t *Tweet) ApplyFilteredStreamRules(ctx context.Context, rules TweetSearchStreamRule, validate bool) (*TweetSearchStreamRules, error) {
 	if len(rules.Add) == 0 && rules.Delete == nil {
 		return nil, errors.New("tweet search stream rules: there must be add or delete rules")
 	}
@@ -458,7 +458,7 @@ func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchSt
 		return nil, fmt.Errorf("tweet search stream rules: rules encoding %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamRulesEndpoint), bytes.NewReader(enc))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/%s", t.Host, tweetFilteredStreamRulesEndpoint), bytes.NewReader(enc))
 	if err != nil {
 		return nil, fmt.Errorf("tweet rsearch stream rules request: %w", err)
 	}
@@ -496,13 +496,13 @@ func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchSt
 	return tr, nil
 }
 
-// SearchStreamRules will return the rules from the ids
-func (t *Tweet) SearchStreamRules(ctx context.Context, ids []string) (*TweetSearchStreamRules, error) {
+// FilteredStreamRules will return the rules from the ids
+func (t *Tweet) FilteredStreamRules(ctx context.Context, ids []string) (*TweetSearchStreamRules, error) {
 	if len(ids) == 0 {
 		return nil, errors.New("tweet search stream rules: there must be ids")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamRulesEndpoint), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetFilteredStreamRulesEndpoint), nil)
 	if err != nil {
 		return nil, fmt.Errorf("tweet rsearch stream rules request: %w", err)
 	}
@@ -538,10 +538,10 @@ func (t *Tweet) SearchStreamRules(ctx context.Context, ids []string) (*TweetSear
 	return tr, nil
 }
 
-// SearchStream allows to stream some tweets on a specific set of filter rules
-func (t *Tweet) SearchStream(ctx context.Context, parameters TweetStreamSearchParameters) (TweetLookups, error) {
+// FilteredStream allows to stream some tweets on a specific set of filter rules
+func (t *Tweet) FilteredStream(ctx context.Context, parameters TweetFilteredSearchParameters) (TweetLookups, error) {
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamEndpoint), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetFilteredStreamEndpoint), nil)
 	if err != nil {
 		return nil, fmt.Errorf("tweet lookup request: %w", err)
 	}

@@ -811,7 +811,7 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := tweet.UpdateSearchStreamRules(context.Background(), tt.args.rules, tt.args.validate)
+			got, err := tweet.ApplyFilteredStreamRules(context.Background(), tt.args.rules, tt.args.validate)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tweet.UpdateSearchStreamRules() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -931,7 +931,7 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := tweet.SearchStreamRules(context.Background(), tt.args.ids)
+			got, err := tweet.FilteredStreamRules(context.Background(), tt.args.ids)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tweet.SearchStreamRules() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -956,7 +956,7 @@ func TestTweet_SearchStream(t *testing.T) {
 		Host       string
 	}
 	type args struct {
-		parameters TweetStreamSearchParameters
+		parameters TweetFilteredSearchParameters
 	}
 	tests := []struct {
 		name           string
@@ -985,7 +985,7 @@ func TestTweet_SearchStream(t *testing.T) {
 				}),
 			},
 			args: args{
-				parameters: TweetStreamSearchParameters{
+				parameters: TweetFilteredSearchParameters{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -1034,7 +1034,7 @@ func TestTweet_SearchStream(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := tweet.SearchStream(context.Background(), tt.args.parameters)
+			got, err := tweet.FilteredStream(context.Background(), tt.args.parameters)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tweet.SearchStream() error = %v, wantErr %v", err, tt.wantErr)
 				return
