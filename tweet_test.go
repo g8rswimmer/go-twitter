@@ -956,7 +956,7 @@ func TestTweet_SearchStream(t *testing.T) {
 		Host       string
 	}
 	type args struct {
-		parameters TweetStreamSearchParameters
+		parameters TweetFilteredSearchParameters
 	}
 	tests := []struct {
 		name           string
@@ -985,7 +985,7 @@ func TestTweet_SearchStream(t *testing.T) {
 				}),
 			},
 			args: args{
-				parameters: TweetStreamSearchParameters{
+				parameters: TweetFilteredSearchParameters{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
