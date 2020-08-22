@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,10 +12,12 @@ import (
 )
 
 const (
-	tweetLookupEndpoint       = "2/tweets"
-	tweetRecentSearchEndpoint = "2/tweets/search/recent"
-	tweetMaxIDs               = 100
-	tweetQuerySize            = 512
+	tweetLookupEndpoint            = "2/tweets"
+	tweetRecentSearchEndpoint      = "2/tweets/search/recent"
+	tweetSearchStreamRulesEndpoint = "/2/tweets/search/stream/rules"
+	tweetSearchStreamEndpoint      = "/2/tweets/search/stream"
+	tweetMaxIDs                    = 100
+	tweetQuerySize                 = 512
 )
 
 // TweetLookups is a map of tweet lookups
@@ -191,6 +194,41 @@ func (t TweetLookupParameters) encode(req *http.Request) {
 	}
 }
 
+// TweetStreamSearchParameters are the search tweet get parameters
+type TweetStreamSearchParameters struct {
+	Expansions  []Expansion
+	MediaFields []MediaField
+	PlaceFields []PlaceField
+	PollFields  []PollField
+	TweetFields []TweetField
+	UserFields  []UserField
+}
+
+func (t TweetStreamSearchParameters) encode(req *http.Request) {
+	q := req.URL.Query()
+	if len(t.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
+	}
+	if len(t.MediaFields) > 0 {
+		q.Add("media.fields", strings.Join(mediaFieldStringArray(t.MediaFields), ","))
+	}
+	if len(t.PlaceFields) > 0 {
+		q.Add("place.fields", strings.Join(placeFieldStringArray(t.PlaceFields), ","))
+	}
+	if len(t.PollFields) > 0 {
+		q.Add("poll.fields", strings.Join(pollFieldStringArray(t.PollFields), ","))
+	}
+	if len(t.TweetFields) > 0 {
+		q.Add("tweet.fields", strings.Join(tweetFieldStringArray(t.TweetFields), ","))
+	}
+	if len(t.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(t.UserFields), ","))
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
 // TweetRecentSearchParameters handles all of the recent search parameters
 type TweetRecentSearchParameters struct {
 	query       string
@@ -251,6 +289,50 @@ func (t TweetRecentSearchParameters) encode(req *http.Request) {
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
 	}
+}
+
+// TweetSearchStreamAddRule are the rules to add the search stream
+type TweetSearchStreamAddRule struct {
+	Value string `json:"value"`
+	Tag   string `json:"tag,omitempty"`
+}
+
+// TweetSearchStreamDeleteRule lists the search rule ids to remove
+type TweetSearchStreamDeleteRule struct {
+	IDs []string `json:"ids"`
+}
+
+// TweetSearchStreamRule are the rules to add and/or delete
+type TweetSearchStreamRule struct {
+	Add    []*TweetSearchStreamAddRule  `json:"add,omitempty"`
+	Delete *TweetSearchStreamDeleteRule `json:"delete,omitempty"`
+}
+
+// TweetSearchStreamRuleData are the rules that where added
+type TweetSearchStreamRuleData struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
+	Tag   string `json:"tag"`
+}
+
+// TweetSearchStreamRuleMeta is the meta data for the search rules
+type TweetSearchStreamRuleMeta struct {
+	Sent    string                       `json:"sent"`
+	Summary TweetSearchStreamRuleSummary `json:"summary"`
+}
+
+// TweetSearchStreamRuleSummary is the summary of the rules
+type TweetSearchStreamRuleSummary struct {
+	Created    int `json:"created"`
+	NotCreated int `json:"not_created"`
+	Deleted    int `json:"deleted"`
+	NotDeleted int `json:"not_deleted"`
+}
+
+// TweetSearchStreamRules is the returned set of rules
+type TweetSearchStreamRules struct {
+	Data []TweetSearchStreamRuleData `json:"data"`
+	Meta TweetSearchStreamRuleMeta   `json:"meta"`
 }
 
 // Tweet represents the Tweet v2 APIs
@@ -356,4 +438,137 @@ func (t *Tweet) RecentSearch(ctx context.Context, query string, parameters Tweet
 		return nil, fmt.Errorf("tweet recent search response decode: %w", err)
 	}
 	return tr, nil
+}
+
+// UpdateSearchStreamRules will add and/or remove rules from the seach stream
+func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchStreamRule, validate bool) (*TweetSearchStreamRules, error) {
+	if len(rules.Add) == 0 && rules.Delete == nil {
+		return nil, errors.New("tweet search stream rules: there must be add or delete rules")
+	}
+	for _, add := range rules.Add {
+		if len(add.Value) == 0 {
+			return nil, errors.New("tweet search stream rules: add value is required")
+		}
+	}
+	if rules.Delete != nil && len(rules.Delete.IDs) == 0 {
+		return nil, errors.New("tweet search stream rules: delete ids are required")
+	}
+	enc, err := json.Marshal(rules)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules: rules encoding %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamRulesEndpoint), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet rsearch stream rules request: %w", err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-type", "application/json")
+	t.Authorizer.Add(req)
+	if validate {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet search stream rules response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tr := &TweetSearchStreamRules{}
+	if err := decoder.Decode(tr); err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response decode: %w", err)
+	}
+	return tr, nil
+}
+
+// SearchStreamRules will return the rules from the ids
+func (t *Tweet) SearchStreamRules(ctx context.Context, ids []string) (*TweetSearchStreamRules, error) {
+	if len(ids) == 0 {
+		return nil, errors.New("tweet search stream rules: there must be ids")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamRulesEndpoint), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet rsearch stream rules request: %w", err)
+	}
+
+	q := req.URL.Query()
+	q.Add("ids", strings.Join(ids, ","))
+	req.URL.RawQuery = q.Encode()
+
+	req.Header.Add("Accept", "application/json")
+	t.Authorizer.Add(req)
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet search stream rules response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tr := &TweetSearchStreamRules{}
+	if err := decoder.Decode(tr); err != nil {
+		return nil, fmt.Errorf("tweet search stream rules response decode: %w", err)
+	}
+	return tr, nil
+}
+
+// SearchStream allows to stream some tweets on a specific set of filter rules
+func (t *Tweet) SearchStream(ctx context.Context, parameters TweetStreamSearchParameters) (TweetLookups, error) {
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamEndpoint), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	t.Authorizer.Add(req)
+	parameters.encode(req)
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet lookup response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tl := TweetLookups{}
+	if err := tl.lookup(decoder); err != nil {
+		return nil, err
+	}
+	return tl, nil
 }
