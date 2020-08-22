@@ -440,8 +440,8 @@ func (t *Tweet) RecentSearch(ctx context.Context, query string, parameters Tweet
 	return tr, nil
 }
 
-// UpdateSearchStreamRules will add and/or remove rules from the seach stream
-func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchStreamRule, validate bool) (*TweetSearchStreamRules, error) {
+// ApplyFilteredStreamRules will add and/or remove rules from the seach stream
+func (t *Tweet) ApplyFilteredStreamRules(ctx context.Context, rules TweetSearchStreamRule, validate bool) (*TweetSearchStreamRules, error) {
 	if len(rules.Add) == 0 && rules.Delete == nil {
 		return nil, errors.New("tweet search stream rules: there must be add or delete rules")
 	}
@@ -496,8 +496,8 @@ func (t *Tweet) UpdateSearchStreamRules(ctx context.Context, rules TweetSearchSt
 	return tr, nil
 }
 
-// SearchStreamRules will return the rules from the ids
-func (t *Tweet) SearchStreamRules(ctx context.Context, ids []string) (*TweetSearchStreamRules, error) {
+// FilteredStreamRules will return the rules from the ids
+func (t *Tweet) FilteredStreamRules(ctx context.Context, ids []string) (*TweetSearchStreamRules, error) {
 	if len(ids) == 0 {
 		return nil, errors.New("tweet search stream rules: there must be ids")
 	}
@@ -538,8 +538,8 @@ func (t *Tweet) SearchStreamRules(ctx context.Context, ids []string) (*TweetSear
 	return tr, nil
 }
 
-// SearchStream allows to stream some tweets on a specific set of filter rules
-func (t *Tweet) SearchStream(ctx context.Context, parameters TweetStreamSearchParameters) (TweetLookups, error) {
+// FilteredStream allows to stream some tweets on a specific set of filter rules
+func (t *Tweet) FilteredStream(ctx context.Context, parameters TweetStreamSearchParameters) (TweetLookups, error) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSearchStreamEndpoint), nil)
 	if err != nil {

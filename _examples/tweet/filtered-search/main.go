@@ -38,7 +38,7 @@ func main() {
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldAttachments},
 	}
 
-	lookups, err := tweet.SearchStream(context.Background(), parameters)
+	lookups, err := tweet.FilteredStream(context.Background(), parameters)
 	var tweetErr *twitter.TweetErrorResponse
 	switch {
 	case errors.As(err, &tweetErr):
