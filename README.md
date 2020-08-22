@@ -14,3 +14,6 @@ The tweet lookup API example is located [here](./_examples/tweet/lookup).
 
 ### Tweet Recent Search 
 The tweet recent search API example is locate [here](./_examples/tweet/recent-search).  
+
+### Tweet Filtered Search 
+The tweet recent search API example is locate [here](./_examples/tweet/filtered-search).  
