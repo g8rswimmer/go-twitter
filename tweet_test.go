@@ -1154,3 +1154,128 @@ func TestTweet_SampledStream(t *testing.T) {
 		})
 	}
 }
+
+func TestTweet_Hide(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		id     string
+		hidden bool
+	}
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		wantErr        bool
+		wantTweetError *TweetErrorResponse
+	}{
+		{
+			name: "hide",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{"data":{"hidden":true}}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id:     "122334433",
+				hidden: true,
+			},
+			wantErr: false,
+		},
+		{
+			name: "unhide",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{"data":{"hidden":false}}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id:     "122334433",
+				hidden: false,
+			},
+			wantErr: false,
+		},
+		{
+			name: "mis-match",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{"data":{"hidden":false}}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id:     "122334433",
+				hidden: true,
+			},
+			wantErr: true,
+		},
+		{
+			name: "tweet error",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"title": "Invalid Request",
+						"detail": "One or more parameters to your request was invalid.",
+						"type": "https://api.twitter.com/2/problems/invalid-request"
+					}`
+					return &http.Response{
+						StatusCode: http.StatusBadRequest,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id:     "122334433",
+				hidden: false,
+			},
+			wantErr: true,
+			wantTweetError: &TweetErrorResponse{
+				StatusCode: http.StatusBadRequest,
+				Title:      "Invalid Request",
+				Detail:     "One or more parameters to your request was invalid.",
+				Type:       "https://api.twitter.com/2/problems/invalid-request",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tweet := &Tweet{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			err := tweet.HideReplies(context.Background(), tt.args.id, tt.args.hidden)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Tweet.Hide() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			var tweetErr *TweetErrorResponse
+			if errors.As(err, &tweetErr) {
+				if !reflect.DeepEqual(tweetErr, tt.wantTweetError) {
+					t.Errorf("Tweet.Lookup() Error = %+v, want %+v", tweetErr, tt.wantTweetError)
+				}
+			}
+		})
+	}
+}

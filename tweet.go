@@ -17,6 +17,8 @@ const (
 	tweetFilteredStreamRulesEndpoint = "/2/tweets/search/stream/rules"
 	tweetFilteredStreamEndpoint      = "/2/tweets/search/stream"
 	tweetSampledStreamEndpoint       = "/2/tweets/sample/stream"
+	tweetHideEndpoint                = "/2/tweets/{id}/hidden"
+	tweetID                          = "{id}"
 	tweetMaxIDs                      = 100
 	tweetQuerySize                   = 512
 )
@@ -642,4 +644,58 @@ func (t *Tweet) SampledStream(ctx context.Context, parameters TweetSampledSearch
 		return nil, err
 	}
 	return tl, nil
+}
+
+func (t *Tweet) HideReplies(ctx context.Context, id string, hidden bool) error {
+	if len(id) == 0 {
+		return errors.New("tweet hidden: id can not be empty")
+	}
+
+	hb := struct {
+		Hidden bool `json:"hidden"`
+	}{
+		Hidden: hidden,
+	}
+	enc, _ := json.Marshal(hb)
+
+	ep := strings.ReplaceAll(tweetHideEndpoint, tweetID, id)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, ep), bytes.NewReader(enc))
+	if err != nil {
+		return fmt.Errorf("tweet lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-type", "application/json")
+	t.Authorizer.Add(req)
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return fmt.Errorf("tweet lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return fmt.Errorf("tweet lookup response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return e
+	}
+
+	type responseData struct {
+		Hidden bool `json:"hidden`
+	}
+	type response struct {
+		Data responseData `json:"data"`
+	}
+	r := &response{}
+	if err := decoder.Decode(r); err != nil {
+		return fmt.Errorf("tweet hidden: response decode err %w", err)
+	}
+	if r.Data.Hidden != hidden {
+		return fmt.Errorf("tweet hidden: expected response (%v) does not match hidden (%v)", r.Data.Hidden, hidden)
+	}
+	return nil
 }
