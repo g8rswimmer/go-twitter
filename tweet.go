@@ -646,6 +646,7 @@ func (t *Tweet) SampledStream(ctx context.Context, parameters TweetSampledSearch
 	return tl, nil
 }
 
+// HideReplies will hide a tweet id replies
 func (t *Tweet) HideReplies(ctx context.Context, id string, hidden bool) error {
 	if len(id) == 0 {
 		return errors.New("tweet hidden: id can not be empty")
