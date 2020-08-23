@@ -20,3 +20,6 @@ The tweet filtered search API example is locate [here](./_examples/tweet/filtere
 
 ### Tweet Sampled Search 
 The tweet sampled search API example is locate [here](./_examples/tweet/sampled-search).  
+
+### Tweet Hide Replies
+The tweet hide replies API example is locate [here](./_examples/tweet/hide).  
