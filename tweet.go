@@ -660,7 +660,7 @@ func (t *Tweet) HideReplies(ctx context.Context, id string, hidden bool) error {
 	enc, _ := json.Marshal(hb)
 
 	ep := strings.ReplaceAll(tweetHideEndpoint, tweetID, id)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, ep), bytes.NewReader(enc))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, fmt.Sprintf("%s/%s", t.Host, ep), bytes.NewReader(enc))
 	if err != nil {
 		return fmt.Errorf("tweet lookup request: %w", err)
 	}
