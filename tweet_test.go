@@ -1051,3 +1051,106 @@ func TestTweet_SearchStream(t *testing.T) {
 		})
 	}
 }
+
+func TestTweet_SampledStream(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		parameters TweetSampledSearchParameters
+	}
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		want           TweetLookups
+		wantErr        bool
+		wantTweetError *TweetErrorResponse
+	}{
+		{
+			name: "search",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"data": {
+						  "id": "1067094924124872705",
+						  "text": "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				parameters: TweetSampledSearchParameters{
+					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
+				},
+			},
+			want: TweetLookups{
+				"1067094924124872705": TweetLookup{
+					Tweet: TweetObj{
+						Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+						ID:   "1067094924124872705",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "tweet error",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					body := `{
+						"title": "Invalid Request",
+						"detail": "One or more parameters to your request was invalid.",
+						"type": "https://api.twitter.com/2/problems/invalid-request"
+					}`
+					return &http.Response{
+						StatusCode: http.StatusBadRequest,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args:    args{},
+			want:    nil,
+			wantErr: true,
+			wantTweetError: &TweetErrorResponse{
+				StatusCode: http.StatusBadRequest,
+				Title:      "Invalid Request",
+				Detail:     "One or more parameters to your request was invalid.",
+				Type:       "https://api.twitter.com/2/problems/invalid-request",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tweet := &Tweet{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := tweet.SampledStream(context.Background(), tt.args.parameters)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Tweet.SampledStream() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Tweet.SampledStream() = %v, want %v", got, tt.want)
+			}
+			var tweetErr *TweetErrorResponse
+			if errors.As(err, &tweetErr) {
+				if !reflect.DeepEqual(tweetErr, tt.wantTweetError) {
+					t.Errorf("Tweet.Lookup() Error = %+v, want %+v", tweetErr, tt.wantTweetError)
+				}
+			}
+		})
+	}
+}

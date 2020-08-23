@@ -16,6 +16,7 @@ const (
 	tweetRecentSearchEndpoint        = "2/tweets/search/recent"
 	tweetFilteredStreamRulesEndpoint = "/2/tweets/search/stream/rules"
 	tweetFilteredStreamEndpoint      = "/2/tweets/search/stream"
+	tweetSampledStreamEndpoint       = "/2/tweets/sample/stream"
 	tweetMaxIDs                      = 100
 	tweetQuerySize                   = 512
 )
@@ -205,6 +206,41 @@ type TweetFilteredSearchParameters struct {
 }
 
 func (t TweetFilteredSearchParameters) encode(req *http.Request) {
+	q := req.URL.Query()
+	if len(t.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
+	}
+	if len(t.MediaFields) > 0 {
+		q.Add("media.fields", strings.Join(mediaFieldStringArray(t.MediaFields), ","))
+	}
+	if len(t.PlaceFields) > 0 {
+		q.Add("place.fields", strings.Join(placeFieldStringArray(t.PlaceFields), ","))
+	}
+	if len(t.PollFields) > 0 {
+		q.Add("poll.fields", strings.Join(pollFieldStringArray(t.PollFields), ","))
+	}
+	if len(t.TweetFields) > 0 {
+		q.Add("tweet.fields", strings.Join(tweetFieldStringArray(t.TweetFields), ","))
+	}
+	if len(t.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(t.UserFields), ","))
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+// TweetSampledSearchParameters are the search tweet get parameters
+type TweetSampledSearchParameters struct {
+	Expansions  []Expansion
+	MediaFields []MediaField
+	PlaceFields []PlaceField
+	PollFields  []PollField
+	TweetFields []TweetField
+	UserFields  []UserField
+}
+
+func (t TweetSampledSearchParameters) encode(req *http.Request) {
 	q := req.URL.Query()
 	if len(t.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
@@ -542,6 +578,41 @@ func (t *Tweet) FilteredStreamRules(ctx context.Context, ids []string) (*TweetSe
 func (t *Tweet) FilteredStream(ctx context.Context, parameters TweetFilteredSearchParameters) (TweetLookups, error) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetFilteredStreamEndpoint), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	t.Authorizer.Add(req)
+	parameters.encode(req)
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("tweet lookup response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	tl := TweetLookups{}
+	if err := tl.lookup(decoder); err != nil {
+		return nil, err
+	}
+	return tl, nil
+}
+
+// SampledStream will stream about 1% of all tweets
+func (t *Tweet) SampledStream(ctx context.Context, parameters TweetSampledSearchParameters) (TweetLookups, error) {
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/%s", t.Host, tweetSampledStreamEndpoint), nil)
 	if err != nil {
 		return nil, fmt.Errorf("tweet lookup request: %w", err)
 	}
