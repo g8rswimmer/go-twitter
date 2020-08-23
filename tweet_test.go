@@ -38,6 +38,9 @@ func TestTweet_Lookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
 					body := `{
 						"data": {
 						  "author_id": "2244994945",
@@ -94,6 +97,9 @@ func TestTweet_Lookup(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
 					}
 					body := `{
 						"data": [
@@ -180,6 +186,9 @@ func TestTweet_Lookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -259,6 +268,9 @@ func TestTweet_RecentSearch(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetRecentSearchEndpoint)
 					}
 					body := `{
 						"data": [
@@ -403,6 +415,9 @@ func TestTweet_RecentSearch(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetRecentSearchEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -478,6 +493,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodPost {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
 					}
 
 					body := `{
@@ -579,6 +597,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					if req.Method != http.MethodPost {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
 					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
 					body := `{
 						"meta": {
 						  "sent": "2019-08-29T01:48:54.633Z",
@@ -620,6 +641,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodPost {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -714,6 +738,9 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
 					body := `{
 						"data": [
 						  {
@@ -764,6 +791,9 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -840,6 +870,9 @@ func TestTweet_SearchStream(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamEndpoint)
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -875,6 +908,9 @@ func TestTweet_SearchStream(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamEndpoint)
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -949,6 +985,9 @@ func TestTweet_SampledStream(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
+					if strings.Contains(req.URL.String(), tweetSampledStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSampledStreamEndpoint)
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -984,6 +1023,9 @@ func TestTweet_SampledStream(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetSampledStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSampledStreamEndpoint)
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -1058,6 +1100,9 @@ func TestTweet_Hide(t *testing.T) {
 					if req.Method != http.MethodPut {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
 					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
 					body := `{"data":{"hidden":true}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1079,6 +1124,9 @@ func TestTweet_Hide(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodPut {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
 					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
@@ -1102,6 +1150,9 @@ func TestTweet_Hide(t *testing.T) {
 					if req.Method != http.MethodPut {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
 					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1123,6 +1174,9 @@ func TestTweet_Hide(t *testing.T) {
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
 					if req.Method != http.MethodPut {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
 					}
 					body := `{
 						"title": "Invalid Request",
