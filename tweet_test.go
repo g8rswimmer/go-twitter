@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -34,6 +35,9 @@ func TestTweet_Lookup(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"data": {
 						  "author_id": "2244994945",
@@ -88,6 +92,9 @@ func TestTweet_Lookup(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"data": [
 						  {
@@ -170,6 +177,9 @@ func TestTweet_Lookup(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -247,6 +257,9 @@ func TestTweet_RecentSearch(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"data": [
 						  {
@@ -387,6 +400,9 @@ func TestTweet_RecentSearch(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -460,6 +476,10 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+
 					body := `{
 						"data": [
 							{
@@ -556,6 +576,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
 					body := `{
 						"meta": {
 						  "sent": "2019-08-29T01:48:54.633Z",
@@ -595,6 +618,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -685,6 +711,9 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"data": [
 						  {
@@ -733,6 +762,9 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -805,6 +837,9 @@ func TestTweet_SearchStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -838,6 +873,9 @@ func TestTweet_SearchStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -908,6 +946,9 @@ func TestTweet_SampledStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -941,6 +982,9 @@ func TestTweet_SampledStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -1011,6 +1055,9 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
 					body := `{"data":{"hidden":true}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1030,6 +1077,9 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1049,6 +1099,9 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1068,6 +1121,9 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
