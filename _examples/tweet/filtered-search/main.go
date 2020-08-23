@@ -33,12 +33,12 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	parameters := twitter.TweetFilteredSearchParameters{
+	fieldOpts := twitter.TweetFieldOptions{
 		Expansions:  []twitter.Expansion{twitter.ExpansionEntitiesMentionsUserName, twitter.ExpansionAuthorID},
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldAttachments},
 	}
 
-	lookups, err := tweet.FilteredStream(context.Background(), parameters)
+	lookups, err := tweet.FilteredStream(context.Background(), fieldOpts)
 	var tweetErr *twitter.TweetErrorResponse
 	switch {
 	case errors.As(err, &tweetErr):

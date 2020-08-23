@@ -34,11 +34,12 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	parameters := twitter.TweetRecentSearchOptions{
+	fieldOpts := twitter.TweetFieldOptions{
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldLanguage},
 	}
+	searchOpts := twitter.TweetRecentSearchOptions{}
 
-	recentSearch, err := tweet.RecentSearch(context.Background(), *query, parameters)
+	recentSearch, err := tweet.RecentSearch(context.Background(), *query, searchOpts, fieldOpts)
 	var tweetErr *twitter.TweetErrorResponse
 	switch {
 	case errors.As(err, &tweetErr):
