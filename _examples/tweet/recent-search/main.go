@@ -34,7 +34,7 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	parameters := twitter.TweetRecentSearchParameters{
+	parameters := twitter.TweetRecentSearchOptions{
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldLanguage},
 	}
 
