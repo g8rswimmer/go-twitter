@@ -4,85 +4,12 @@ import (
 	"context"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"reflect"
 	"strings"
 	"testing"
-	"time"
 )
-
-func TestTweetLookupParameters_encode(t *testing.T) {
-	type fields struct {
-		ids         []string
-		Expansions  []Expansion
-		MediaFields []MediaField
-		PlaceFields []PlaceField
-		PollFields  []PollField
-		TweetFields []TweetField
-		UserFields  []UserField
-	}
-	type args struct {
-		req *http.Request
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   url.Values
-	}{
-		{
-			name:   "no queries",
-			fields: fields{},
-			args: args{
-				req: httptest.NewRequest(http.MethodGet, "https://www.go-twitter.com", nil),
-			},
-			want: url.Values{},
-		},
-		{
-			name: "queries",
-			fields: fields{
-				ids:         []string{"123", "678"},
-				Expansions:  []Expansion{ExpansionAuthorID},
-				MediaFields: []MediaField{MediaFieldType, MediaFieldWidth},
-				PlaceFields: []PlaceField{PlaceFieldID, PlaceFieldPlaceType},
-				PollFields:  []PollField{PollFieldOptions},
-				TweetFields: []TweetField{TweetFieldPossiblySensitve, TweetFieldNonPublicMetrics},
-				UserFields:  []UserField{UserFieldProfileImageURL, UserFieldUserName},
-			},
-			args: args{
-				req: httptest.NewRequest(http.MethodGet, "https://www.go-twitter.com", nil),
-			},
-			want: url.Values{
-				"ids":          []string{"123,678"},
-				"expansions":   []string{strings.Join(expansionStringArray([]Expansion{ExpansionAuthorID}), ",")},
-				"media.fields": []string{strings.Join(mediaFieldStringArray([]MediaField{MediaFieldType, MediaFieldWidth}), ",")},
-				"place.fields": []string{strings.Join(placeFieldStringArray([]PlaceField{PlaceFieldID, PlaceFieldPlaceType}), ",")},
-				"poll.fields":  []string{strings.Join(pollFieldStringArray([]PollField{PollFieldOptions}), ",")},
-				"tweet.fields": []string{strings.Join(tweetFieldStringArray([]TweetField{TweetFieldPossiblySensitve, TweetFieldNonPublicMetrics}), ",")},
-				"user.fields":  []string{strings.Join(userFieldStringArray([]UserField{UserFieldProfileImageURL, UserFieldUserName}), ",")},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tlp := TweetLookupParameters{
-				ids:         tt.fields.ids,
-				Expansions:  tt.fields.Expansions,
-				MediaFields: tt.fields.MediaFields,
-				PlaceFields: tt.fields.PlaceFields,
-				PollFields:  tt.fields.PollFields,
-				TweetFields: tt.fields.TweetFields,
-				UserFields:  tt.fields.UserFields,
-			}
-			tlp.encode(tt.args.req)
-			if reflect.DeepEqual(tt.args.req.URL.Query(), tt.want) == false {
-				t.Errorf("TweetLookupParameters.encode() got %v want %v", tt.args.req.URL.Query(), tt.want)
-			}
-		})
-	}
-}
 
 func TestTweet_Lookup(t *testing.T) {
 	type fields struct {
@@ -92,7 +19,7 @@ func TestTweet_Lookup(t *testing.T) {
 	}
 	type args struct {
 		ids        []string
-		parameters TweetLookupParameters
+		parameters TweetFieldOptions
 	}
 	tests := []struct {
 		name           string
@@ -108,6 +35,12 @@ func TestTweet_Lookup(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
 					body := `{
 						"data": {
 						  "author_id": "2244994945",
@@ -134,7 +67,7 @@ func TestTweet_Lookup(t *testing.T) {
 			},
 			args: args{
 				ids: []string{"1067094924124872705"},
-				parameters: TweetLookupParameters{
+				parameters: TweetFieldOptions{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -162,6 +95,12 @@ func TestTweet_Lookup(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
 					body := `{
 						"data": [
 						  {
@@ -202,7 +141,7 @@ func TestTweet_Lookup(t *testing.T) {
 			},
 			args: args{
 				ids: []string{"1261326399320715264", "1278347468690915330"},
-				parameters: TweetLookupParameters{
+				parameters: TweetFieldOptions{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -244,6 +183,12 @@ func TestTweet_Lookup(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -257,7 +202,7 @@ func TestTweet_Lookup(t *testing.T) {
 			},
 			args: args{
 				ids: []string{"1067094924124872705"},
-				parameters: TweetLookupParameters{
+				parameters: TweetFieldOptions{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -296,99 +241,6 @@ func TestTweet_Lookup(t *testing.T) {
 	}
 }
 
-func TestTweetRecentSearchParameters_encode(t *testing.T) {
-	type fields struct {
-		query       string
-		StartTime   time.Time
-		EndTime     time.Time
-		MaxResult   int
-		NextToken   string
-		SinceID     string
-		UntilID     string
-		Expansions  []Expansion
-		MediaFields []MediaField
-		PlaceFields []PlaceField
-		PollFields  []PollField
-		TweetFields []TweetField
-		UserFields  []UserField
-	}
-	type args struct {
-		req *http.Request
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   url.Values
-	}{
-		{
-			name: "no queries",
-			fields: fields{
-				query: "python",
-			},
-			args: args{
-				req: httptest.NewRequest(http.MethodGet, "https://www.go-twitter.com", nil),
-			},
-			want: url.Values{
-				"query": []string{"python"},
-			},
-		},
-		{
-			name: "queries",
-			fields: fields{
-				query:       "python",
-				NextToken:   "112233445566",
-				StartTime:   time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
-				EndTime:     time.Date(2020, time.February, 20, 0, 0, 0, 0, time.UTC),
-				Expansions:  []Expansion{ExpansionAuthorID},
-				MediaFields: []MediaField{MediaFieldType, MediaFieldWidth},
-				PlaceFields: []PlaceField{PlaceFieldID, PlaceFieldPlaceType},
-				PollFields:  []PollField{PollFieldOptions},
-				TweetFields: []TweetField{TweetFieldPossiblySensitve, TweetFieldNonPublicMetrics},
-				UserFields:  []UserField{UserFieldProfileImageURL, UserFieldUserName},
-			},
-			args: args{
-				req: httptest.NewRequest(http.MethodGet, "https://www.go-twitter.com", nil),
-			},
-			want: url.Values{
-				"query":        []string{"python"},
-				"next_token":   []string{"112233445566"},
-				"end_time":     []string{"2020-02-20T00:00:00Z"},
-				"start_time":   []string{"2020-01-01T00:00:00Z"},
-				"expansions":   []string{strings.Join(expansionStringArray([]Expansion{ExpansionAuthorID}), ",")},
-				"media.fields": []string{strings.Join(mediaFieldStringArray([]MediaField{MediaFieldType, MediaFieldWidth}), ",")},
-				"place.fields": []string{strings.Join(placeFieldStringArray([]PlaceField{PlaceFieldID, PlaceFieldPlaceType}), ",")},
-				"poll.fields":  []string{strings.Join(pollFieldStringArray([]PollField{PollFieldOptions}), ",")},
-				"tweet.fields": []string{strings.Join(tweetFieldStringArray([]TweetField{TweetFieldPossiblySensitve, TweetFieldNonPublicMetrics}), ",")},
-				"user.fields":  []string{strings.Join(userFieldStringArray([]UserField{UserFieldProfileImageURL, UserFieldUserName}), ",")},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			trs := TweetRecentSearchParameters{
-				query:       tt.fields.query,
-				StartTime:   tt.fields.StartTime,
-				EndTime:     tt.fields.EndTime,
-				MaxResult:   tt.fields.MaxResult,
-				NextToken:   tt.fields.NextToken,
-				SinceID:     tt.fields.SinceID,
-				UntilID:     tt.fields.UntilID,
-				Expansions:  tt.fields.Expansions,
-				MediaFields: tt.fields.MediaFields,
-				PlaceFields: tt.fields.PlaceFields,
-				PollFields:  tt.fields.PollFields,
-				TweetFields: tt.fields.TweetFields,
-				UserFields:  tt.fields.UserFields,
-			}
-			trs.encode(tt.args.req)
-			if reflect.DeepEqual(tt.args.req.URL.Query(), tt.want) == false {
-				t.Errorf("TweetRecentSearchParameters.encode() got %v want %v", tt.args.req.URL.Query(), tt.want)
-			}
-		})
-	}
-}
-
 func TestTweet_RecentSearch(t *testing.T) {
 	type fields struct {
 		Authorizer Authorizer
@@ -397,7 +249,8 @@ func TestTweet_RecentSearch(t *testing.T) {
 	}
 	type args struct {
 		query      string
-		parameters TweetRecentSearchParameters
+		searchOpts TweetRecentSearchOptions
+		fieldOpts  TweetFieldOptions
 	}
 	tests := []struct {
 		name           string
@@ -413,6 +266,12 @@ func TestTweet_RecentSearch(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetRecentSearchEndpoint)
+					}
 					body := `{
 						"data": [
 						  {
@@ -471,7 +330,7 @@ func TestTweet_RecentSearch(t *testing.T) {
 			},
 			args: args{
 				query: "python",
-				parameters: TweetRecentSearchParameters{
+				fieldOpts: TweetFieldOptions{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -553,6 +412,12 @@ func TestTweet_RecentSearch(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetLookupEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetRecentSearchEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -565,8 +430,7 @@ func TestTweet_RecentSearch(t *testing.T) {
 				}),
 			},
 			args: args{
-				query:      "python",
-				parameters: TweetRecentSearchParameters{},
+				query: "python",
 			},
 			want:    nil,
 			wantErr: true,
@@ -585,7 +449,7 @@ func TestTweet_RecentSearch(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := tweet.RecentSearch(context.Background(), tt.args.query, tt.args.parameters)
+			got, err := tweet.RecentSearch(context.Background(), tt.args.query, tt.args.searchOpts, tt.args.fieldOpts)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tweet.RecentSearch() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -627,6 +491,13 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
+
 					body := `{
 						"data": [
 							{
@@ -723,6 +594,12 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
 					body := `{
 						"meta": {
 						  "sent": "2019-08-29T01:48:54.633Z",
@@ -762,6 +639,12 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -852,6 +735,12 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
 					body := `{
 						"data": [
 						  {
@@ -900,6 +789,12 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -956,7 +851,7 @@ func TestTweet_SearchStream(t *testing.T) {
 		Host       string
 	}
 	type args struct {
-		parameters TweetFilteredSearchParameters
+		fieldOpts TweetFieldOptions
 	}
 	tests := []struct {
 		name           string
@@ -972,6 +867,12 @@ func TestTweet_SearchStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamEndpoint)
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -985,7 +886,7 @@ func TestTweet_SearchStream(t *testing.T) {
 				}),
 			},
 			args: args{
-				parameters: TweetFilteredSearchParameters{
+				fieldOpts: TweetFieldOptions{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -1005,6 +906,12 @@ func TestTweet_SearchStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetFilteredStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -1034,7 +941,7 @@ func TestTweet_SearchStream(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := tweet.FilteredStream(context.Background(), tt.args.parameters)
+			got, err := tweet.FilteredStream(context.Background(), tt.args.fieldOpts)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tweet.SearchStream() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -1059,7 +966,7 @@ func TestTweet_SampledStream(t *testing.T) {
 		Host       string
 	}
 	type args struct {
-		parameters TweetSampledSearchParameters
+		fieldOpts TweetFieldOptions
 	}
 	tests := []struct {
 		name           string
@@ -1075,6 +982,12 @@ func TestTweet_SampledStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetSampledStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSampledStreamEndpoint)
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -1088,7 +1001,7 @@ func TestTweet_SampledStream(t *testing.T) {
 				}),
 			},
 			args: args{
-				parameters: TweetSampledSearchParameters{
+				fieldOpts: TweetFieldOptions{
 					UserFields: []UserField{UserFieldVerified, UserFieldUserName, UserFieldID, UserFieldName},
 				},
 			},
@@ -1108,6 +1021,12 @@ func TestTweet_SampledStream(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), tweetSampledStreamEndpoint) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSampledStreamEndpoint)
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",
@@ -1137,7 +1056,7 @@ func TestTweet_SampledStream(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := tweet.SampledStream(context.Background(), tt.args.parameters)
+			got, err := tweet.SampledStream(context.Background(), tt.args.fieldOpts)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Tweet.SampledStream() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -1178,6 +1097,12 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
 					body := `{"data":{"hidden":true}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1197,6 +1122,12 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1216,6 +1147,12 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1235,6 +1172,12 @@ func TestTweet_Hide(t *testing.T) {
 				Authorizer: &mockAuth{},
 				Host:       "https://www.test.com",
 				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPut {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPut)
+					}
+					if strings.Contains(req.URL.String(), "hidden") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
 					body := `{
 						"title": "Invalid Request",
 						"detail": "One or more parameters to your request was invalid.",

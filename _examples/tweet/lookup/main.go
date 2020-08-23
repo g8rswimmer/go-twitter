@@ -35,12 +35,12 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	parameters := twitter.TweetLookupParameters{
+	fieldOpts := twitter.TweetFieldOptions{
 		Expansions:  []twitter.Expansion{twitter.ExpansionEntitiesMentionsUserName, twitter.ExpansionAuthorID},
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldAttachments},
 	}
 
-	lookups, err := tweet.Lookup(context.Background(), strings.Split(*ids, ","), parameters)
+	lookups, err := tweet.Lookup(context.Background(), strings.Split(*ids, ","), fieldOpts)
 	var tweetErr *twitter.TweetErrorResponse
 	switch {
 	case errors.As(err, &tweetErr):
