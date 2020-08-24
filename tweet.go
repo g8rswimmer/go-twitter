@@ -22,7 +22,7 @@ const (
 	tweetQuerySize                   = 512
 )
 
-// TweetLookups is a map of tweet lookups
+// TweetLookups is .a map of tweet lookups
 type TweetLookups map[string]TweetLookup
 
 func (t TweetLookups) lookup(decoder *json.Decoder) error {
