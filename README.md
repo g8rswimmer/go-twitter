@@ -9,17 +9,29 @@ The library is based off of [version 2](https://developer.twitter.com/en/docs/tw
 ## Examples
 To run all examples, the user is required to provide their developer account credentials.  The library does not share any credentials.
 
-### Tweet Lookup
+### Tweet
+The following examples demostrate the tweet APIs.
+
+#### Lookup
 The tweet lookup API example is located [here](./_examples/tweet/lookup).  
 
-### Tweet Recent Search 
+#### Recent Search 
 The tweet recent search API example is locate [here](./_examples/tweet/recent-search).  
 
-### Tweet Filtered Search 
+#### Filtered Search 
 The tweet filtered search API example is locate [here](./_examples/tweet/filtered-search).  
 
-### Tweet Sampled Search 
+#### Sampled Search 
 The tweet sampled search API example is locate [here](./_examples/tweet/sampled-search).  
 
-### Tweet Hide Replies
+#### Hide Replies
 The tweet hide replies API example is locate [here](./_examples/tweet/hide).  
+
+### User
+The following example demostrate the user APIs
+
+#### Lookup by ID
+The user lookup API example is located [here](./_examples/user/lookup-id)
+
+#### Lookup by User Name
+The user lookup API example is located [here](./_examples/user/lookup-name)
