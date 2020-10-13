@@ -1,3 +1,4 @@
+![](https://img.shields.io/endpoint?url=https%3A%2F%2Ftwbadges.glitch.me%2Fbadges%2Fv2)
 # go-twitter
 This is a go library for Twitter v2 API integration.
 
