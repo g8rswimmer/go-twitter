@@ -87,7 +87,7 @@ type UserLookup struct {
 type UserFollowLookup struct {
 	Lookups UserLookups
 	Meta    *UserFollowMeta
-	Errors  []UserErrorObj
+	Errors  []ErrorObj
 }
 
 // UserFollowMeta the meta that is returned for the following APIs
@@ -265,7 +265,7 @@ func (u *User) LookupFollowing(ctx context.Context, id string, followOpts UserFo
 	}
 	type extra struct {
 		Meta   *UserFollowMeta `json:"meta"`
-		Errors []UserErrorObj  `json:"errors"`
+		Errors []ErrorObj      `json:"errors"`
 	}
 	ufm := &extra{}
 	if err := json.Unmarshal(body, ufm); err != nil {
