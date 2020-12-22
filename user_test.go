@@ -434,3 +434,740 @@ func TestUser_LookupUsername(t *testing.T) {
 		})
 	}
 }
+
+func TestUser_LookupFollowing(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		id         string
+		followOpts UserFollowOptions
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserFollowLookup
+		wantErr bool
+	}{
+		{
+			name: "Success-Basic",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), "2/users/2244994945/following?max_results=10") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"id": "6253282",
+							"name": "Twitter API",
+							"username": "TwitterAPI"
+						  },
+						  {
+							"id": "2244994945",
+							"name": "Twitter Dev",
+							"username": "TwitterDev"
+						  },
+						  {
+							"id": "783214",
+							"name": "Twitter",
+							"username": "Twitter"
+						  },
+						  {
+							"id": "95731075",
+							"name": "Twitter Safety",
+							"username": "TwitterSafety"
+						  },
+						  {
+							"id": "3260518932",
+							"name": "Twitter Moments",
+							"username": "TwitterMoments"
+						  },
+						  {
+							"id": "373471064",
+							"name": "Twitter Music",
+							"username": "TwitterMusic"
+						  },
+						  {
+							"id": "791978718",
+							"name": "Twitter Official Partner",
+							"username": "OfficialPartner"
+						  },
+						  {
+							"id": "17874544",
+							"name": "Twitter Support",
+							"username": "TwitterSupport"
+						  },
+						  {
+							"id": "234489024",
+							"name": "Twitter Comms",
+							"username": "TwitterComms"
+						  },
+						  {
+							"id": "1526228120",
+							"name": "Twitter Data",
+							"username": "TwitterData"
+						  }
+						],
+						"meta": {
+						  "result_count": 10,
+						  "next_token": "DFEDBNRFT3MHCZZZ"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id: "2244994945",
+				followOpts: UserFollowOptions{
+					MaxResults: 10,
+				},
+			},
+			want: &UserFollowLookup{
+				Lookups: UserLookups{
+					"6253282": UserLookup{
+						User: UserObj{
+							ID:       "6253282",
+							Name:     "Twitter API",
+							UserName: "TwitterAPI",
+						},
+					},
+					"2244994945": UserLookup{
+						User: UserObj{
+							ID:       "2244994945",
+							Name:     "Twitter Dev",
+							UserName: "TwitterDev",
+						},
+					},
+					"783214": UserLookup{
+						User: UserObj{
+							ID:       "783214",
+							Name:     "Twitter",
+							UserName: "Twitter",
+						},
+					},
+					"95731075": UserLookup{
+						User: UserObj{
+							ID:       "95731075",
+							Name:     "Twitter Safety",
+							UserName: "TwitterSafety",
+						},
+					},
+					"3260518932": UserLookup{
+						User: UserObj{
+							ID:       "3260518932",
+							Name:     "Twitter Moments",
+							UserName: "TwitterMoments",
+						},
+					},
+					"373471064": UserLookup{
+						User: UserObj{
+							ID:       "373471064",
+							Name:     "Twitter Music",
+							UserName: "TwitterMusic",
+						},
+					},
+					"791978718": UserLookup{
+						User: UserObj{
+							ID:       "791978718",
+							Name:     "Twitter Official Partner",
+							UserName: "OfficialPartner",
+						},
+					},
+					"17874544": UserLookup{
+						User: UserObj{
+							ID:       "17874544",
+							Name:     "Twitter Support",
+							UserName: "TwitterSupport",
+						},
+					},
+					"234489024": UserLookup{
+						User: UserObj{
+							ID:       "234489024",
+							Name:     "Twitter Comms",
+							UserName: "TwitterComms",
+						},
+					},
+					"1526228120": UserLookup{
+						User: UserObj{
+							ID:       "1526228120",
+							Name:     "Twitter Data",
+							UserName: "TwitterData",
+						},
+					},
+				},
+				Meta: &UserFollowMeta{
+					ResultCount: 10,
+					NextToken:   "DFEDBNRFT3MHCZZZ",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Success-Optional",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), "2/users/2244994945/following?") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"pinned_tweet_id": "1293595870563381249",
+							"id": "6253282",
+							"username": "TwitterAPI",
+							"name": "Twitter API"
+						  },
+						  {
+							"pinned_tweet_id": "1293593516040269825",
+							"id": "2244994945",
+							"username": "TwitterDev",
+							"name": "Twitter Dev"
+						  },
+						  {
+							"id": "783214",
+							"username": "Twitter",
+							"name": "Twitter"
+						  },
+						  {
+							"pinned_tweet_id": "1271186240323432452",
+							"id": "95731075",
+							"username": "TwitterSafety",
+							"name": "Twitter Safety"
+						  },
+						  {
+							"id": "3260518932",
+							"username": "TwitterMoments",
+							"name": "Twitter Moments"
+						  },
+						  {
+							"pinned_tweet_id": "1293216056274759680",
+							"id": "373471064",
+							"username": "TwitterMusic",
+							"name": "Twitter Music"
+						  },
+						  {
+							"id": "791978718",
+							"username": "OfficialPartner",
+							"name": "Twitter Official Partner"
+						  },
+						  {
+							"pinned_tweet_id": "1289000334497439744",
+							"id": "17874544",
+							"username": "TwitterSupport",
+							"name": "Twitter Support"
+						  },
+						  {
+							"pinned_tweet_id": "1283543147444711424",
+							"id": "234489024",
+							"username": "TwitterComms",
+							"name": "Twitter Comms"
+						  },
+						  {
+							"id": "1526228120",
+							"username": "TwitterData",
+							"name": "Twitter Data"
+						  }
+						],
+						"includes": {
+						  "tweets": [
+							{
+							  "context_annotations": [
+								{
+								  "domain": {
+									"id": "46",
+									"name": "Brand Category",
+									"description": "Categories within Brand Verticals that narrow down the scope of Brands"
+								  },
+								  "entity": {
+									"id": "781974596752842752",
+									"name": "Services"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "47",
+									"name": "Brand",
+									"description": "Brands and Companies"
+								  },
+								  "entity": {
+									"id": "10045225402",
+									"name": "Twitter"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "65",
+									"name": "Interests and Hobbies Vertical",
+									"description": "Top level interests and hobbies groupings, like Food or Travel"
+								  },
+								  "entity": {
+									"id": "848920371311001600",
+									"name": "Technology",
+									"description": "Technology and computing"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "66",
+									"name": "Interests and Hobbies Category",
+									"description": "A grouping of interests and hobbies entities, like Novelty Food or Destinations"
+								  },
+								  "entity": {
+									"id": "848921413196984320",
+									"name": "Computer programming",
+									"description": "Computer programming"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "47",
+									"name": "Brand",
+									"description": "Brands and Companies"
+								  },
+								  "entity": {
+									"id": "10045225402",
+									"name": "Twitter"
+								  }
+								}
+							  ],
+							  "id": "1293595870563381249",
+							  "text": "Twitter API v2: Early Access released\n\nToday we announced Early Access to the first endpoints of the new Twitter API!\n\n#TwitterAPI #EarlyAccess #VersionBump https://t.co/g7v3aeIbtQ"
+							},
+							{
+							  "context_annotations": [
+								{
+								  "domain": {
+									"id": "46",
+									"name": "Brand Category",
+									"description": "Categories within Brand Verticals that narrow down the scope of Brands"
+								  },
+								  "entity": {
+									"id": "781974596752842752",
+									"name": "Services"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "47",
+									"name": "Brand",
+									"description": "Brands and Companies"
+								  },
+								  "entity": {
+									"id": "10045225402",
+									"name": "Twitter"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "65",
+									"name": "Interests and Hobbies Vertical",
+									"description": "Top level interests and hobbies groupings, like Food or Travel"
+								  },
+								  "entity": {
+									"id": "848920371311001600",
+									"name": "Technology",
+									"description": "Technology and computing"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "66",
+									"name": "Interests and Hobbies Category",
+									"description": "A grouping of interests and hobbies entities, like Novelty Food or Destinations"
+								  },
+								  "entity": {
+									"id": "848921413196984320",
+									"name": "Computer programming",
+									"description": "Computer programming"
+								  }
+								}
+							  ],
+							  "id": "1293593516040269825",
+							  "text": "It’s finally here! 🥁 Say hello to the new #TwitterAPI.\n\nWe’re rebuilding the Twitter API v2 from the ground up to better serve our developer community. And today’s launch is only the beginning.\n\nhttps://t.co/32VrwpGaJw https://t.co/KaFSbjWUA8"
+							},
+							{
+							  "id": "1271186240323432452",
+							  "text": "We’re disclosing new state-linked information operations to our public archive — the only one of its kind in the industry. Originating from the People’s Republic of China (PRC), Russia, and Turkey, all associated accounts and content have been removed. https://t.co/obRqr96iYm"
+							},
+							{
+							  "id": "1293216056274759680",
+							  "text": "say howdy to your new yeehaw king @orvillepeck—our #ArtistToFollow this month 🤠 https://t.co/3pk9fYcPHb"
+							},
+							{
+							  "context_annotations": [
+								{
+								  "domain": {
+									"id": "46",
+									"name": "Brand Category",
+									"description": "Categories within Brand Verticals that narrow down the scope of Brands"
+								  },
+								  "entity": {
+									"id": "781974596752842752",
+									"name": "Services"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "47",
+									"name": "Brand",
+									"description": "Brands and Companies"
+								  },
+								  "entity": {
+									"id": "10045225402",
+									"name": "Twitter"
+								  }
+								}
+							  ],
+							  "id": "1289000334497439744",
+							  "text": "We’ve significantly limited access to our internal tools and systems. Until we can safely resume normal operations, our response times to some support needs and reports will be slower. Thank you for your patience as we work through this."
+							},
+							{
+							  "context_annotations": [
+								{
+								  "domain": {
+									"id": "46",
+									"name": "Brand Category",
+									"description": "Categories within Brand Verticals that narrow down the scope of Brands"
+								  },
+								  "entity": {
+									"id": "781974596752842752",
+									"name": "Services"
+								  }
+								},
+								{
+								  "domain": {
+									"id": "47",
+									"name": "Brand",
+									"description": "Brands and Companies"
+								  },
+								  "entity": {
+									"id": "10045225402",
+									"name": "Twitter"
+								  }
+								}
+							  ],
+							  "id": "1283543147444711424",
+							  "text": "Follow @TwitterSupport for the latest on the security incident ⬇️ https://t.co/7FKKksJqxV"
+							}
+						  ]
+						},
+						"meta": {
+							"result_count": 10,
+							"next_token": "DFEDBNRFT3MHCZZZ"
+					    }
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id: "2244994945",
+				followOpts: UserFollowOptions{
+					MaxResults:  10,
+					Expansions:  []Expansion{ExpansionPinnedTweetID},
+					TweetFields: []TweetField{TweetFieldID, TweetFieldContextAnnotations},
+				},
+			},
+			want: &UserFollowLookup{
+				Lookups: UserLookups{
+					"6253282": UserLookup{
+						User: UserObj{
+							ID:            "6253282",
+							Name:          "Twitter API",
+							UserName:      "TwitterAPI",
+							PinnedTweetID: "1293595870563381249",
+						},
+						Tweet: &TweetObj{
+							ID:   "1293595870563381249",
+							Text: "Twitter API v2: Early Access released\n\nToday we announced Early Access to the first endpoints of the new Twitter API!\n\n#TwitterAPI #EarlyAccess #VersionBump https://t.co/g7v3aeIbtQ",
+							ContextAnnotations: []TweetContextAnnotationObj{
+								{
+									Domain: TweetContextObj{
+										ID:          "46",
+										Name:        "Brand Category",
+										Description: "Categories within Brand Verticals that narrow down the scope of Brands",
+									},
+									Entity: TweetContextObj{
+										ID:   "781974596752842752",
+										Name: "Services",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "47",
+										Name:        "Brand",
+										Description: "Brands and Companies",
+									},
+									Entity: TweetContextObj{
+										ID:   "10045225402",
+										Name: "Twitter",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "65",
+										Name:        "Interests and Hobbies Vertical",
+										Description: "Top level interests and hobbies groupings, like Food or Travel",
+									},
+									Entity: TweetContextObj{
+										ID:          "848920371311001600",
+										Name:        "Technology",
+										Description: "Technology and computing",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "66",
+										Name:        "Interests and Hobbies Category",
+										Description: "A grouping of interests and hobbies entities, like Novelty Food or Destinations",
+									},
+									Entity: TweetContextObj{
+										ID:          "848921413196984320",
+										Name:        "Computer programming",
+										Description: "Computer programming",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "47",
+										Name:        "Brand",
+										Description: "Brands and Companies",
+									},
+									Entity: TweetContextObj{
+										ID:   "10045225402",
+										Name: "Twitter",
+									},
+								},
+							},
+						},
+					},
+					"2244994945": UserLookup{
+						User: UserObj{
+							ID:            "2244994945",
+							Name:          "Twitter Dev",
+							UserName:      "TwitterDev",
+							PinnedTweetID: "1293593516040269825",
+						},
+						Tweet: &TweetObj{
+							ID:   "1293593516040269825",
+							Text: "It’s finally here! 🥁 Say hello to the new #TwitterAPI.\n\nWe’re rebuilding the Twitter API v2 from the ground up to better serve our developer community. And today’s launch is only the beginning.\n\nhttps://t.co/32VrwpGaJw https://t.co/KaFSbjWUA8",
+							ContextAnnotations: []TweetContextAnnotationObj{
+								{
+									Domain: TweetContextObj{
+										ID:          "46",
+										Name:        "Brand Category",
+										Description: "Categories within Brand Verticals that narrow down the scope of Brands",
+									},
+									Entity: TweetContextObj{
+										ID:   "781974596752842752",
+										Name: "Services",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "47",
+										Name:        "Brand",
+										Description: "Brands and Companies",
+									},
+									Entity: TweetContextObj{
+										ID:   "10045225402",
+										Name: "Twitter",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "65",
+										Name:        "Interests and Hobbies Vertical",
+										Description: "Top level interests and hobbies groupings, like Food or Travel",
+									},
+									Entity: TweetContextObj{
+										ID:          "848920371311001600",
+										Name:        "Technology",
+										Description: "Technology and computing",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "66",
+										Name:        "Interests and Hobbies Category",
+										Description: "A grouping of interests and hobbies entities, like Novelty Food or Destinations",
+									},
+									Entity: TweetContextObj{
+										ID:          "848921413196984320",
+										Name:        "Computer programming",
+										Description: "Computer programming",
+									},
+								},
+							},
+						},
+					},
+					"783214": UserLookup{
+						User: UserObj{
+							ID:       "783214",
+							Name:     "Twitter",
+							UserName: "Twitter",
+						},
+					},
+					"95731075": UserLookup{
+						User: UserObj{
+							ID:            "95731075",
+							Name:          "Twitter Safety",
+							UserName:      "TwitterSafety",
+							PinnedTweetID: "1271186240323432452",
+						},
+						Tweet: &TweetObj{
+							ID:   "1271186240323432452",
+							Text: "We’re disclosing new state-linked information operations to our public archive — the only one of its kind in the industry. Originating from the People’s Republic of China (PRC), Russia, and Turkey, all associated accounts and content have been removed. https://t.co/obRqr96iYm",
+						},
+					},
+					"3260518932": UserLookup{
+						User: UserObj{
+							ID:       "3260518932",
+							Name:     "Twitter Moments",
+							UserName: "TwitterMoments",
+						},
+					},
+					"373471064": UserLookup{
+						User: UserObj{
+							ID:            "373471064",
+							Name:          "Twitter Music",
+							UserName:      "TwitterMusic",
+							PinnedTweetID: "1293216056274759680",
+						},
+						Tweet: &TweetObj{
+							ID:   "1293216056274759680",
+							Text: "say howdy to your new yeehaw king @orvillepeck—our #ArtistToFollow this month 🤠 https://t.co/3pk9fYcPHb",
+						},
+					},
+					"791978718": UserLookup{
+						User: UserObj{
+							ID:       "791978718",
+							Name:     "Twitter Official Partner",
+							UserName: "OfficialPartner",
+						},
+					},
+					"17874544": UserLookup{
+						User: UserObj{
+							ID:            "17874544",
+							Name:          "Twitter Support",
+							UserName:      "TwitterSupport",
+							PinnedTweetID: "1289000334497439744",
+						},
+						Tweet: &TweetObj{
+							ID:   "1289000334497439744",
+							Text: "We’ve significantly limited access to our internal tools and systems. Until we can safely resume normal operations, our response times to some support needs and reports will be slower. Thank you for your patience as we work through this.",
+							ContextAnnotations: []TweetContextAnnotationObj{
+								{
+									Domain: TweetContextObj{
+										ID:          "46",
+										Name:        "Brand Category",
+										Description: "Categories within Brand Verticals that narrow down the scope of Brands",
+									},
+									Entity: TweetContextObj{
+										ID:   "781974596752842752",
+										Name: "Services",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "47",
+										Name:        "Brand",
+										Description: "Brands and Companies",
+									},
+									Entity: TweetContextObj{
+										ID:   "10045225402",
+										Name: "Twitter",
+									},
+								},
+							},
+						},
+					},
+					"234489024": UserLookup{
+						User: UserObj{
+							ID:            "234489024",
+							Name:          "Twitter Comms",
+							UserName:      "TwitterComms",
+							PinnedTweetID: "1283543147444711424",
+						},
+						Tweet: &TweetObj{
+							ID:   "1283543147444711424",
+							Text: "Follow @TwitterSupport for the latest on the security incident ⬇️ https://t.co/7FKKksJqxV",
+							ContextAnnotations: []TweetContextAnnotationObj{
+								{
+									Domain: TweetContextObj{
+										ID:          "46",
+										Name:        "Brand Category",
+										Description: "Categories within Brand Verticals that narrow down the scope of Brands",
+									},
+									Entity: TweetContextObj{
+										ID:   "781974596752842752",
+										Name: "Services",
+									},
+								},
+								{
+									Domain: TweetContextObj{
+										ID:          "47",
+										Name:        "Brand",
+										Description: "Brands and Companies",
+									},
+									Entity: TweetContextObj{
+										ID:   "10045225402",
+										Name: "Twitter",
+									},
+								},
+							},
+						},
+					},
+					"1526228120": UserLookup{
+						User: UserObj{
+							ID:       "1526228120",
+							Name:     "Twitter Data",
+							UserName: "TwitterData",
+						},
+					},
+				},
+				Meta: &UserFollowMeta{
+					ResultCount: 10,
+					NextToken:   "DFEDBNRFT3MHCZZZ",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			u := &User{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := u.LookupFollowing(context.Background(), tt.args.id, tt.args.followOpts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("User.LookupFollowing() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("User.LookupFollowing() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

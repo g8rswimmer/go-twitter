@@ -67,3 +67,13 @@ type UserMetricsObj struct {
 	Tweets    int `json:"tweet_count"`
 	Listed    int `json:"listed_count"`
 }
+
+// UserErrorObj is the user response errors
+type UserErrorObj struct {
+	Title        string `json:"title"`
+	Detail       string `json:"detail"`
+	Type         string `json:"type"`
+	ResourceType string `json:"resource_type"`
+	Value        string `json:"value"`
+	Parameter    string `json:"parameter"`
+}
