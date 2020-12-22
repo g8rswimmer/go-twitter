@@ -15,7 +15,7 @@ const (
 	userNameLookupEndpoint      = "2/users/by/username"
 	userNamesLookupEndpoint     = "2/users/by"
 	userFollowingLookupEndpoint = "2/users/{id}/following"
-	userFollowersLookupEndpoint = "/2/users/{id}/followers"
+	userFollowersLookupEndpoint = "2/users/{id}/followers"
 	userID                      = "{id}"
 	userMaxIDs                  = 100
 	userMaxNames                = 100
