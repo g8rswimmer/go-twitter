@@ -36,3 +36,9 @@ The user lookup API example is located [here](./_examples/user/lookup-id)
 
 #### Lookup by User Name
 The user lookup API example is located [here](./_examples/user/lookup-name)
+
+#### Following by User Id
+The user following API example is located [here](./_examples/user/following)
+
+#### Followers by User Id
+The user followers API example is located [here](./_examples/user/followers)
