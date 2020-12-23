@@ -519,7 +519,7 @@ func (t *Tweet) HideReplies(ctx context.Context, id string, hidden bool) error {
 	}
 
 	type responseData struct {
-		Hidden bool `json:"hidden`
+		Hidden bool `json:"hidden"`
 	}
 	type response struct {
 		Data responseData `json:"data"`
