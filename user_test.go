@@ -2130,3 +2130,106 @@ func TestUser_Tweets(t *testing.T) {
 		})
 	}
 }
+
+func TestUser_Mentions(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		id        string
+		tweetOpts UserTimelineOpts
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserTimeline
+		wantErr bool
+	}{
+		{
+			name: "Success-Default",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), "2/users/2244994945/mentions") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"id": "1338971066773905408",
+							"text": "💡 Using Twitter data for academic research? Join our next livestream this Friday @ 9am PT on https://t.co/GrtBOXh5Y1!\n \n@SuhemParack will show how to get started with recent search &amp; filtered stream endpoints on the #TwitterAPI v2, the new Tweet payload, annotations, &amp; more. https://t.co/IraD2Z7wEg"
+						  },
+						  {
+							"id": "1338923691497959425",
+							"text": "📈 Live now with @jessicagarson and @i_am_daniele! https://t.co/Y1AFzsTTxb"
+						  },
+						  {
+							"id": "1337498609819021312",
+							"text": "Thanks to everyone who tuned in today to make music with the #TwitterAPI!\n\nNext week on Twitch - @iamdaniele and @jessicagarson will show you how to integrate the #TwitterAPI and Google Sheets 📈. Tuesday, Dec 15th at 2pm ET. \n\nhttps://t.co/SQziic6eyp"
+						  }
+						],
+						"meta": {
+						  "oldest_id": "1334564488884862976",
+						  "newest_id": "1338971066773905408",
+						  "result_count": 10,
+						  "next_token": "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				id: "2244994945",
+			},
+			want: &UserTimeline{
+				Tweets: []TweetObj{
+					{
+						ID:   "1338971066773905408",
+						Text: "💡 Using Twitter data for academic research? Join our next livestream this Friday @ 9am PT on https://t.co/GrtBOXh5Y1!\n \n@SuhemParack will show how to get started with recent search &amp; filtered stream endpoints on the #TwitterAPI v2, the new Tweet payload, annotations, &amp; more. https://t.co/IraD2Z7wEg",
+					},
+					{
+						ID:   "1338923691497959425",
+						Text: "📈 Live now with @jessicagarson and @i_am_daniele! https://t.co/Y1AFzsTTxb",
+					},
+					{
+						ID:   "1337498609819021312",
+						Text: "Thanks to everyone who tuned in today to make music with the #TwitterAPI!\n\nNext week on Twitch - @iamdaniele and @jessicagarson will show you how to integrate the #TwitterAPI and Google Sheets 📈. Tuesday, Dec 15th at 2pm ET. \n\nhttps://t.co/SQziic6eyp",
+					},
+				},
+				Meta: UserTimelineMeta{
+					OldestID:    "1334564488884862976",
+					NewestID:    "1338971066773905408",
+					ResultCount: 10,
+					NextToken:   "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			u := &User{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := u.Mentions(context.Background(), tt.args.id, tt.args.tweetOpts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("User.Mentions() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("User.Mentions() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
