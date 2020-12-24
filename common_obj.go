@@ -29,7 +29,7 @@ type EntityURLObj struct {
 	URL         string `json:"url"`
 	ExpandedURL string `json:"expanded_url"`
 	DisplayURL  string `json:"display_url"`
-	Status      string `json:"status"`
+	Status      int    `json:"status"`
 	Title       string `json:"title"`
 	Desription  string `json:"description"`
 	UnwoundURL  string `json:"unwound_url"`

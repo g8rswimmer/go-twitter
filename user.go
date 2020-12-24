@@ -16,6 +16,7 @@ const (
 	userNamesLookupEndpoint     = "2/users/by"
 	userFollowingLookupEndpoint = "2/users/{id}/following"
 	userFollowersLookupEndpoint = "2/users/{id}/followers"
+	userTimelineTweetsEndpoint  = "2/users/{id}/tweets"
 	userID                      = "{id}"
 	userMaxIDs                  = 100
 	userMaxNames                = 100
@@ -96,6 +97,32 @@ type UserFollowMeta struct {
 	ResultCount   int    `json:"result_count"`
 	PreviousToken string `json:"previous_token"`
 	NextToken     string `json:"next_token"`
+}
+
+// UserTweets is the response to the user tweet timeline API
+type UserTweets struct {
+	Tweets   []TweetObj          `json:"data"`
+	Includes *UserTweetsIncludes `json:"includes"`
+	Errors   []ErrorObj          `json:"errors"`
+	Meta     UserTweetsMeta      `json:"meta"`
+}
+
+// UserTweetsIncludes will contain the optional response objects
+type UserTweetsIncludes struct {
+	Medias []MediaObj `json:"media"`
+	Users  []UserObj  `json:"users"`
+	Tweets []TweetObj `json:"tweets"`
+	Places []PlaceObj `json:"places"`
+	Polls  string     `json:"polls"`
+}
+
+// UserTweetsMeta is the meta data of the response
+type UserTweetsMeta struct {
+	OldestID      string `json:"oldest_id"`
+	NewestID      string `json:"newest_id"`
+	ResultCount   int    `json:"result_count"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
 }
 
 // User represents the User v2 APIs
@@ -337,4 +364,53 @@ func (u *User) LookupFollowers(ctx context.Context, id string, followOpts UserFo
 		Meta:    ufm.Meta,
 		Errors:  ufm.Errors,
 	}, nil
+}
+
+// Tweets is the user timeline tweets
+func (u *User) Tweets(ctx context.Context, id string, tweetOpts UserTweetOpts) (*UserTweets, error) {
+	switch {
+	case len(id) == 0:
+		return nil, fmt.Errorf("user id must be present for timeline tweets")
+	case tweetOpts.MaxResults < 0 || tweetOpts.MaxResults > 100:
+		return nil, fmt.Errorf("user max results for timeline tweets must be between 1-1000: %d", tweetOpts.MaxResults)
+	default:
+	}
+
+	ep := fmt.Sprintf("%s/%s", u.Host, userTimelineTweetsEndpoint)
+	ep = strings.Replace(ep, userID, id, -1)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user lookup following request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	u.Authorizer.Add(req)
+	tweetOpts.addQuery(req)
+
+	fmt.Println(req.URL.String())
+	resp, err := u.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("user lookup following reading body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		e := &TweetErrorResponse{}
+		if err := json.Unmarshal(body, e); err != nil {
+			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	result := &UserTweets{}
+	if err := json.Unmarshal(body, result); err != nil {
+		return nil, fmt.Errorf("user tweet timeline response decode: %w", err)
+	}
+	return result, nil
 }
