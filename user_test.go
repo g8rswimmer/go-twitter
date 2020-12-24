@@ -1918,13 +1918,13 @@ func TestUser_Tweets(t *testing.T) {
 	}
 	type args struct {
 		id        string
-		tweetOpts UserTweetOpts
+		tweetOpts UserTimelineOpts
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *UserTweets
+		want    *UserTimeline
 		wantErr bool
 	}{
 		{
@@ -1970,7 +1970,7 @@ func TestUser_Tweets(t *testing.T) {
 			args: args{
 				id: "2244994945",
 			},
-			want: &UserTweets{
+			want: &UserTimeline{
 				Tweets: []TweetObj{
 					{
 						ID:   "1338971066773905408",
@@ -1985,7 +1985,7 @@ func TestUser_Tweets(t *testing.T) {
 						Text: "Thanks to everyone who tuned in today to make music with the #TwitterAPI!\n\nNext week on Twitch - @iamdaniele and @jessicagarson will show you how to integrate the #TwitterAPI and Google Sheets 📈. Tuesday, Dec 15th at 2pm ET. \n\nhttps://t.co/SQziic6eyp",
 					},
 				},
-				Meta: UserTweetsMeta{
+				Meta: UserTimelineMeta{
 					OldestID:    "1334564488884862976",
 					NewestID:    "1338971066773905408",
 					ResultCount: 10,
@@ -2058,14 +2058,14 @@ func TestUser_Tweets(t *testing.T) {
 			},
 			args: args{
 				id: "2244994945",
-				tweetOpts: UserTweetOpts{
+				tweetOpts: UserTimelineOpts{
 					MaxResults:  5,
 					TweetFields: []TweetField{TweetFieldCreatedAt, TweetFieldAuthorID, TweetFieldConversationID, TweetFieldPublicMetrics, TweetFieldContextAnnotations},
 					UserFields:  []UserField{UserFieldName},
 					Expansions:  []Expansion{ExpansionAuthorID},
 				},
 			},
-			want: &UserTweets{
+			want: &UserTimeline{
 				Tweets: []TweetObj{
 					{
 						AuthorID:       "2244994945",
@@ -2094,7 +2094,7 @@ func TestUser_Tweets(t *testing.T) {
 						CreatedAt: "2020-12-15T22:15:53.000Z",
 					},
 				},
-				Includes: &UserTweetsIncludes{
+				Includes: &UserTimelineIncludes{
 					Users: []UserObj{
 						{
 							ID:       "2244994945",
@@ -2103,7 +2103,7 @@ func TestUser_Tweets(t *testing.T) {
 						},
 					},
 				},
-				Meta: UserTweetsMeta{
+				Meta: UserTimelineMeta{
 					OldestID:    "1337122535188652033",
 					NewestID:    "1338971066773905408",
 					ResultCount: 5,

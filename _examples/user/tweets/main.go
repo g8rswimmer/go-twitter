@@ -34,7 +34,7 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	tweetOpts := twitter.UserTweetOpts{
+	tweetOpts := twitter.UserTimelineOpts{
 		TweetFields: []twitter.TweetField{
 			twitter.TweetFieldAttachments,
 			twitter.TweetFieldAuthorID,
@@ -107,7 +107,7 @@ func main() {
 	}
 
 }
-func printUserTweets(userTweets *twitter.UserTweets) {
+func printUserTweets(userTweets *twitter.UserTimeline) {
 	enc, err := json.MarshalIndent(userTweets, "", "    ")
 	if err != nil {
 		panic(err)

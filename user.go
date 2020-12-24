@@ -99,16 +99,16 @@ type UserFollowMeta struct {
 	NextToken     string `json:"next_token"`
 }
 
-// UserTweets is the response to the user tweet timeline API
-type UserTweets struct {
-	Tweets   []TweetObj          `json:"data"`
-	Includes *UserTweetsIncludes `json:"includes"`
-	Errors   []ErrorObj          `json:"errors"`
-	Meta     UserTweetsMeta      `json:"meta"`
+// UserTimeline is the response to the user tweet timeline API
+type UserTimeline struct {
+	Tweets   []TweetObj            `json:"data"`
+	Includes *UserTimelineIncludes `json:"includes"`
+	Errors   []ErrorObj            `json:"errors"`
+	Meta     UserTimelineMeta      `json:"meta"`
 }
 
-// UserTweetsIncludes will contain the optional response objects
-type UserTweetsIncludes struct {
+// UserTimelineIncludes will contain the optional response objects
+type UserTimelineIncludes struct {
 	Medias []MediaObj `json:"media"`
 	Users  []UserObj  `json:"users"`
 	Tweets []TweetObj `json:"tweets"`
@@ -116,8 +116,8 @@ type UserTweetsIncludes struct {
 	Polls  string     `json:"polls"`
 }
 
-// UserTweetsMeta is the meta data of the response
-type UserTweetsMeta struct {
+// UserTimelineMeta is the meta data of the response
+type UserTimelineMeta struct {
 	OldestID      string `json:"oldest_id"`
 	NewestID      string `json:"newest_id"`
 	ResultCount   int    `json:"result_count"`
@@ -367,7 +367,7 @@ func (u *User) LookupFollowers(ctx context.Context, id string, followOpts UserFo
 }
 
 // Tweets is the user timeline tweets
-func (u *User) Tweets(ctx context.Context, id string, tweetOpts UserTweetOpts) (*UserTweets, error) {
+func (u *User) Tweets(ctx context.Context, id string, tweetOpts UserTimelineOpts) (*UserTimeline, error) {
 	switch {
 	case len(id) == 0:
 		return nil, fmt.Errorf("user id must be present for timeline tweets")
@@ -408,7 +408,7 @@ func (u *User) Tweets(ctx context.Context, id string, tweetOpts UserTweetOpts) (
 		return nil, e
 	}
 
-	result := &UserTweets{}
+	result := &UserTimeline{}
 	if err := json.Unmarshal(body, result); err != nil {
 		return nil, fmt.Errorf("user tweet timeline response decode: %w", err)
 	}

@@ -61,8 +61,8 @@ func (u UserFollowOptions) addQuery(req *http.Request) {
 	}
 }
 
-// UserTweetOpts are options in the user tweet timeline
-type UserTweetOpts struct {
+// UserTimelineOpts are options in the user tweet timeline
+type UserTimelineOpts struct {
 	Excludes        []Exclude
 	Expansions      []Expansion
 	MediaFields     []MediaField
@@ -78,7 +78,7 @@ type UserTweetOpts struct {
 	EndTime         time.Time
 }
 
-func (u UserTweetOpts) addQuery(req *http.Request) {
+func (u UserTimelineOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(u.Excludes) > 0 {
 		q.Add("exclude", strings.Join(excludetringArray(u.Excludes), ","))
