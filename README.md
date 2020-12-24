@@ -7,44 +7,54 @@ In order to use or demo this library, you need a developer account with twitter.
 ## API Reference
 The library is based off of [version 2](https://developer.twitter.com/en/docs/twitter-api/early-access) of Twitters API.  At the time of creation, the APIs are early access.  Please be aware that as the APIs are built out, the library may lag behind.
 
-## Examples
+## Version 2
+
+Currently, version 2 is in development. Please refer to [here](./v2/README.md) for more information.  Please note, that version 1 is still going to be maintained for some time after version 2 is released.
+
+## Version 1
+
+```
+go get -u github.com/g8rswimmer/go-twitter
+```
+
+### Examples
 To run all examples, the user is required to provide their developer account credentials.  The library does not share any credentials.
 
-### Tweet
+#### Tweet
 The following examples demostrate the tweet APIs.
 
-#### Lookup
+##### Lookup
 The tweet lookup API example is located [here](./_examples/tweet/lookup).  
 
-#### Recent Search 
+##### Recent Search 
 The tweet recent search API example is locate [here](./_examples/tweet/recent-search).  
 
-#### Filtered Search 
+##### Filtered Search 
 The tweet filtered search API example is locate [here](./_examples/tweet/filtered-search).  
 
-#### Sampled Search 
+##### Sampled Search 
 The tweet sampled search API example is locate [here](./_examples/tweet/sampled-search).  
 
-#### Hide Replies
+##### Hide Replies
 The tweet hide replies API example is locate [here](./_examples/tweet/hide).  
 
-### User
+#### User
 The following example demostrate the user APIs
 
-#### Lookup by ID
+##### Lookup by ID
 The user lookup API example is located [here](./_examples/user/lookup-id)
 
-#### Lookup by User Name
+##### Lookup by User Name
 The user lookup API example is located [here](./_examples/user/lookup-name)
 
-#### Following by User Id
+##### Following by User Id
 The user following API example is located [here](./_examples/user/following)
 
-#### Followers by User Id
+##### Followers by User Id
 The user followers API example is located [here](./_examples/user/followers)
 
-#### Tweet Timeline by User Id
+##### Tweet Timeline by User Id
 The user tweet timeline API example is located [here](./_examples/user/tweets)
 
-#### Mention Timeline by User Id
+##### Mention Timeline by User Id
 The user tweet timeline API example is located [here](./_examples/user/mentions)
