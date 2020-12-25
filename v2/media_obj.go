@@ -38,17 +38,17 @@ func mediaFieldStringArray(arr []MediaField) []string {
 
 // MediaObj refers to any image, GIF, or video attached to a Tweet
 type MediaObj struct {
-	Key              string          `json:"media_key"`
-	Type             string          `json:"type"`
-	URL              string          `json:"url"`
-	DurationMS       int             `json:"duration_ms"`
-	Height           int             `json:"height"`
-	NonPublicMetrics MediaMetricsObj `json:"non_public_metrics"`
-	OrganicMetrics   MediaMetricsObj `json:"organic_metrics"`
-	PreviewImageURL  string          `json:"preview_image_url"`
-	PromotedMetrics  MediaMetricsObj `json:"promoted_metrics"`
-	PublicMetrics    MediaMetricsObj `json:"public_metrics"`
-	Width            int             `json:"width"`
+	Key              string           `json:"media_key"`
+	Type             string           `json:"type"`
+	URL              string           `json:"url"`
+	DurationMS       int              `json:"duration_ms"`
+	Height           int              `json:"height,omitempty"`
+	NonPublicMetrics *MediaMetricsObj `json:"non_public_metrics,omitempty"`
+	OrganicMetrics   *MediaMetricsObj `json:"organic_metrics,omitempty"`
+	PreviewImageURL  string           `json:"preview_image_url,omitempty"`
+	PromotedMetrics  *MediaMetricsObj `json:"promoted_metrics,omitempty"`
+	PublicMetrics    *MediaMetricsObj `json:"public_metrics,omitempty"`
+	Width            int              `json:"width,omitempty"`
 }
 
 // MediaMetricsObj engagement metrics for the media content at the time of the request

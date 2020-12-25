@@ -26,11 +26,11 @@ func pollFieldStringArray(arr []PollField) []string {
 
 // PollObj included in a Tweet is not a primary object on any endpoint
 type PollObj struct {
-	ID              string          `json:"id"`
-	Options         []PollOptionObj `json:"options"`
-	DurationMinutes int             `json:"duration_minutes"`
-	EndDateTime     string          `json:"end_datetime"`
-	VotingStatus    string          `json:"voting_status"`
+	ID              string           `json:"id"`
+	Options         []*PollOptionObj `json:"options,omitempty"`
+	DurationMinutes int              `json:"duration_minutes,omitempty"`
+	EndDateTime     string           `json:"end_datetime,omitempty"`
+	VotingStatus    string           `json:"voting_status,omitempty"`
 }
 
 // PollOptionObj contains objects describing each choice in the referenced poll.

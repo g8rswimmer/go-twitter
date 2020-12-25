@@ -32,14 +32,14 @@ func placeFieldStringArray(arr []PlaceField) []string {
 
 // PlaceObj tagged in a Tweet is not a primary object on any endpoint
 type PlaceObj struct {
-	FullName        string      `json:"full_name"`
-	ID              string      `json:"id"`
-	ContainedWithin []string    `json:"contained_within"`
-	Country         string      `json:"country"`
-	CountryCode     string      `json:"country_code"`
-	Geo             PlaceGeoObj `json:"geo"`
-	Name            string      `json:"name"`
-	PlaceType       string      `json:"place_type"`
+	FullName        string       `json:"full_name,omitempty"`
+	ID              string       `json:"id"`
+	ContainedWithin []string     `json:"contained_within,omitempty"`
+	Country         string       `json:"country,omitempty"`
+	CountryCode     string       `json:"country_code,omitempty"`
+	Geo             *PlaceGeoObj `json:"geo,omitempty"`
+	Name            string       `json:"name"`
+	PlaceType       string       `json:"place_type,omitempty"`
 }
 
 // PlaceGeoObj contains place details
