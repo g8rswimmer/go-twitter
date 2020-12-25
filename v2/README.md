@@ -13,7 +13,7 @@ go get -u github.com/g8rswimmer/go-twitter/v2
 ```
 
 ## Examples
-Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./v2/_examples) for more information.
+Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
 
 ## Simple Usage
 ```go
