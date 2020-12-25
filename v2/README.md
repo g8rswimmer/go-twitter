@@ -12,6 +12,16 @@ This [project](https://github.com/g8rswimmer/go-twitter/projects/1) will track t
 go get -u github.com/g8rswimmer/go-twitter/v2
 ```
 
+## Changes
+The following are changes between `v1` and `v2` of the library.
+*  One structure for all endpoint callouts.  In `v1` there were two structures, `Tweet` and `User`, to preform callouts.  This require management of two structures and knowledge which structure contained the desired endpoint callouts.  At the time, the grouping looked logical.  However with the addtion of the timeline endpoints, it makes more sense to have a single struture `Client` to handle all of the callouts.  If the user would like to separate the functionality, interfaces can be used to achieve this.
+*  Endpoint methods will return the entire response.  One of the major drawbacks of `v1` was the object returned was not the entire response sent by the callout.  For example, the `errors` object in the response is included in `v1` response which does not allow the caller to properly handle partial errors.  In `v2`, the first focus is to return the response from twitter to allow the caller to use it as they see fit.  However, it does not mean that methods can not be added to the response object to provide groupings, etc.
+
+## Features 
+Here are the current twitter `v2` API features supported:
+*  [Tweet Lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
+    * [example](./_examples/tweet-lookup)
+
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
 
