@@ -62,7 +62,7 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 		return nil, e
 	}
 
-	raw := &TweetLookupRaw{}
+	raw := &TweetRaw{}
 	switch {
 	case len(ids) == 1:
 		single := &tweetraw{}

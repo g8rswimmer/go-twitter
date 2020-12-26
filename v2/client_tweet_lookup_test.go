@@ -55,7 +55,7 @@ func TestClient_TweetLookup(t *testing.T) {
 				ids: []string{"1067094924124872705"},
 			},
 			want: &TweetLookupResponse{
-				Raw: &TweetLookupRaw{
+				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
 							Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
@@ -110,7 +110,7 @@ func TestClient_TweetLookup(t *testing.T) {
 				},
 			},
 			want: &TweetLookupResponse{
-				Raw: &TweetLookupRaw{
+				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
 							Text:      "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
@@ -119,7 +119,7 @@ func TestClient_TweetLookup(t *testing.T) {
 							CreatedAt: "2018-11-26T16:37:10.000Z",
 						},
 					},
-					Includes: &TweetDictionaryIncludes{
+					Includes: &TweetRawIncludes{
 						Users: []*UserObj{
 							{
 								ID:       "2244994945",
@@ -167,7 +167,7 @@ func TestClient_TweetLookup(t *testing.T) {
 				ids: []string{"1261326399320715264", "1278347468690915330"},
 			},
 			want: &TweetLookupResponse{
-				Raw: &TweetLookupRaw{
+				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
 							Text: "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
@@ -241,7 +241,7 @@ func TestClient_TweetLookup(t *testing.T) {
 				},
 			},
 			want: &TweetLookupResponse{
-				Raw: &TweetLookupRaw{
+				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
 							Text:      "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
@@ -256,7 +256,7 @@ func TestClient_TweetLookup(t *testing.T) {
 							CreatedAt: "2020-07-01T15:19:21.000Z",
 						},
 					},
-					Includes: &TweetDictionaryIncludes{
+					Includes: &TweetRawIncludes{
 						Users: []*UserObj{
 							{
 								ID:       "2244994945",
@@ -353,7 +353,7 @@ func TestClient_TweetLookup(t *testing.T) {
 				ids: []string{"1067094924124872705"},
 			},
 			want: &TweetLookupResponse{
-				Raw: &TweetLookupRaw{
+				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
 							Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",

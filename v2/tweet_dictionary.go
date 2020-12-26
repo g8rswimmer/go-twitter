@@ -2,18 +2,18 @@ package twitter
 
 // TweetLookupResponse contains all of the information from a tweet lookup callout
 type TweetLookupResponse struct {
-	Raw *TweetLookupRaw
+	Raw *TweetRaw
 }
 
-// TweetLookupRaw is the raw response from the tweet lookup endpoint
-type TweetLookupRaw struct {
-	Tweets   []*TweetObj              `json:"data"`
-	Includes *TweetDictionaryIncludes `json:"includes,omitempty"`
-	Errors   []*ErrorObj              `json:"errors,omitempty"`
+// TweetRaw is the raw response from the tweet lookup endpoint
+type TweetRaw struct {
+	Tweets   []*TweetObj       `json:"data"`
+	Includes *TweetRawIncludes `json:"includes,omitempty"`
+	Errors   []*ErrorObj       `json:"errors,omitempty"`
 }
 
-// TweetDictionaryIncludes contains any additional information from the tweet callout
-type TweetDictionaryIncludes struct {
+// TweetRawIncludes contains any additional information from the tweet callout
+type TweetRawIncludes struct {
 	Tweets []*TweetObj `json:"tweets,omitempty"`
 	Users  []*UserObj  `json:"users,omitempty"`
 	Places []*PlaceObj `json:"places,omitempty"`
@@ -22,7 +22,7 @@ type TweetDictionaryIncludes struct {
 }
 
 type tweetraw struct {
-	Tweet    *TweetObj                `json:"data"`
-	Includes *TweetDictionaryIncludes `json:"includes"`
-	Errors   []*ErrorObj              `json:"errors"`
+	Tweet    *TweetObj         `json:"data"`
+	Includes *TweetRawIncludes `json:"includes"`
+	Errors   []*ErrorObj       `json:"errors"`
 }
