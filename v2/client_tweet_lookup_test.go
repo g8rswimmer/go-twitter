@@ -24,7 +24,7 @@ func TestClient_TweetLookup(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *TweetDictionary
+		want    *TweetLookupResponse
 		wantErr bool
 	}{
 		{
@@ -54,11 +54,13 @@ func TestClient_TweetLookup(t *testing.T) {
 			args: args{
 				ids: []string{"1067094924124872705"},
 			},
-			want: &TweetDictionary{
-				Tweets: []*TweetObj{
-					{
-						Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
-						ID:   "1067094924124872705",
+			want: &TweetLookupResponse{
+				Raw: &TweetLookupRaw{
+					Tweets: []*TweetObj{
+						{
+							Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+							ID:   "1067094924124872705",
+						},
 					},
 				},
 			},
@@ -107,22 +109,24 @@ func TestClient_TweetLookup(t *testing.T) {
 					MediaFields: []MediaField{MediaFieldType, MediaFieldDurationMS},
 				},
 			},
-			want: &TweetDictionary{
-				Tweets: []*TweetObj{
-					{
-						Text:      "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
-						ID:        "1067094924124872705",
-						AuthorID:  "2244994945",
-						CreatedAt: "2018-11-26T16:37:10.000Z",
-					},
-				},
-				Includes: &TweetDictionaryIncludes{
-					Users: []*UserObj{
+			want: &TweetLookupResponse{
+				Raw: &TweetLookupRaw{
+					Tweets: []*TweetObj{
 						{
-							ID:       "2244994945",
-							Verified: true,
-							UserName: "TwitterDev",
-							Name:     "Twitter Dev",
+							Text:      "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+							ID:        "1067094924124872705",
+							AuthorID:  "2244994945",
+							CreatedAt: "2018-11-26T16:37:10.000Z",
+						},
+					},
+					Includes: &TweetDictionaryIncludes{
+						Users: []*UserObj{
+							{
+								ID:       "2244994945",
+								Verified: true,
+								UserName: "TwitterDev",
+								Name:     "Twitter Dev",
+							},
 						},
 					},
 				},
@@ -162,15 +166,17 @@ func TestClient_TweetLookup(t *testing.T) {
 			args: args{
 				ids: []string{"1261326399320715264", "1278347468690915330"},
 			},
-			want: &TweetDictionary{
-				Tweets: []*TweetObj{
-					{
-						Text: "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
-						ID:   "1261326399320715264",
-					},
-					{
-						Text: "Good news and bad news: \n\n2020 is half over",
-						ID:   "1278347468690915330",
+			want: &TweetLookupResponse{
+				Raw: &TweetLookupRaw{
+					Tweets: []*TweetObj{
+						{
+							Text: "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
+							ID:   "1261326399320715264",
+						},
+						{
+							Text: "Good news and bad news: \n\n2020 is half over",
+							ID:   "1278347468690915330",
+						},
 					},
 				},
 			},
@@ -234,34 +240,36 @@ func TestClient_TweetLookup(t *testing.T) {
 					UserFields:  []UserField{UserFieldName, UserFieldVerified},
 				},
 			},
-			want: &TweetDictionary{
-				Tweets: []*TweetObj{
-					{
-						Text:      "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
-						ID:        "1261326399320715264",
-						AuthorID:  "2244994945",
-						CreatedAt: "2020-05-15T16:03:42.000Z",
-					},
-					{
-						Text:      "Good news and bad news: \n\n2020 is half over",
-						ID:        "1278347468690915330",
-						AuthorID:  "783214",
-						CreatedAt: "2020-07-01T15:19:21.000Z",
-					},
-				},
-				Includes: &TweetDictionaryIncludes{
-					Users: []*UserObj{
+			want: &TweetLookupResponse{
+				Raw: &TweetLookupRaw{
+					Tweets: []*TweetObj{
 						{
-							ID:       "2244994945",
-							Verified: true,
-							UserName: "TwitterDev",
-							Name:     "Twitter Dev",
+							Text:      "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
+							ID:        "1261326399320715264",
+							AuthorID:  "2244994945",
+							CreatedAt: "2020-05-15T16:03:42.000Z",
 						},
 						{
-							ID:       "783214",
-							Verified: true,
-							UserName: "Twitter",
-							Name:     "Twitter",
+							Text:      "Good news and bad news: \n\n2020 is half over",
+							ID:        "1278347468690915330",
+							AuthorID:  "783214",
+							CreatedAt: "2020-07-01T15:19:21.000Z",
+						},
+					},
+					Includes: &TweetDictionaryIncludes{
+						Users: []*UserObj{
+							{
+								ID:       "2244994945",
+								Verified: true,
+								UserName: "TwitterDev",
+								Name:     "Twitter Dev",
+							},
+							{
+								ID:       "783214",
+								Verified: true,
+								UserName: "Twitter",
+								Name:     "Twitter",
+							},
 						},
 					},
 				},
@@ -344,21 +352,23 @@ func TestClient_TweetLookup(t *testing.T) {
 			args: args{
 				ids: []string{"1067094924124872705"},
 			},
-			want: &TweetDictionary{
-				Tweets: []*TweetObj{
-					{
-						Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
-						ID:   "1067094924124872705",
+			want: &TweetLookupResponse{
+				Raw: &TweetLookupRaw{
+					Tweets: []*TweetObj{
+						{
+							Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+							ID:   "1067094924124872705",
+						},
 					},
-				},
-				Errors: []*ErrorObj{
-					{
-						Detail:       "Could not find tweet with ids: [1276230436478386177].",
-						Title:        "Not Found Error",
-						ResourceType: "tweet",
-						Parameter:    "ids",
-						Value:        "1276230436478386177",
-						Type:         "https://api.twitter.com/2/problems/resource-not-found",
+					Errors: []*ErrorObj{
+						{
+							Detail:       "Could not find tweet with ids: [1276230436478386177].",
+							Title:        "Not Found Error",
+							ResourceType: "tweet",
+							Parameter:    "ids",
+							Value:        "1276230436478386177",
+							Type:         "https://api.twitter.com/2/problems/resource-not-found",
+						},
 					},
 				},
 			},

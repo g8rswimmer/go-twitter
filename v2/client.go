@@ -20,7 +20,7 @@ type Client struct {
 }
 
 // TweetLookup returns information about a tweet or group of tweets specified by a group of tweet ids.
-func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookupOpts) (*TweetDictionary, error) {
+func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookupOpts) (*TweetLookupResponse, error) {
 	ep := tweetLookupEndpoint.url(c.Host)
 	switch {
 	case len(ids) == 0:
@@ -62,21 +62,23 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 		return nil, e
 	}
 
-	dictionary := &TweetDictionary{}
+	raw := &TweetLookupRaw{}
 	switch {
 	case len(ids) == 1:
-		single := &tweetdictionary{}
+		single := &tweetraw{}
 		if err := decoder.Decode(single); err != nil {
 			return nil, fmt.Errorf("tweet lookup single dictionary: %w", err)
 		}
-		dictionary.Tweets = make([]*TweetObj, 1)
-		dictionary.Tweets[0] = single.Tweet
-		dictionary.Includes = single.Includes
-		dictionary.Errors = single.Errors
+		raw.Tweets = make([]*TweetObj, 1)
+		raw.Tweets[0] = single.Tweet
+		raw.Includes = single.Includes
+		raw.Errors = single.Errors
 	default:
-		if err := decoder.Decode(dictionary); err != nil {
+		if err := decoder.Decode(raw); err != nil {
 			return nil, fmt.Errorf("tweet lookup dictionary: %w", err)
 		}
 	}
-	return dictionary, nil
+	return &TweetLookupResponse{
+		Raw: raw,
+	}, nil
 }
