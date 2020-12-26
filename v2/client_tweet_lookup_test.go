@@ -307,6 +307,63 @@ func TestClient_TweetLookup(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name: "Success - Partial Errors",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), string(tweetLookupEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
+					}
+					body := `{
+						"data": {
+						  "id": "1067094924124872705",
+						  "text": "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN"
+						},
+						"errors": [
+							{
+							  "detail": "Could not find tweet with ids: [1276230436478386177].",
+							  "title": "Not Found Error",
+							  "resource_type": "tweet",
+							  "parameter": "ids",
+							  "value": "1276230436478386177",
+							  "type": "https://api.twitter.com/2/problems/resource-not-found"
+							}
+						  ]
+						}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				ids: []string{"1067094924124872705"},
+			},
+			want: &TweetDictionary{
+				Tweets: []*TweetObj{
+					{
+						Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+						ID:   "1067094924124872705",
+					},
+				},
+				Errors: []*ErrorObj{
+					{
+						Detail:       "Could not find tweet with ids: [1276230436478386177].",
+						Title:        "Not Found Error",
+						ResourceType: "tweet",
+						Parameter:    "ids",
+						Value:        "1276230436478386177",
+						Type:         "https://api.twitter.com/2/problems/resource-not-found",
+					},
+				},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

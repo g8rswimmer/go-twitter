@@ -4,9 +4,12 @@ import "fmt"
 
 // ErrorObj is part of the partial errors in the response
 type ErrorObj struct {
-	Title  string `json:"title"`
-	Detail string `json:"detail"`
-	Type   string `json:"type"`
+	Title        string      `json:"title"`
+	Detail       string      `json:"detail"`
+	Type         string      `json:"type"`
+	ResourceType string      `json:"resource_type"`
+	Parameter    string      `json:"parameter"`
+	Value        interface{} `json:"value"`
 }
 
 // Error is part of the HTTP response error
