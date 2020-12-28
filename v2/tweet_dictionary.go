@@ -24,7 +24,7 @@ type TweetReference struct {
 	TweetDictionary *TweetDictionary
 }
 
-// CreateTweetDictionary will cerate a dictionary from a tweet and the includes
+// CreateTweetDictionary will create a dictionary from a tweet and the includes
 func CreateTweetDictionary(tweet TweetObj, includes *TweetRawIncludes) *TweetDictionary {
 	dictionary := &TweetDictionary{
 		Tweet:            tweet,
