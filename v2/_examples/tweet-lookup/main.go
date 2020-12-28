@@ -42,12 +42,14 @@ func main() {
 
 	fmt.Println("Callout to tweet lookup callout")
 
-	tweetDictionary, err := client.TweetLookup(context.Background(), strings.Split(*ids, ","), opts)
+	tweetResponse, err := client.TweetLookup(context.Background(), strings.Split(*ids, ","), opts)
 	if err != nil {
 		log.Panicf("tweet lookup error: %v", err)
 	}
 
-	enc, err := json.MarshalIndent(tweetDictionary, "", "    ")
+	dictionaries := tweetResponse.Raw.TweetDictionaries()
+
+	enc, err := json.MarshalIndent(dictionaries, "", "    ")
 	if err != nil {
 		log.Panic(err)
 	}
