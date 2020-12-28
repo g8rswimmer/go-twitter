@@ -328,10 +328,12 @@ func TestClient_TweetLookup(t *testing.T) {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLookupEndpoint)
 					}
 					body := `{
-						"data": {
-						  "id": "1067094924124872705",
-						  "text": "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN"
-						},
+						"data": [
+							{
+						  		"id": "1067094924124872705",
+						  		"text": "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN"
+							}
+						],
 						"errors": [
 							{
 							  "detail": "Could not find tweet with ids: [1276230436478386177].",
@@ -350,7 +352,7 @@ func TestClient_TweetLookup(t *testing.T) {
 				}),
 			},
 			args: args{
-				ids: []string{"1067094924124872705"},
+				ids: []string{"1067094924124872705", "1276230436478386177"},
 			},
 			want: &TweetLookupResponse{
 				Raw: &TweetRaw{
