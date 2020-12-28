@@ -11,6 +11,10 @@ The library is based off of [version 2](https://developer.twitter.com/en/docs/tw
 
 Currently, version 2 is in development. Please refer to [here](./v2/README.md) for more information.  Please note, that version 1 is still going to be maintained for some time after version 2 is released.
 
+```
+go get -u github.com/g8rswimmer/go-twitter/v2
+```
+
 ## Version 1
 
 ```
