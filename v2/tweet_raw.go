@@ -138,7 +138,7 @@ func (t *TweetRawIncludes) placesByID() map[string]*PlaceObj {
 	return t.placeIDs
 }
 
-// TweetsByID will reutnr a map of tweet ids to object
+// TweetsByID will return a map of tweet ids to object
 func (t *TweetRawIncludes) TweetsByID() map[string]*TweetObj {
 	switch {
 	case t.referenceTweets == nil:
