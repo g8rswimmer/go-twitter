@@ -1,5 +1,6 @@
 package twitter
 
+// UserLookupResponse contains all of the information from an user lookup callout
 type UserLookupResponse struct {
 	Raw *UserRaw
 }
@@ -10,6 +11,7 @@ type userraw struct {
 	Errors   []*ErrorObj      `json:"errors"`
 }
 
+// UserRaw is the raw response from the user lookup endpoint
 type UserRaw struct {
 	Users        []*UserObj       `json:"data"`
 	Includes     *UserRawIncludes `json:"includes,omitempty"`
@@ -17,6 +19,7 @@ type UserRaw struct {
 	dictionaries map[string]*UserDictionary
 }
 
+// UserDictionaries create a map of user dictionaries from the raw user response
 func (u *UserRaw) UserDictionaries() map[string]*UserDictionary {
 	if u.dictionaries != nil {
 		return u.dictionaries
@@ -29,6 +32,7 @@ func (u *UserRaw) UserDictionaries() map[string]*UserDictionary {
 	return u.dictionaries
 }
 
+// UserRawIncludes contains any additional information from the user callout
 type UserRawIncludes struct {
 	Tweets       []*TweetObj `json:"tweets,omitempty"`
 	pinnedTweets map[string]*TweetObj
@@ -44,10 +48,10 @@ func (u *UserRawIncludes) TweetsByID() map[string]*TweetObj {
 	}
 }
 
-func (t *UserRawIncludes) tweetsByID() map[string]*TweetObj {
-	t.pinnedTweets = map[string]*TweetObj{}
-	for _, tweet := range t.Tweets {
-		t.pinnedTweets[tweet.ID] = tweet
+func (u *UserRawIncludes) tweetsByID() map[string]*TweetObj {
+	u.pinnedTweets = map[string]*TweetObj{}
+	for _, tweet := range u.Tweets {
+		u.pinnedTweets[tweet.ID] = tweet
 	}
-	return t.pinnedTweets
+	return u.pinnedTweets
 }

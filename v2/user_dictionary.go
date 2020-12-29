@@ -1,10 +1,12 @@
 package twitter
 
+// UserDictionary is a struct of an user and all of the reference objects
 type UserDictionary struct {
 	User        UserObj
 	PinnedTweet *TweetObj
 }
 
+// CreateUserDictionary will create a dictionary from a user and the includes
 func CreateUserDictionary(user UserObj, includes *UserRawIncludes) *UserDictionary {
 	dictionary := &UserDictionary{
 		User: user,

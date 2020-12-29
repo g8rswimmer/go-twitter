@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// UserLookupOpts are the optional paramters that can be passed to the lookup callout
 type UserLookupOpts struct {
 	Expansions  []Expansion
 	TweetFields []TweetField

@@ -85,6 +85,7 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 	}, nil
 }
 
+// UserLookup returns information about an user or group of users specified by a group of user ids.
 func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOpts) (*UserLookupResponse, error) {
 	ep := userLookupEndpoint.url(c.Host)
 	switch {
@@ -148,6 +149,7 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 	}, nil
 }
 
+// UserNameLookup returns information about an user or group of users specified by a group of usernames.
 func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts UserLookupOpts) (*UserLookupResponse, error) {
 	ep := userNameLookupEndpoint.url(c.Host)
 	switch {
