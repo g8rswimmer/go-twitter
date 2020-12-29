@@ -85,6 +85,10 @@ func TestTweet_Lookup(t *testing.T) {
 						ID:       "2244994945",
 						Name:     "Twitter Dev",
 					},
+					Mentions:         []*UserObj{},
+					AttachmentPolls:  []*PollObj{},
+					AttachmentMedia:  []*MediaObj{},
+					ReferencedTweets: []TweetLookup{},
 				},
 			},
 			wantErr: false,
@@ -159,6 +163,10 @@ func TestTweet_Lookup(t *testing.T) {
 						ID:       "2244994945",
 						Name:     "Twitter Dev",
 					},
+					Mentions:         []*UserObj{},
+					AttachmentPolls:  []*PollObj{},
+					AttachmentMedia:  []*MediaObj{},
+					ReferencedTweets: []TweetLookup{},
 				},
 				"1278347468690915330": TweetLookup{
 					Tweet: TweetObj{
@@ -173,6 +181,10 @@ func TestTweet_Lookup(t *testing.T) {
 						ID:       "783214",
 						Name:     "Twitter",
 					},
+					Mentions:         []*UserObj{},
+					AttachmentPolls:  []*PollObj{},
+					AttachmentMedia:  []*MediaObj{},
+					ReferencedTweets: []TweetLookup{},
 				},
 			},
 			wantErr: false,
@@ -341,60 +353,100 @@ func TestTweet_RecentSearch(t *testing.T) {
 							ID:   "1279990139888918528",
 							Text: "Python now online for you !!\n\nWith the advent and acceptance of AI, Robotics, Python has become an inevitable factor in software development industry and most looked out skill both Nationally and Internationally. \n\nCoupon code: GVUP9\nCall: 9482303905/9482163905 https://t.co/ZFXCDJedAh",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990133463429120": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990133463429120",
 							Text: "RT @McQubit: Building Neural Networks with Python Code and Math in Detail — II https://t.co/l6PKTTFGkv #machine_learning #programming #math…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990118355476480": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990118355476480",
 							Text: "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990114584875009": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990114584875009",
 							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990108968665088": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990108968665088",
 							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990090828320769": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990090828320769",
 							Text: "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990084398387201": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990084398387201",
 							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990076748038145": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990076748038145",
 							Text: "RT @gp_pulipaka: Best Machine Learning and Data Science #Books 2020. #BigData #Analytics #DataScience #IoT #IIoT #PyTorch #Python #RStats #…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990069105917952": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990069105917952",
 							Text: "RT @SunnyVaram: Top 10 Natural Language Processing Online Courses https://t.co/oAGqkHdS8H via @https://twitter.com/analyticsinme \n#DataScie…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 					"1279990063888076800": TweetLookup{
 						Tweet: TweetObj{
 							ID:   "1279990063888076800",
 							Text: "RT @mohitnihalani7: LINK IN BIO......\n\n#programming #coding #programmer #developer #python #code #technology #coder #javascript #java #comp…",
 						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
 					},
 				},
 				Meta: TweetRecentSearchMeta{
@@ -896,6 +948,10 @@ func TestTweet_SearchStream(t *testing.T) {
 						Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
 						ID:   "1067094924124872705",
 					},
+					Mentions:         []*UserObj{},
+					AttachmentPolls:  []*PollObj{},
+					AttachmentMedia:  []*MediaObj{},
+					ReferencedTweets: []TweetLookup{},
 				},
 			},
 			wantErr: false,
@@ -1011,6 +1067,10 @@ func TestTweet_SampledStream(t *testing.T) {
 						Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
 						ID:   "1067094924124872705",
 					},
+					Mentions:         []*UserObj{},
+					AttachmentPolls:  []*PollObj{},
+					AttachmentMedia:  []*MediaObj{},
+					ReferencedTweets: []TweetLookup{},
 				},
 			},
 			wantErr: false,
@@ -1218,6 +1278,309 @@ func TestTweet_Hide(t *testing.T) {
 				if !reflect.DeepEqual(tweetErr, tt.wantTweetError) {
 					t.Errorf("Tweet.Lookup() Error = %+v, want %+v", tweetErr, tt.wantTweetError)
 				}
+			}
+		})
+	}
+}
+
+func Test_createTweetLookup(t *testing.T) {
+	type args struct {
+		tweet TweetObj
+		maps  tweetLookupMaps
+	}
+	tests := []struct {
+		name string
+		args args
+		want TweetLookup
+	}{
+		{
+			name: "success",
+			args: args{
+				tweet: TweetObj{
+					ID:   "1261326399320715264",
+					Text: "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
+					Attachments: TweetAttachmentsObj{
+						PollIDs:   []string{"1199786642468413448"},
+						MediaKeys: []string{"13_1263145212760805376"},
+					},
+					Geo: TweetGeoObj{
+						PlaceID: "01a9a39529b27f36",
+					},
+					AuthorID:        "2244994945",
+					InReplyToUserID: "783214",
+					Entities: EntitiesObj{
+						Mentions: []EntityMentionObj{
+							{
+								EntityObj: EntityObj{
+									Start: 15,
+									End:   23,
+								},
+								UserName: "MongoDB",
+							},
+							{
+								EntityObj: EntityObj{
+									Start: 24,
+									End:   31,
+								},
+								UserName: "Twitch",
+							},
+							{
+								EntityObj: EntityObj{
+									Start: 62,
+									End:   74,
+								},
+								UserName: "suhemparack",
+							},
+						},
+					},
+					ReferencedTweets: []TweetReferencedTweetObj{
+						{
+							Type: "quoted",
+							ID:   "1261091720801980419",
+						},
+					},
+				},
+				maps: func() tweetLookupMaps {
+					includes := tweetLookupIncludes{
+						User: []*UserObj{
+							{
+								ID:       "2244994945",
+								Name:     "Twitter Dev",
+								UserName: "TwitterDev",
+							},
+							{
+								Name:     "Twitter",
+								ID:       "783214",
+								UserName: "Twitter",
+							},
+							{
+								Name:     "MongoDB",
+								ID:       "18080585",
+								UserName: "MongoDB",
+							},
+							{
+								Name:     "Twitch",
+								ID:       "309366491",
+								UserName: "Twitch",
+							},
+							{
+								Name:     "Suhem Parack",
+								ID:       "857699969263964161",
+								UserName: "suhemparack",
+							},
+						},
+						Poll: []*PollObj{
+							{
+								ID:              "1199786642468413448",
+								VotingStatus:    "closed",
+								DurationMinutes: 1440,
+								Options: []PollOptionObj{
+									{
+										Position: 1,
+										Label:    "C Sharp",
+										Votes:    795,
+									},
+									{
+										Position: 2,
+										Label:    "C Hashtag",
+										Votes:    156,
+									},
+								},
+								EndDateTime: "2019-11-28T20:26:41.000Z",
+							},
+						},
+						Media: []*MediaObj{
+							{
+								DurationMS: 46947,
+								Type:       "video",
+								Height:     1080,
+								Key:        "13_1263145212760805376",
+								PublicMetrics: MediaMetricsObj{
+									Views: 6909260,
+								},
+								PreviewImageURL: "https://pbs.twimg.com/media/EYeX7akWsAIP1_1.jpg",
+								Width:           1920,
+							},
+						},
+						Place: []*PlaceObj{
+							{
+								Geo: PlaceGeoObj{
+									Type: "Feature",
+									BBox: []float64{
+										-74.026675,
+										40.683935,
+										-73.910408,
+										40.877483,
+									},
+									Properties: map[string]interface{}{},
+								},
+								CountryCode: "US",
+								Name:        "Manhattan",
+								ID:          "01a9a39529b27f36",
+								PlaceType:   "city",
+								Country:     "United States",
+								FullName:    "Manhattan, NY",
+							},
+						},
+						Tweet: []*TweetObj{
+							{
+								ID:       "1261091720801980419",
+								AuthorID: "18080585",
+								Text:     "Tomorrow (May 15) at 12pm EST (9am PST, 6pm CET), join us for a Twitch stream with @KukicAdo from MongoDB and @suhemparack from @TwitterDev! \n\nLearn about the new Twitter Developer Labs and how to get the most out of the new API with MongoDB: https://t.co/YbrbVNJrPe https://t.co/Oe4bMVpPmh",
+							},
+						},
+					}
+					return lookupMaps(includes)
+				}(),
+			},
+			want: TweetLookup{
+				Tweet: TweetObj{
+					ID:              "1261326399320715264",
+					Text:            "Tune in to the @MongoDB @Twitch stream featuring our very own @suhemparack to learn about Twitter Developer Labs - starting now! https://t.co/fAWpYi3o5O",
+					AuthorID:        "2244994945",
+					InReplyToUserID: "783214",
+					Geo: TweetGeoObj{
+						PlaceID: "01a9a39529b27f36",
+					},
+					Entities: EntitiesObj{
+						Mentions: []EntityMentionObj{
+							{
+								EntityObj: EntityObj{
+									Start: 15,
+									End:   23,
+								},
+								UserName: "MongoDB",
+							},
+							{
+								EntityObj: EntityObj{
+									Start: 24,
+									End:   31,
+								},
+								UserName: "Twitch",
+							},
+							{
+								EntityObj: EntityObj{
+									Start: 62,
+									End:   74,
+								},
+								UserName: "suhemparack",
+							},
+						},
+					},
+					Attachments: TweetAttachmentsObj{
+						PollIDs:   []string{"1199786642468413448"},
+						MediaKeys: []string{"13_1263145212760805376"},
+					},
+					ReferencedTweets: []TweetReferencedTweetObj{
+						{
+							Type: "quoted",
+							ID:   "1261091720801980419",
+						},
+					},
+				},
+				User: &UserObj{
+					ID:       "2244994945",
+					Name:     "Twitter Dev",
+					UserName: "TwitterDev",
+				},
+				InReplyUser: &UserObj{
+					Name:     "Twitter",
+					ID:       "783214",
+					UserName: "Twitter",
+				},
+				Place: &PlaceObj{
+					Geo: PlaceGeoObj{
+						Type: "Feature",
+						BBox: []float64{
+							-74.026675,
+							40.683935,
+							-73.910408,
+							40.877483,
+						},
+						Properties: map[string]interface{}{},
+					},
+					CountryCode: "US",
+					Name:        "Manhattan",
+					ID:          "01a9a39529b27f36",
+					PlaceType:   "city",
+					Country:     "United States",
+					FullName:    "Manhattan, NY",
+				},
+				Mentions: []*UserObj{
+					{
+						Name:     "MongoDB",
+						ID:       "18080585",
+						UserName: "MongoDB",
+					},
+					{
+						Name:     "Twitch",
+						ID:       "309366491",
+						UserName: "Twitch",
+					},
+					{
+						Name:     "Suhem Parack",
+						ID:       "857699969263964161",
+						UserName: "suhemparack",
+					},
+				},
+				AttachmentPolls: []*PollObj{
+					{
+						ID:              "1199786642468413448",
+						VotingStatus:    "closed",
+						DurationMinutes: 1440,
+						Options: []PollOptionObj{
+							{
+								Position: 1,
+								Label:    "C Sharp",
+								Votes:    795,
+							},
+							{
+								Position: 2,
+								Label:    "C Hashtag",
+								Votes:    156,
+							},
+						},
+						EndDateTime: "2019-11-28T20:26:41.000Z",
+					},
+				},
+				AttachmentMedia: []*MediaObj{
+					{
+						DurationMS: 46947,
+						Type:       "video",
+						Height:     1080,
+						Key:        "13_1263145212760805376",
+						PublicMetrics: MediaMetricsObj{
+							Views: 6909260,
+						},
+						PreviewImageURL: "https://pbs.twimg.com/media/EYeX7akWsAIP1_1.jpg",
+						Width:           1920,
+					},
+				},
+				ReferencedTweets: []TweetLookup{
+					{
+						Tweet: TweetObj{
+							ID:       "1261091720801980419",
+							AuthorID: "18080585",
+							Text:     "Tomorrow (May 15) at 12pm EST (9am PST, 6pm CET), join us for a Twitch stream with @KukicAdo from MongoDB and @suhemparack from @TwitterDev! \n\nLearn about the new Twitter Developer Labs and how to get the most out of the new API with MongoDB: https://t.co/YbrbVNJrPe https://t.co/Oe4bMVpPmh",
+						},
+						User: &UserObj{
+							Name:     "MongoDB",
+							ID:       "18080585",
+							UserName: "MongoDB",
+						},
+						Mentions:         []*UserObj{},
+						AttachmentPolls:  []*PollObj{},
+						AttachmentMedia:  []*MediaObj{},
+						ReferencedTweets: []TweetLookup{},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := createTweetLookup(tt.args.tweet, tt.args.maps); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("createTweetLookup() = %v, want %v", got, tt.want)
 			}
 		})
 	}

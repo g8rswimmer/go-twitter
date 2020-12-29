@@ -25,86 +25,159 @@ const (
 // TweetLookups is .a map of tweet lookups
 type TweetLookups map[string]TweetLookup
 
-func (t TweetLookups) lookup(decoder *json.Decoder) error {
-	type include struct {
-		Media []*MediaObj `json:"medias"`
-		Place []*PlaceObj `json:"places"`
-		Poll  []*PollObj  `json:"polls"`
-		User  []*UserObj  `json:"users"`
+type tweetLookupIncludes struct {
+	Media []*MediaObj `json:"medias"`
+	Place []*PlaceObj `json:"places"`
+	Poll  []*PollObj  `json:"polls"`
+	User  []*UserObj  `json:"users"`
+	Tweet []*TweetObj `json:"tweets"`
+}
+
+type tweetLookupMaps struct {
+	usersByID   map[string]*UserObj
+	usersByName map[string]*UserObj
+	placeByID   map[string]*PlaceObj
+	pollByID    map[string]*PollObj
+	mediaByKey  map[string]*MediaObj
+	tweetsByID  map[string]*TweetObj
+}
+
+func lookupMaps(include tweetLookupIncludes) tweetLookupMaps {
+	maps := tweetLookupMaps{}
+
+	maps.usersByID = map[string]*UserObj{}
+	maps.usersByName = map[string]*UserObj{}
+	for _, user := range include.User {
+		maps.usersByID[user.ID] = user
+		maps.usersByName[user.UserName] = user
 	}
+
+	maps.placeByID = map[string]*PlaceObj{}
+	for _, place := range include.Place {
+		maps.placeByID[place.ID] = place
+	}
+
+	maps.pollByID = map[string]*PollObj{}
+	for _, poll := range include.Poll {
+		maps.pollByID[poll.ID] = poll
+	}
+
+	maps.mediaByKey = map[string]*MediaObj{}
+	for _, media := range include.Media {
+		maps.mediaByKey[media.Key] = media
+	}
+
+	maps.tweetsByID = map[string]*TweetObj{}
+	for _, tweet := range include.Tweet {
+		maps.tweetsByID[tweet.ID] = tweet
+	}
+
+	return maps
+}
+
+func (t TweetLookups) lookup(decoder *json.Decoder) error {
 	type body struct {
-		Data    TweetObj `json:"data"`
-		Include include  `json:"includes"`
+		Data    TweetObj            `json:"data"`
+		Include tweetLookupIncludes `json:"includes"`
 	}
 	b := &body{}
 	if err := decoder.Decode(b); err != nil {
 		return fmt.Errorf("tweet lookup decode error %w", err)
 	}
 
-	tl := TweetLookup{
-		Tweet: b.Data,
-	}
-	if len(b.Include.Media) > 0 {
-		tl.Media = b.Include.Media[0]
-	}
-	if len(b.Include.Place) > 0 {
-		tl.Place = b.Include.Place[0]
-	}
-	if len(b.Include.Poll) > 0 {
-		tl.Poll = b.Include.Poll[0]
-	}
-	if len(b.Include.User) > 0 {
-		tl.User = b.Include.User[0]
-	}
+	maps := lookupMaps(b.Include)
+
+	tl := createTweetLookup(b.Data, maps)
+
 	t[b.Data.ID] = tl
 
 	return nil
 }
 
 func (t TweetLookups) lookups(decoder *json.Decoder) error {
-	type include struct {
-		Media []*MediaObj `json:"medias"`
-		Place []*PlaceObj `json:"places"`
-		Poll  []*PollObj  `json:"polls"`
-		User  []*UserObj  `json:"users"`
-	}
 	type body struct {
-		Data    []TweetObj `json:"data"`
-		Include include    `json:"includes"`
+		Data    []TweetObj          `json:"data"`
+		Include tweetLookupIncludes `json:"includes"`
 	}
 	b := &body{}
 	if err := decoder.Decode(b); err != nil {
 		return fmt.Errorf("tweet lookup decode error %w", err)
 	}
 
-	for i, tweet := range b.Data {
-		tl := TweetLookup{
-			Tweet: tweet,
-		}
-		if i < len(b.Include.Media) {
-			tl.Media = b.Include.Media[i]
-		}
-		if i < len(b.Include.Place) {
-			tl.Place = b.Include.Place[i]
-		}
-		if i < len(b.Include.Poll) {
-			tl.Poll = b.Include.Poll[i]
-		}
-		if i < len(b.Include.User) {
-			tl.User = b.Include.User[i]
-		}
+	maps := lookupMaps(b.Include)
+
+	for _, tweet := range b.Data {
+		tl := createTweetLookup(tweet, maps)
+
 		t[tweet.ID] = tl
 	}
 	return nil
 }
 
+func createTweetLookup(tweet TweetObj, maps tweetLookupMaps) TweetLookup {
+	tl := TweetLookup{
+		Tweet: tweet,
+	}
+
+	if author, has := maps.usersByID[tweet.AuthorID]; has {
+		tl.User = author
+	}
+
+	if inReply, has := maps.usersByID[tweet.InReplyToUserID]; has {
+		tl.InReplyUser = inReply
+	}
+
+	if place, has := maps.placeByID[tweet.Geo.PlaceID]; has {
+		tl.Place = place
+	}
+
+	mentions := []*UserObj{}
+	for _, entity := range tweet.Entities.Mentions {
+		if user, has := maps.usersByName[entity.UserName]; has {
+			mentions = append(mentions, user)
+		}
+	}
+	tl.Mentions = mentions
+
+	attachmentPolls := []*PollObj{}
+	for _, id := range tweet.Attachments.PollIDs {
+		if poll, has := maps.pollByID[id]; has {
+			attachmentPolls = append(attachmentPolls, poll)
+		}
+	}
+	tl.AttachmentPolls = attachmentPolls
+
+	attachmentMedia := []*MediaObj{}
+	for _, key := range tweet.Attachments.MediaKeys {
+		if media, has := maps.mediaByKey[key]; has {
+			attachmentMedia = append(attachmentMedia, media)
+		}
+	}
+	tl.AttachmentMedia = attachmentMedia
+
+	tweetReferences := []TweetLookup{}
+	for _, rt := range tweet.ReferencedTweets {
+		if t, has := maps.tweetsByID[rt.ID]; has {
+			tweetReferences = append(tweetReferences, createTweetLookup(*t, maps))
+		}
+	}
+	tl.ReferencedTweets = tweetReferences
+
+	return tl
+}
+
 // TweetLookup is a complete tweet objects
 type TweetLookup struct {
-	Tweet TweetObj
-	Media *MediaObj
-	Place *PlaceObj
-	Poll  *PollObj
-	User  *UserObj
+	Tweet            TweetObj
+	Media            *MediaObj
+	Place            *PlaceObj
+	Poll             *PollObj
+	User             *UserObj
+	InReplyUser      *UserObj
+	Mentions         []*UserObj
+	AttachmentPolls  []*PollObj
+	AttachmentMedia  []*MediaObj
+	ReferencedTweets []TweetLookup
 }
 
 // TweetRecentSearchMeta is the media data returned from the recent search
