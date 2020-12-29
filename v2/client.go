@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	tweetMaxIDs = 100
-	userMaxIDs  = 100
+	tweetMaxIDs  = 100
+	userMaxIDs   = 100
+	userMaxNames = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -140,6 +141,69 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 	default:
 		if err := decoder.Decode(raw); err != nil {
 			return nil, fmt.Errorf("user lookup dictionary: %w", err)
+		}
+	}
+	return &UserLookupResponse{
+		Raw: raw,
+	}, nil
+}
+
+func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts UserLookupOpts) (*UserLookupResponse, error) {
+	ep := userNameLookupEndpoint.url(c.Host)
+	switch {
+	case len(usernames) == 0:
+		return nil, fmt.Errorf("username lookup: an username is required: %w", ErrParameter)
+	case len(usernames) > userMaxIDs:
+		return nil, fmt.Errorf("username lookup: usernames %d is greater than max %d: %w", len(usernames), userMaxNames, ErrParameter)
+	case len(usernames) == 1:
+		ep += fmt.Sprintf("/username/%s", usernames[0])
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("username lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	if len(usernames) > 1 {
+		q := req.URL.Query()
+		q.Add("usernames", strings.Join(usernames, ","))
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("username lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, fmt.Errorf("username lookup response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserRaw{}
+	switch {
+	case len(usernames) == 1:
+		single := &userraw{}
+		if err := decoder.Decode(single); err != nil {
+			return nil, fmt.Errorf("username lookup single dictionary: %w", err)
+		}
+		raw.Users = make([]*UserObj, 1)
+		raw.Users[0] = single.User
+		raw.Includes = single.Includes
+		raw.Errors = single.Errors
+	default:
+		if err := decoder.Decode(raw); err != nil {
+			return nil, fmt.Errorf("username lookup dictionary: %w", err)
 		}
 	}
 	return &UserLookupResponse{
