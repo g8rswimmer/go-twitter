@@ -22,6 +22,10 @@ Here are the current twitter `v2` API features supported:
 *  [Tweet Lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
     * [example](./_examples/tweet-lookup)
 * [Tweet Dictionary](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet) - the tweet and all of its references related to it
+*  [User Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
+    * [example](./_examples/user-lookup)
+    * [example: by usernames](./_examples/username-lookup)
+* [User Dictionary](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user) - the user and all of its references related to it
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
