@@ -7,7 +7,7 @@ type TweetLookupResponse struct {
 
 type TweetRecentSearchResponse struct {
 	Raw  *TweetRaw
-	Meta *TweetResentSearchMeta
+	Meta *TweetResentSearchMeta `json:"meta"`
 }
 
 type TweetResentSearchMeta struct {

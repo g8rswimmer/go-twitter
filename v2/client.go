@@ -263,7 +263,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 		return nil, fmt.Errorf("tweet recent search raw response error decode: %w", err)
 	}
 
-	if err := json.Unmarshal(respBytes, recentSearch.Meta); err != nil {
+	if err := json.Unmarshal(respBytes, recentSearch); err != nil {
 		return nil, fmt.Errorf("tweet recent search meta response error decode: %w", err)
 	}
 
