@@ -215,6 +215,7 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 	}, nil
 }
 
+// TweetRecentSearch will return a recent search based of a query
 func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts TweetRecentSearchOpts) (*TweetRecentSearchResponse, error) {
 	switch {
 	case len(query) == 0:

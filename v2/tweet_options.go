@@ -42,6 +42,7 @@ func (t TweetLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// TweetRecentSearchOpts are the optional parameters for the recent seach API
 type TweetRecentSearchOpts struct {
 	Expansions  []Expansion
 	MediaFields []MediaField
