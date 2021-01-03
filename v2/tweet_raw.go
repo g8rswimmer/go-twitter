@@ -7,10 +7,10 @@ type TweetLookupResponse struct {
 
 type TweetRecentSearchResponse struct {
 	Raw  *TweetRaw
-	Meta *TweetResentSearchMeta `json:"meta"`
+	Meta *TweetRecentSearchMeta `json:"meta"`
 }
 
-type TweetResentSearchMeta struct {
+type TweetRecentSearchMeta struct {
 	NewestID    string `json:"newest_id"`
 	OldestID    string `json:"oldest_id"`
 	ResultCount int    `json:"result_count"`

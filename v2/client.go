@@ -256,7 +256,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 
 	recentSearch := &TweetRecentSearchResponse{
 		Raw:  &TweetRaw{},
-		Meta: &TweetResentSearchMeta{},
+		Meta: &TweetRecentSearchMeta{},
 	}
 
 	if err := json.Unmarshal(respBytes, recentSearch.Raw); err != nil {

@@ -143,7 +143,7 @@ func TestClient_TweetRecentSearch(t *testing.T) {
 						},
 					},
 				},
-				Meta: &TweetResentSearchMeta{
+				Meta: &TweetRecentSearchMeta{
 					NewestID:    "1279990139888918528",
 					OldestID:    "1279990063888076800",
 					ResultCount: 10,
@@ -332,7 +332,7 @@ func TestClient_TweetRecentSearch(t *testing.T) {
 						},
 					},
 				},
-				Meta: &TweetResentSearchMeta{
+				Meta: &TweetRecentSearchMeta{
 					NewestID:    "1279990139888918528",
 					OldestID:    "1279990063888076800",
 					ResultCount: 10,
