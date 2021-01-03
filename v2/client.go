@@ -243,7 +243,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 
 	respBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("tweet ressent search response read: %w", err)
+		return nil, fmt.Errorf("tweet recent search response read: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
