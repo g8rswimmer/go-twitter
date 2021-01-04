@@ -13,10 +13,10 @@ import (
 const (
 	tweetLookupEndpoint              = "2/tweets"
 	tweetRecentSearchEndpoint        = "2/tweets/search/recent"
-	tweetFilteredStreamRulesEndpoint = "/2/tweets/search/stream/rules"
-	tweetFilteredStreamEndpoint      = "/2/tweets/search/stream"
-	tweetSampledStreamEndpoint       = "/2/tweets/sample/stream"
-	tweetHideEndpoint                = "/2/tweets/{id}/hidden"
+	tweetFilteredStreamRulesEndpoint = "2/tweets/search/stream/rules"
+	tweetFilteredStreamEndpoint      = "2/tweets/search/stream"
+	tweetSampledStreamEndpoint       = "2/tweets/sample/stream"
+	tweetHideEndpoint                = "2/tweets/{id}/hidden"
 	tweetID                          = "{id}"
 	tweetMaxIDs                      = 100
 	tweetQuerySize                   = 512

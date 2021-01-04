@@ -549,6 +549,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
 					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
+					}
 
 					body := `{
 						"data": [
@@ -652,6 +655,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
 					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
+					}
 					body := `{
 						"meta": {
 						  "sent": "2019-08-29T01:48:54.633Z",
@@ -696,6 +702,9 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					}
 					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -793,6 +802,9 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
 					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
+					}
 					body := `{
 						"data": [
 						  {
@@ -846,6 +858,9 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 					}
 					if strings.Contains(req.URL.String(), tweetFilteredStreamRulesEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamRulesEndpoint)
+					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -925,6 +940,9 @@ func TestTweet_SearchStream(t *testing.T) {
 					if strings.Contains(req.URL.String(), tweetFilteredStreamEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamEndpoint)
 					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -967,6 +985,9 @@ func TestTweet_SearchStream(t *testing.T) {
 					}
 					if strings.Contains(req.URL.String(), tweetFilteredStreamEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetFilteredStreamEndpoint)
+					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -1044,6 +1065,9 @@ func TestTweet_SampledStream(t *testing.T) {
 					if strings.Contains(req.URL.String(), tweetSampledStreamEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSampledStreamEndpoint)
 					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
+					}
 					body := `{
 						"data": {
 						  "id": "1067094924124872705",
@@ -1086,6 +1110,9 @@ func TestTweet_SampledStream(t *testing.T) {
 					}
 					if strings.Contains(req.URL.String(), tweetSampledStreamEndpoint) == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSampledStreamEndpoint)
+					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
 					}
 					body := `{
 						"title": "Invalid Request",
@@ -1163,6 +1190,9 @@ func TestTweet_Hide(t *testing.T) {
 					if strings.Contains(req.URL.String(), "hidden") == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
 					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
+					}
 					body := `{"data":{"hidden":true}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
@@ -1187,6 +1217,9 @@ func TestTweet_Hide(t *testing.T) {
 					}
 					if strings.Contains(req.URL.String(), "hidden") == false {
 						log.Panicf("the url is not correct %s %s", req.URL.String(), "hidden")
+					}
+					if strings.Contains(req.URL.String(), "//2/tweets") {
+						log.Panicf("the url is not correct %s", req.URL.String())
 					}
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
