@@ -170,7 +170,11 @@ func (u *User) Lookup(ctx context.Context, ids []string, fieldOpts UserFieldOpti
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -227,7 +231,11 @@ func (u *User) LookupUsername(ctx context.Context, usernames []string, fieldOpts
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -282,7 +290,11 @@ func (u *User) LookupFollowing(ctx context.Context, id string, followOpts UserFo
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := json.Unmarshal(body, e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -342,7 +354,11 @@ func (u *User) LookupFollowers(ctx context.Context, id string, followOpts UserFo
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := json.Unmarshal(body, e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -402,7 +418,11 @@ func (u *User) Tweets(ctx context.Context, id string, tweetOpts UserTimelineOpts
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := json.Unmarshal(body, e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -444,7 +464,11 @@ func (u *User) Mentions(ctx context.Context, id string, tweetOpts UserTimelineOp
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("user lookup following reading body: %w", err)
+		return nil, &HTTPError{
+			Status:     resp.Status,
+			StatusCode: resp.StatusCode,
+			URL:        resp.Request.URL.String(),
+		}
 	}
 
 	if resp.StatusCode != http.StatusOK {

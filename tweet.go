@@ -211,6 +211,17 @@ func (t *TweetRecentSearch) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// HTTPError is a response error where the body is not JSON, but XML.  This commonly seen in 404 errors.
+type HTTPError struct {
+	Status     string
+	StatusCode int
+	URL        string
+}
+
+func (h *HTTPError) Error() string {
+	return fmt.Sprintf("tweet [%s] status: %s code: %d", h.URL, h.Status, h.StatusCode)
+}
+
 // TweetError is the group of errors in a response
 type TweetError struct {
 	Parameters interface{} `json:"parameters"`
@@ -318,7 +329,11 @@ func (t *Tweet) Lookup(ctx context.Context, ids []string, options TweetFieldOpti
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -371,7 +386,11 @@ func (t *Tweet) RecentSearch(ctx context.Context, query string, searchOpts Tweet
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet recent search response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -427,7 +446,11 @@ func (t *Tweet) ApplyFilteredStreamRules(ctx context.Context, rules TweetSearchS
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet search stream rules response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -469,7 +492,11 @@ func (t *Tweet) FilteredStreamRules(ctx context.Context, ids []string) (*TweetSe
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet search stream rules response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -504,7 +531,11 @@ func (t *Tweet) FilteredStream(ctx context.Context, options TweetFieldOptions) (
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -539,7 +570,11 @@ func (t *Tweet) SampledStream(ctx context.Context, options TweetFieldOptions) (T
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -585,7 +620,11 @@ func (t *Tweet) HideReplies(ctx context.Context, id string, hidden bool) error {
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return fmt.Errorf("tweet lookup response error decode: %w", err)
+			return &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return e
