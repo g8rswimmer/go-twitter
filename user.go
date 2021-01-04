@@ -464,17 +464,17 @@ func (u *User) Mentions(ctx context.Context, id string, tweetOpts UserTimelineOp
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, &HTTPError{
-			Status:     resp.Status,
-			StatusCode: resp.StatusCode,
-			URL:        resp.Request.URL.String(),
-		}
+		return nil, fmt.Errorf("user lookup following reading body: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		e := &TweetErrorResponse{}
 		if err := json.Unmarshal(body, e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
