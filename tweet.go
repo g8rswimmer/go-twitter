@@ -219,7 +219,7 @@ type HTTPError struct {
 }
 
 func (h *HTTPError) Error() string {
-	return fmt.Sprintf("tweet [%s] status: %s code: %d", h.URL, h.Status, h.StatusCode)
+	return fmt.Sprintf("twitter [%s] status: %s code: %d", h.URL, h.Status, h.StatusCode)
 }
 
 // TweetError is the group of errors in a response
