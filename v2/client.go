@@ -4,14 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
 const (
-	tweetMaxIDs  = 100
-	userMaxIDs   = 100
-	userMaxNames = 100
+	tweetMaxIDs                  = 100
+	userMaxIDs                   = 100
+	userMaxNames                 = 100
+	tweetRecentSearchQueryLength = 512
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -211,4 +213,60 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 	return &UserLookupResponse{
 		Raw: raw,
 	}, nil
+}
+
+// TweetRecentSearch will return a recent search based of a query
+func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts TweetRecentSearchOpts) (*TweetRecentSearchResponse, error) {
+	switch {
+	case len(query) == 0:
+		return nil, fmt.Errorf("tweet recent search: a query is required: %w", ErrParameter)
+	case len(query) > tweetRecentSearchQueryLength:
+		return nil, fmt.Errorf("tweet recent search: the query over the length (%d): %w", tweetRecentSearchQueryLength, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetRecentSearchEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent search request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent search response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent search response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, fmt.Errorf("tweet recent search response error decode: %w", err)
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	recentSearch := &TweetRecentSearchResponse{
+		Raw:  &TweetRaw{},
+		Meta: &TweetRecentSearchMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, recentSearch.Raw); err != nil {
+		return nil, fmt.Errorf("tweet recent search raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, recentSearch); err != nil {
+		return nil, fmt.Errorf("tweet recent search meta response error decode: %w", err)
+	}
+
+	return recentSearch, nil
 }

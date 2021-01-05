@@ -5,6 +5,20 @@ type TweetLookupResponse struct {
 	Raw *TweetRaw
 }
 
+// TweetRecentSearchResponse contains all of the information from a tweet recent search
+type TweetRecentSearchResponse struct {
+	Raw  *TweetRaw
+	Meta *TweetRecentSearchMeta `json:"meta"`
+}
+
+// TweetRecentSearchMeta contains the recent search information
+type TweetRecentSearchMeta struct {
+	NewestID    string `json:"newest_id"`
+	OldestID    string `json:"oldest_id"`
+	ResultCount int    `json:"result_count"`
+	NextToken   string `json:"next_token"`
+}
+
 type tweetraw struct {
 	Tweet    *TweetObj         `json:"data"`
 	Includes *TweetRawIncludes `json:"includes"`
