@@ -60,7 +60,11 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("tweet lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -124,7 +128,11 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("user lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -188,7 +196,11 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, fmt.Errorf("username lookup response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
@@ -249,7 +261,11 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := json.Unmarshal(respBytes, e); err != nil {
-			return nil, fmt.Errorf("tweet recent search response error decode: %w", err)
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
 		}
 		e.StatusCode = resp.StatusCode
 		return nil, e
