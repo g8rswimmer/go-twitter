@@ -5,6 +5,17 @@ type UserLookupResponse struct {
 	Raw *UserRaw
 }
 
+type UserFollowingLookupResponse struct {
+	Raw  *UserRaw
+	Meta *UserFollowinghMeta `json:"meta"`
+}
+
+type UserFollowinghMeta struct {
+	ResultCount   int    `json:"result_count"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
+}
+
 type userraw struct {
 	User     *UserObj         `json:"data"`
 	Includes *UserRawIncludes `json:"includes"`

@@ -286,3 +286,57 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 
 	return recentSearch, nil
 }
+
+func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFollowingLookupOpts) (*UserFollowingLookupResponse, error) {
+	if len(id) == 0 {
+		return nil, fmt.Errorf("user following lookup: id is required: %w", ErrParameter)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userFollowingEndpoint.urlID(c.Host, id), nil)
+	if err != nil {
+		return nil, fmt.Errorf("user following lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user following lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("user following lookup response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	followingLookup := &UserFollowingLookupResponse{
+		Raw:  &UserRaw{},
+		Meta: &UserFollowinghMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, followingLookup.Raw); err != nil {
+		return nil, fmt.Errorf("user following lookup raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, followingLookup); err != nil {
+		return nil, fmt.Errorf("user following lookup meta response error decode: %w", err)
+	}
+
+	return followingLookup, nil
+}
