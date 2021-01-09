@@ -39,11 +39,11 @@ func main() {
 		TweetFields: []twitter.TweetField{twitter.TweetFieldContextAnnotations},
 	}
 
-	fmt.Println("Callout to user following lookup callout")
+	fmt.Println("Callout to user followers lookup callout")
 
 	userResponse, err := client.UserFollowersLookup(context.Background(), *id, opts)
 	if err != nil {
-		log.Panicf("user following lookup error: %v", err)
+		log.Panicf("user followers lookup error: %v", err)
 	}
 
 	dictionaries := userResponse.Raw.UserDictionaries()
