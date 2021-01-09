@@ -287,6 +287,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	return recentSearch, nil
 }
 
+// UserFollowingLookup will return a user's following users
 func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFollowingLookupOpts) (*UserFollowingLookupResponse, error) {
 	if len(id) == 0 {
 		return nil, fmt.Errorf("user following lookup: id is required: %w", ErrParameter)
@@ -341,6 +342,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 	return followingLookup, nil
 }
 
+// UserFollowersLookup will return a user's followers
 func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFollowersLookupOpts) (*UserFollowersLookupResponse, error) {
 	if len(id) == 0 {
 		return nil, fmt.Errorf("user followers lookup: id is required: %w", ErrParameter)

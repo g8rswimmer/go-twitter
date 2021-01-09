@@ -29,6 +29,7 @@ func (u UserLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserFollowingLookupOpts are the options for the user following API
 type UserFollowingLookupOpts struct {
 	Expansions      []Expansion
 	TweetFields     []TweetField
@@ -59,6 +60,7 @@ func (u UserFollowingLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserFollowersLookupOpts are the options for the user followers API
 type UserFollowersLookupOpts struct {
 	Expansions      []Expansion
 	TweetFields     []TweetField
