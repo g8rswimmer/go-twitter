@@ -2,6 +2,17 @@ package twitter
 
 import "fmt"
 
+// HTTPError is a response error where the body is not JSON, but XML.  This commonly seen in 404 errors.
+type HTTPError struct {
+	Status     string
+	StatusCode int
+	URL        string
+}
+
+func (h *HTTPError) Error() string {
+	return fmt.Sprintf("twitter [%s] status: %s code: %d", h.URL, h.Status, h.StatusCode)
+}
+
 // ErrorObj is part of the partial errors in the response
 type ErrorObj struct {
 	Title        string      `json:"title"`
