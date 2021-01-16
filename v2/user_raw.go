@@ -5,6 +5,32 @@ type UserLookupResponse struct {
 	Raw *UserRaw
 }
 
+// UserFollowingLookupResponse is the response for the user following API
+type UserFollowingLookupResponse struct {
+	Raw  *UserRaw
+	Meta *UserFollowinghMeta `json:"meta"`
+}
+
+// UserFollowinghMeta is the meta data returned by the user following API
+type UserFollowinghMeta struct {
+	ResultCount   int    `json:"result_count"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
+}
+
+// UserFollowersLookupResponse is the response for the user followers API
+type UserFollowersLookupResponse struct {
+	Raw  *UserRaw
+	Meta *UserFollowershMeta `json:"meta"`
+}
+
+// UserFollowershMeta is the meta data returned by the user followers API
+type UserFollowershMeta struct {
+	ResultCount   int    `json:"result_count"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
+}
+
 type userraw struct {
 	User     *UserObj         `json:"data"`
 	Includes *UserRawIncludes `json:"includes"`
