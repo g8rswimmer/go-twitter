@@ -5,6 +5,19 @@ type TweetLookupResponse struct {
 	Raw *TweetRaw
 }
 
+type UserTweetTimelineResponse struct {
+	Raw  *TweetRaw
+	Meta *UserTimelineMeta `json:"meta"`
+}
+
+type UserTimelineMeta struct {
+	Count         int    `json:"count"`
+	NewestID      string `json:"newest_id"`
+	OldestID      string `json:"oldest_id"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
+}
+
 // TweetRecentSearchResponse contains all of the information from a tweet recent search
 type TweetRecentSearchResponse struct {
 	Raw  *TweetRaw
