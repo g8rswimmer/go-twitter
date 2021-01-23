@@ -443,7 +443,7 @@ func (t *Tweet) ApplyFilteredStreamRules(ctx context.Context, rules TweetSearchS
 
 	decoder := json.NewDecoder(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		e := &TweetErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
 			return nil, &HTTPError{
