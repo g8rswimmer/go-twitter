@@ -585,7 +585,7 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 						}
 					}`
 					return &http.Response{
-						StatusCode: http.StatusOK,
+						StatusCode: http.StatusCreated,
 						Body:       ioutil.NopCloser(strings.NewReader(body)),
 					}
 				}),
@@ -668,7 +668,7 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 						}
 					  }`
 					return &http.Response{
-						StatusCode: http.StatusOK,
+						StatusCode: http.StatusCreated,
 						Body:       ioutil.NopCloser(strings.NewReader(body)),
 					}
 				}),
