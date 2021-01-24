@@ -11,7 +11,7 @@ type UserTweetTimelineResponse struct {
 }
 
 type UserTimelineMeta struct {
-	Count         int    `json:"count"`
+	ResultCount   int    `json:"result_count"`
 	NewestID      string `json:"newest_id"`
 	OldestID      string `json:"oldest_id"`
 	NextToken     string `json:"next_token"`
