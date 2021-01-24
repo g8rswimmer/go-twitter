@@ -397,6 +397,7 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 	return followersLookup, nil
 }
 
+// UserTweetTimeline will return the user tweet timeline
 func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts UserTweetTimelineOpts) (*UserTweetTimelineResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -451,6 +452,7 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 	return timeline, nil
 }
 
+// UserMentionTimeline will return the user's mentions timeline
 func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts UserMentionTimelineOpts) (*UserMentionTimelineResponse, error) {
 	switch {
 	case len(userID) == 0:

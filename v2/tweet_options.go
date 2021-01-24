@@ -101,6 +101,7 @@ func (t TweetRecentSearchOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserTweetTimelineOpts are the options for the user tweet timeline request
 type UserTweetTimelineOpts struct {
 	Expansions      []Expansion
 	MediaFields     []MediaField
@@ -163,6 +164,7 @@ func (t UserTweetTimelineOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserMentionTimelineOpts are the options for the user mention timeline request
 type UserMentionTimelineOpts struct {
 	Expansions      []Expansion
 	MediaFields     []MediaField

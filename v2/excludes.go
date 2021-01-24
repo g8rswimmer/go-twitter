@@ -1,10 +1,13 @@
 package twitter
 
+// Exclude are the exclusions in the request
 type Exclude string
 
 const (
+	// ExcludeRetweets will exclude a tweet's retweets
 	ExcludeRetweets Exclude = "retweets"
-	ExcludeReplies  Exclude = "replies"
+	// ExcludeReplies will exclude a tweet's replies
+	ExcludeReplies Exclude = "replies"
 )
 
 func excludeStringArray(arr []Exclude) []string {
