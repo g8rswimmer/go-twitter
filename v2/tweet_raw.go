@@ -5,6 +5,11 @@ type TweetLookupResponse struct {
 	Raw *TweetRaw
 }
 
+type UserMentionTimelineResponse struct {
+	Raw  *TweetRaw
+	Meta *UserTimelineMeta `json:"meta"`
+}
+
 type UserTweetTimelineResponse struct {
 	Raw  *TweetRaw
 	Meta *UserTimelineMeta `json:"meta"`

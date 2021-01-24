@@ -435,18 +435,72 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 		return nil, e
 	}
 
-	recentSearch := &UserTweetTimelineResponse{
+	timeline := &UserTweetTimelineResponse{
 		Raw:  &TweetRaw{},
 		Meta: &UserTimelineMeta{},
 	}
 
-	if err := json.Unmarshal(respBytes, recentSearch.Raw); err != nil {
+	if err := json.Unmarshal(respBytes, timeline.Raw); err != nil {
 		return nil, fmt.Errorf("user tweet timeline raw response error decode: %w", err)
 	}
 
-	if err := json.Unmarshal(respBytes, recentSearch); err != nil {
+	if err := json.Unmarshal(respBytes, timeline); err != nil {
 		return nil, fmt.Errorf("user tweet timeline meta response error decode: %w", err)
 	}
 
-	return recentSearch, nil
+	return timeline, nil
+}
+
+func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts UserMentionTimelineOpts) (*UserMentionTimelineResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user mention timeline: a query is required: %w", ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userMentionTimelineEdnpoint.urlID(c.Host, userID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("user mention timeline request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user mention timeline response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("user mention timeline response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	timeline := &UserMentionTimelineResponse{
+		Raw:  &TweetRaw{},
+		Meta: &UserTimelineMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, timeline.Raw); err != nil {
+		return nil, fmt.Errorf("user mention timeline raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, timeline); err != nil {
+		return nil, fmt.Errorf("user mention timeline meta response error decode: %w", err)
+	}
+
+	return timeline, nil
 }
