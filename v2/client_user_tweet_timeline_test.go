@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-
-
 func TestClient_UserTweetTimeline(t *testing.T) {
 	type fields struct {
 		Authorizer Authorizer
@@ -38,8 +36,8 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), userTweetTimelineEdnpoint.urlID("", "2244994945")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetTimelineEdnpoint)
+					if strings.Contains(req.URL.String(), userTweetTimelineEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetTimelineEndpoint)
 					}
 					body := `{
 						"data": [
@@ -72,20 +70,20 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
-							ID: "1338971066773905408",
-							Text: "💡 Using Twitter data for academic research? Join our next livestream this Friday @ 9am PT on https://t.co/GrtBOXh5Y1!\n \n@SuhemParack will show how to get started with recent search &amp; filtered stream endpoints on the #TwitterAPI v2, the new Tweet payload, annotations, &amp; more. https://t.co/IraD2Z7wEg",	
+							ID:   "1338971066773905408",
+							Text: "💡 Using Twitter data for academic research? Join our next livestream this Friday @ 9am PT on https://t.co/GrtBOXh5Y1!\n \n@SuhemParack will show how to get started with recent search &amp; filtered stream endpoints on the #TwitterAPI v2, the new Tweet payload, annotations, &amp; more. https://t.co/IraD2Z7wEg",
 						},
 						{
-							ID: "1338923691497959425",
+							ID:   "1338923691497959425",
 							Text: "📈 Live now with @jessicagarson and @i_am_daniele! https://t.co/Y1AFzsTTxb",
 						},
 					},
 				},
 				Meta: &UserTimelineMeta{
 					ResultCount: 2,
-					OldestID: "1334564488884862976",
-					NewestID: "1338971066773905408",
-					NextToken: "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i",
+					OldestID:    "1334564488884862976",
+					NewestID:    "1338971066773905408",
+					NextToken:   "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i",
 				},
 			},
 			wantErr: false,
@@ -99,8 +97,8 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), userTweetTimelineEdnpoint.urlID("", "2244994945")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetTimelineEdnpoint)
+					if strings.Contains(req.URL.String(), userTweetTimelineEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetTimelineEndpoint)
 					}
 					body := `{
 						"data": [
@@ -182,73 +180,73 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 			args: args{
 				userID: "2244994945",
 				opts: UserTweetTimelineOpts{
-					TweetFields: []TweetField{TweetFieldCreatedAt, TweetFieldAuthorID, TweetFieldConversationID,TweetFieldPublicMetrics,TweetFieldContextAnnotations},
-					UserFields: []UserField{UserFieldUserName},
-					Expansions: []Expansion{ExpansionAuthorID},
-					MaxResults: 2,
+					TweetFields: []TweetField{TweetFieldCreatedAt, TweetFieldAuthorID, TweetFieldConversationID, TweetFieldPublicMetrics, TweetFieldContextAnnotations},
+					UserFields:  []UserField{UserFieldUserName},
+					Expansions:  []Expansion{ExpansionAuthorID},
+					MaxResults:  2,
 				},
 			},
 			want: &UserTweetTimelineResponse{
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
-							ID: "1338971066773905408",
-							Text: "💡 Using Twitter data for academic research? Join our next livestream this Friday @ 9am PT on https://t.co/GrtBOXh5Y1!\n \n@SuhemParack will show how to get started with recent search &amp; filtered stream endpoints on the #TwitterAPI v2, the new Tweet payload, annotations, &amp; more. https://t.co/IraD2Z7wEg",	
-							AuthorID: "2244994945",
+							ID:             "1338971066773905408",
+							Text:           "💡 Using Twitter data for academic research? Join our next livestream this Friday @ 9am PT on https://t.co/GrtBOXh5Y1!\n \n@SuhemParack will show how to get started with recent search &amp; filtered stream endpoints on the #TwitterAPI v2, the new Tweet payload, annotations, &amp; more. https://t.co/IraD2Z7wEg",
+							AuthorID:       "2244994945",
 							ConversationID: "1338971066773905408",
-							CreatedAt: "2020-12-15T22:15:53.000Z",
+							CreatedAt:      "2020-12-15T22:15:53.000Z",
 							ContextAnnotations: []*TweetContextAnnotationObj{
 								{
 									Domain: TweetContextObj{
-										ID: "47",
-										Name: "Brand",
+										ID:          "47",
+										Name:        "Brand",
 										Description: "Brands and Companies",
 									},
 									Entity: TweetContextObj{
-										ID: "10045225402",
+										ID:   "10045225402",
 										Name: "Twitter",
 									},
 								},
 							},
 							PublicMetrics: &TweetMetricsObj{
 								Retweets: 10,
-								Replies: 1,
-								Likes: 41,
-								Quotes: 4,
+								Replies:  1,
+								Likes:    41,
+								Quotes:   4,
 							},
 						},
 						{
-							ID: "1338923691497959425",
-							Text: "📈 Live now with @jessicagarson and @i_am_daniele! https://t.co/Y1AFzsTTxb",
-							AuthorID: "2244994945",
+							ID:             "1338923691497959425",
+							Text:           "📈 Live now with @jessicagarson and @i_am_daniele! https://t.co/Y1AFzsTTxb",
+							AuthorID:       "2244994945",
 							ConversationID: "1338923691497959425",
-							CreatedAt: "2020-12-15T19:07:38.000Z",
+							CreatedAt:      "2020-12-15T19:07:38.000Z",
 							ContextAnnotations: []*TweetContextAnnotationObj{
 								{
 									Domain: TweetContextObj{
-										ID: "47",
-										Name: "Brand",
+										ID:          "47",
+										Name:        "Brand",
 										Description: "Brands and Companies",
 									},
 									Entity: TweetContextObj{
-										ID: "10026378521",
+										ID:   "10026378521",
 										Name: "Google ",
 									},
 								},
 							},
 							PublicMetrics: &TweetMetricsObj{
 								Retweets: 3,
-								Replies: 0,
-								Likes: 12,
-								Quotes: 1,
+								Replies:  0,
+								Likes:    12,
+								Quotes:   1,
 							},
 						},
 					},
 					Includes: &TweetRawIncludes{
 						Users: []*UserObj{
 							{
-								ID: "2244994945",
-								Name: "Twitter Dev",
+								ID:       "2244994945",
+								Name:     "Twitter Dev",
 								UserName: "TwitterDev",
 							},
 						},
@@ -256,9 +254,9 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 				},
 				Meta: &UserTimelineMeta{
 					ResultCount: 2,
-					OldestID: "1337122535188652033",
-					NewestID: "1338971066773905408",
-					NextToken: "7140dibdnow9c7btw3w29n4v1mtag9kegr0gr7y26pnw3",
+					OldestID:    "1337122535188652033",
+					NewestID:    "1338971066773905408",
+					NextToken:   "7140dibdnow9c7btw3w29n4v1mtag9kegr0gr7y26pnw3",
 				},
 			},
 			wantErr: false,
