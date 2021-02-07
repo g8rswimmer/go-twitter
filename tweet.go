@@ -26,7 +26,7 @@ const (
 type TweetLookups map[string]TweetLookup
 
 type tweetLookupIncludes struct {
-	Media []*MediaObj `json:"medias"`
+	Media []*MediaObj `json:"media"`
 	Place []*PlaceObj `json:"places"`
 	Poll  []*PollObj  `json:"polls"`
 	User  []*UserObj  `json:"users"`
