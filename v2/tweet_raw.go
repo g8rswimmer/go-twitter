@@ -5,6 +5,27 @@ type TweetLookupResponse struct {
 	Raw *TweetRaw
 }
 
+// UserMentionTimelineResponse contains the information from the user mention timelint callout
+type UserMentionTimelineResponse struct {
+	Raw  *TweetRaw
+	Meta *UserTimelineMeta `json:"meta"`
+}
+
+// UserTweetTimelineResponse contains the information from the user tweet timeline callout
+type UserTweetTimelineResponse struct {
+	Raw  *TweetRaw
+	Meta *UserTimelineMeta `json:"meta"`
+}
+
+// UserTimelineMeta contains the meta data from the timeline callout
+type UserTimelineMeta struct {
+	ResultCount   int    `json:"result_count"`
+	NewestID      string `json:"newest_id"`
+	OldestID      string `json:"oldest_id"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
+}
+
 // TweetRecentSearchResponse contains all of the information from a tweet recent search
 type TweetRecentSearchResponse struct {
 	Raw  *TweetRaw

@@ -8,12 +8,14 @@ import (
 type endpoint string
 
 const (
-	tweetLookupEndpoint       endpoint = "2/tweets"
-	userLookupEndpoint        endpoint = "2/users"
-	userNameLookupEndpoint    endpoint = "2/users/by"
-	tweetRecentSearchEndpoint endpoint = "2/tweets/search/recent"
-	userFollowingEndpoint     endpoint = "2/users/{id}/following"
-	userFollowersEndpoint     endpoint = "2/users/{id}/followers"
+	tweetLookupEndpoint         endpoint = "2/tweets"
+	userLookupEndpoint          endpoint = "2/users"
+	userNameLookupEndpoint      endpoint = "2/users/by"
+	tweetRecentSearchEndpoint   endpoint = "2/tweets/search/recent"
+	userFollowingEndpoint       endpoint = "2/users/{id}/following"
+	userFollowersEndpoint       endpoint = "2/users/{id}/followers"
+	userTweetTimelineEdnpoint   endpoint = "2/users/{id}/tweets"
+	userMentionTimelineEdnpoint endpoint = "2/users/{id}/mentions"
 
 	idTag = "{id}"
 )
