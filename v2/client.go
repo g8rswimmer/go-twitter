@@ -508,6 +508,7 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	return timeline, nil
 }
 
+// TweetHideReplies will hide the replies for a given tweet
 func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) error {
 	if len(id) == 0 {
 		return fmt.Errorf("tweet hide replies: id must be present %w", ErrParameter)
