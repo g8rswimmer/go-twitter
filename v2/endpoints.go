@@ -14,8 +14,9 @@ const (
 	tweetRecentSearchEndpoint   endpoint = "2/tweets/search/recent"
 	userFollowingEndpoint       endpoint = "2/users/{id}/following"
 	userFollowersEndpoint       endpoint = "2/users/{id}/followers"
-	userTweetTimelineEdnpoint   endpoint = "2/users/{id}/tweets"
-	userMentionTimelineEdnpoint endpoint = "2/users/{id}/mentions"
+	userTweetTimelineEndpoint   endpoint = "2/users/{id}/tweets"
+	userMentionTimelineEndpoint endpoint = "2/users/{id}/mentions"
+	tweetHideRepliesEndpoint    endpoint = "2/tweets/{id}/hidden"
 
 	idTag = "{id}"
 )
