@@ -10,6 +10,12 @@ This [example](./tweet-lookup) demonstrates the tweets lookup API call.
 go run *.go -token=YOUR_API_TOKEN -ids=1261326399320715264,1278347468690915330
 ```
 
+## Recent Tweet Count
+This [example](./tweet-recent-counts) demonstrates the recent tweet counts API call.
+```
+go run &.go -token=YOUR_API_TOKEN -query=YOUR_SEARCH_QUERY
+```
+
 ## User Lookup
 This [example](./user-lookup) demonstrates the users lookup API call.
 

@@ -12,6 +12,7 @@ const (
 	userLookupEndpoint          endpoint = "2/users"
 	userNameLookupEndpoint      endpoint = "2/users/by"
 	tweetRecentSearchEndpoint   endpoint = "2/tweets/search/recent"
+	tweetRecentCountsEndpoint   endpoint = "2/tweets/counts/recent"
 	userFollowingEndpoint       endpoint = "2/users/{id}/following"
 	userFollowersEndpoint       endpoint = "2/users/{id}/followers"
 	userTweetTimelineEndpoint   endpoint = "2/users/{id}/tweets"

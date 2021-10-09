@@ -15,6 +15,7 @@ const (
 	userMaxIDs                   = 100
 	userMaxNames                 = 100
 	tweetRecentSearchQueryLength = 512
+	tweetRecentCountsQueryLength = 512
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -286,6 +287,66 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	}
 
 	return recentSearch, nil
+}
+
+// TweetRecentCounts will return a recent tweet counts based of a query
+func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts TweetRecentCountsOpts) (*TweetRecentCountsResponse, error) {
+	switch {
+	case len(query) == 0:
+		return nil, fmt.Errorf("tweet recent counts: a query is required: %w", ErrParameter)
+	case len(query) > tweetRecentCountsQueryLength:
+		return nil, fmt.Errorf("tweet recent counts: the query over the length (%d): %w", tweetRecentCountsQueryLength, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetRecentCountsEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent counts request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent counts response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet recent counts response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	recentCounts := &TweetRecentCountsResponse{
+		Raw:  &TweetCountsRaw{},
+		Meta: &TweetRecentCountsMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, recentCounts.Raw); err != nil {
+		return nil, fmt.Errorf("tweet recent counts raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, recentCounts); err != nil {
+		return nil, fmt.Errorf("tweet recent counts meta response error decode: %w", err)
+	}
+
+	return recentCounts, nil
 }
 
 // UserFollowingLookup will return a user's following users
