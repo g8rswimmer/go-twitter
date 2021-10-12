@@ -126,7 +126,7 @@ func TestClient_TweetRecentCounts(t *testing.T) {
 				query: "python",
 				opts: TweetRecentCountsOpts{
 					StartTime:   time.Now().Add(-24 * time.Hour),
-					Granularity: "day",
+					Granularity: Granularity("day"),
 				},
 			},
 			want: &TweetRecentCountsResponse{

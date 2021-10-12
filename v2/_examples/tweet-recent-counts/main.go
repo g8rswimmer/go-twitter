@@ -30,7 +30,9 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.TweetRecentCountsOpts{}
+	opts := twitter.TweetRecentCountsOpts{
+		Granularity: twitter.GranularityHour,
+	}
 
 	fmt.Println("Callout to tweet recent counts callout")
 
@@ -39,7 +41,7 @@ func main() {
 		log.Panicf("tweet recent counts error: %v", err)
 	}
 
-	enc, err := json.MarshalIndent(tweetResponse.Raw, "", "    ")
+	enc, err := json.MarshalIndent(tweetResponse.TweetCounts, "", "    ")
 	if err != nil {
 		log.Panic(err)
 	}

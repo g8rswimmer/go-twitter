@@ -5,13 +5,25 @@ import (
 	"time"
 )
 
+// Granularity is the granularity that you want the timeseries count data to be grouped by
+type Granularity string
+
+const (
+	// GranularityMinute will group tweet in minutes
+	GranularityMinute Granularity = "minute"
+	// GranularityHour is the default granularity
+	GranularityHour Granularity = "hour"
+	// GranularityDay will group tweet on a daily basis
+	GranularityDay Granularity = "day"
+)
+
 // TweetRecentCountsOpts are the optional paramters that can be passed to the tweet recent counts callout
 type TweetRecentCountsOpts struct {
 	StartTime   time.Time
 	EndTime     time.Time
 	SinceID     string
 	UntilID     string
-	Granularity string
+	Granularity Granularity
 }
 
 func (t TweetRecentCountsOpts) addQuery(req *http.Request) {
@@ -29,7 +41,7 @@ func (t TweetRecentCountsOpts) addQuery(req *http.Request) {
 		q.Add("until_id", t.UntilID)
 	}
 	if len(t.Granularity) > 0 {
-		q.Add("granularity", t.Granularity)
+		q.Add("granularity", string(t.Granularity))
 	}
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
