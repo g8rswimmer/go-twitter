@@ -334,16 +334,12 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 	}
 
 	recentCounts := &TweetRecentCountsResponse{
-		Raw:  &TweetCountsRaw{},
-		Meta: &TweetRecentCountsMeta{},
-	}
-
-	if err := json.Unmarshal(respBytes, recentCounts.Raw); err != nil {
-		return nil, fmt.Errorf("tweet recent counts raw response error decode: %w", err)
+		TweetCounts: []*TweetCount{},
+		Meta:        &TweetRecentCountsMeta{},
 	}
 
 	if err := json.Unmarshal(respBytes, recentCounts); err != nil {
-		return nil, fmt.Errorf("tweet recent counts meta response error decode: %w", err)
+		return nil, fmt.Errorf("tweet recent counts response error decode: %w", err)
 	}
 
 	return recentCounts, nil

@@ -67,18 +67,16 @@ func TestClient_TweetRecentCounts(t *testing.T) {
 				query: "python",
 			},
 			want: &TweetRecentCountsResponse{
-				Raw: &TweetCountsRaw{
-					TweetCounts: []*TweetCount{
-						{
-							End:        "2021-05-27t00:00:00.000z",
-							Start:      "2021-05-26t23:00:00.000z",
-							TweetCount: 2,
-						},
-						{
-							End:        "2021-05-27t01:00:00.000z",
-							Start:      "2021-05-27t00:00:00.000z",
-							TweetCount: 2,
-						},
+				TweetCounts: []*TweetCount{
+					{
+						End:        "2021-05-27t00:00:00.000z",
+						Start:      "2021-05-26t23:00:00.000z",
+						TweetCount: 2,
+					},
+					{
+						End:        "2021-05-27t01:00:00.000z",
+						Start:      "2021-05-27t00:00:00.000z",
+						TweetCount: 2,
 					},
 				},
 				Meta: &TweetRecentCountsMeta{
@@ -130,18 +128,16 @@ func TestClient_TweetRecentCounts(t *testing.T) {
 				},
 			},
 			want: &TweetRecentCountsResponse{
-				Raw: &TweetCountsRaw{
-					TweetCounts: []*TweetCount{
-						{
-							End:        "2021-10-09T00:00:00.000Z",
-							Start:      "2021-10-08T15:29:42.000Z",
-							TweetCount: 2,
-						},
-						{
-							End:        "2021-10-09T15:29:33.000Z",
-							Start:      "2021-10-09T00:00:00.000Z",
-							TweetCount: 2,
-						},
+				TweetCounts: []*TweetCount{
+					{
+						End:        "2021-10-09T00:00:00.000Z",
+						Start:      "2021-10-08T15:29:42.000Z",
+						TweetCount: 2,
+					},
+					{
+						End:        "2021-10-09T15:29:33.000Z",
+						Start:      "2021-10-09T00:00:00.000Z",
+						TweetCount: 2,
 					},
 				},
 				Meta: &TweetRecentCountsMeta{
