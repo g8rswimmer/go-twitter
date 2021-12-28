@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,6 +20,22 @@ type CreateTweetOps struct {
 	Reply                 CreateTweetReply `json:"reply"`
 }
 
+func (t CreateTweetOps) validate() error {
+	if err := t.Media.validate(); err != nil {
+		return fmt.Errorf("create tweet error: %w", err)
+	}
+	if err := t.Poll.validate(); err != nil {
+		return fmt.Errorf("create tweet error: %w", err)
+	}
+	if err := t.Reply.validate(); err != nil {
+		return fmt.Errorf("create tweet error: %w", err)
+	}
+	if len(t.Media.IDs) == 0 && len(t.Text) == 0 {
+		return fmt.Errorf("create tweet text is required if no media ids %w", ErrParameter)
+	}
+	return nil
+}
+
 type CreateTweetGeo struct {
 	PlaceID string `json:"place_id"`
 }
@@ -28,14 +45,35 @@ type CreateTweetMedia struct {
 	TaggedUserIDs []string `json:"tagged_user_ids"`
 }
 
+func (m CreateTweetMedia) validate() error {
+	if len(m.TaggedUserIDs) > 0 && len(m.IDs) == 0 {
+		return fmt.Errorf("media ids are required if taged user ids are present %w", ErrParameter)
+	}
+	return nil
+}
+
 type CreateTweetPoll struct {
 	DurationMinutes int      `json:"duration_minutes"`
 	Options         []string `json:"options"`
 }
 
+func (p CreateTweetPoll) validate() error {
+	if len(p.Options) > 0 && p.DurationMinutes <= 0 {
+		return fmt.Errorf("poll duration minutes are required with options %w", ErrParameter)
+	}
+	return nil
+}
+
 type CreateTweetReply struct {
 	ExcludeReplyUserIDs []string `json:"exclude_reply_user_ids"`
 	InReplyToTweetID    string   `json:"in_reply_to_tweet_id"`
+}
+
+func (r CreateTweetReply) validate() error {
+	if len(r.ExcludeReplyUserIDs) > 0 && len(r.InReplyToTweetID) == 0 {
+		return fmt.Errorf("reply in reply to tweet is needs to be present it exclude reply user ids are present %w", ErrParameter)
+	}
+	return nil
 }
 
 // TweetLookupOpts are the optional paramters that can be passed to the lookup callout
