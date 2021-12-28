@@ -7,6 +7,37 @@ import (
 	"time"
 )
 
+type CreateTweetOps struct {
+	DirectMessageDeepLink string           `json:"direct_message_deep_link,omitempty"`
+	ForSuperFollowersOnly bool             `json:"for_super_followers_only,omitempty"`
+	QuoteTweetID          string           `json:"quote_tweet_id,omitempty"`
+	Text                  string           `json:"text,omitemtpy"`
+	ReplySettings         string           `json:"reply_settings"`
+	Geo                   CreateTweetGeo   `json:"geo"`
+	Media                 CreateTweetMedia `json:"media"`
+	Poll                  CreateTweetPoll  `json:"poll"`
+	Reply                 CreateTweetReply `json:"reply"`
+}
+
+type CreateTweetGeo struct {
+	PlaceID string `json:"place_id"`
+}
+
+type CreateTweetMedia struct {
+	IDs           []string `json:"media_ids"`
+	TaggedUserIDs []string `json:"tagged_user_ids"`
+}
+
+type CreateTweetPoll struct {
+	DurationMinutes int      `json:"duration_minutes"`
+	Options         []string `json:"options"`
+}
+
+type CreateTweetReply struct {
+	ExcludeReplyUserIDs []string `json:"exclude_reply_user_ids"`
+	InReplyToTweetID    string   `json:"in_reply_to_tweet_id"`
+}
+
 // TweetLookupOpts are the optional paramters that can be passed to the lookup callout
 type TweetLookupOpts struct {
 	Expansions  []Expansion
