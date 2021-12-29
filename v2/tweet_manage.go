@@ -45,7 +45,7 @@ type CreateTweetMedia struct {
 
 func (m CreateTweetMedia) validate() error {
 	if len(m.TaggedUserIDs) > 0 && len(m.IDs) == 0 {
-		return fmt.Errorf("media ids are required if taged user ids are present %w", ErrParameter)
+		return fmt.Errorf("media ids are required if tagged user ids are present %w", ErrParameter)
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ type CreateTweetReply struct {
 
 func (r CreateTweetReply) validate() error {
 	if len(r.ExcludeReplyUserIDs) > 0 && len(r.InReplyToTweetID) == 0 {
-		return fmt.Errorf("reply in reply to tweet is needs to be present it exclude reply user ids are present %w", ErrParameter)
+		return fmt.Errorf("in reply to tweet is needs to be present if excluded reply user ids are present %w", ErrParameter)
 	}
 	return nil
 }

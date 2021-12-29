@@ -25,7 +25,7 @@ type Client struct {
 	Host       string
 }
 
-// CreateTweet will lets a user post polls, quote tweets, tweet with reply setting, tweet with geo, attach
+// CreateTweet will let a user post polls, quote tweets, tweet with reply setting, tweet with geo, attach
 // perviously uploaded media toa tweet and tag users, tweet to super followers, etc.
 func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*CreateTweetResponse, error) {
 	if err := tweet.validate(); err != nil {
