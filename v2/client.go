@@ -25,6 +25,8 @@ type Client struct {
 	Host       string
 }
 
+// CreateTweet will lets a user post polls, quote tweets, tweet with reply setting, tweet with geo, attach
+// perviously uploaded media toa tweet and tag users, tweet to super followers, etc.
 func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*CreateTweetResponse, error) {
 	if err := tweet.validate(); err != nil {
 		return nil, err
@@ -71,6 +73,7 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 	return raw, nil
 }
 
+// DeleteTweet allow the user to delete a specific tweet
 func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetResponse, error) {
 	if len(id) == 0 {
 		return nil, fmt.Errorf("delete tweet id is required")
