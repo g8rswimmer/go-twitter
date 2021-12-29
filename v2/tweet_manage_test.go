@@ -186,7 +186,7 @@ func TestCreateTweetOps_validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			opts := CreateTweetOps{
+			opts := CreateTweetRequest{
 				DirectMessageDeepLink: tt.fields.DirectMessageDeepLink,
 				ForSuperFollowersOnly: tt.fields.ForSuperFollowersOnly,
 				QuoteTweetID:          tt.fields.QuoteTweetID,

@@ -25,6 +25,93 @@ type Client struct {
 	Host       string
 }
 
+func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*CreateTweetResponse, error) {
+	if err := tweet.validate(); err != nil {
+		return nil, err
+	}
+	body, err := json.Marshal(tweet)
+	if err != nil {
+		return nil, fmt.Errorf("create tweet marshal error %w", err)
+	}
+	ep := tweetCreateEndpoint.url(c.Host)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("create tweet request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("create tweet response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusCreated {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &CreateTweetResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("create tweet decode response %w", err)
+	}
+	return raw, nil
+}
+
+func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetResponse, error) {
+	if len(id) == 0 {
+		return nil, fmt.Errorf("delete tweet id is required")
+	}
+	ep := tweetDeleteEndpoint.urlID(c.Host, id)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("delete tweet request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("delete tweet response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &DeleteTweetResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("delete tweet decode response %w", err)
+	}
+	return raw, nil
+}
+
 // TweetLookup returns information about a tweet or group of tweets specified by a group of tweet ids.
 func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookupOpts) (*TweetLookupResponse, error) {
 	ep := tweetLookupEndpoint.url(c.Host)
