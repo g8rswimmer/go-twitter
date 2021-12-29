@@ -9,6 +9,8 @@ type endpoint string
 
 const (
 	tweetLookupEndpoint         endpoint = "2/tweets"
+	tweetCreateEndpoint         endpoint = "2/tweets"
+	tweetDeleteEndpoint         endpoint = "2/tweets/{id}"
 	userLookupEndpoint          endpoint = "2/users"
 	userNameLookupEndpoint      endpoint = "2/users/by"
 	tweetRecentSearchEndpoint   endpoint = "2/tweets/search/recent"

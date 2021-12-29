@@ -10,6 +10,20 @@ This [example](./tweet-lookup) demonstrates the tweets lookup API call.
 go run *.go -token=YOUR_API_TOKEN -ids=1261326399320715264,1278347468690915330
 ```
 
+## Create Tweet
+This [example](./tweet-create) demonstrates the create tweet API call. 
+
+```
+go run *.go -token=YOUR_API_TOKEN -text='Hello World'
+```
+
+## Delete Tweet
+This [example](./tweet-delete) demonstrates the delete tweet API call. 
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=YOUR_TWEET_TO_DELETE
+```
+
 ## Recent Tweet Count
 This [example](./tweet-recent-counts) demonstrates the recent tweet counts API call.
 ```
