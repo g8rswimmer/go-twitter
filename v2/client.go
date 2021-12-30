@@ -760,3 +760,104 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) erro
 	}
 	return nil
 }
+
+// UserRetweet will retweet a tweet for a user
+func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*UserRetweetResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user retweet: user id is required %w", ErrParameter)
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user retweet: tweet id is required %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		TweetID string `json:"tweet_id"`
+	}{
+		TweetID: tweetID,
+	}
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user retweet: json marshal %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userManageRetweetEndpoint.urlID(c.Host, userID), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user retweet request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user retweet response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserRetweetResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user retweet decode response %w", err)
+	}
+	return raw, nil
+}
+
+// DeleteUserRetweet will return a retweet from a user
+func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) (*DeleteUserRetweetResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user delete retweet: user id is required %w", ErrParameter)
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user delete retweet: tweet id is required %w", ErrParameter)
+	default:
+	}
+
+	ep := userManageRetweetEndpoint.urlID(c.Host, userID) + "/" + tweetID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user delete retweet request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user delete retweet response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &DeleteUserRetweetResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user delete retweet decode response %w", err)
+	}
+	return raw, nil
+}
