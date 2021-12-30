@@ -50,3 +50,17 @@ This [example](./auth-user-lookup) demonstrates the authorized user lookup API c
 ```
 go run *.go -token=YOUR_API_TOKEN
 ```
+
+## User Retweet
+This [example](./user-retweet) demonstrates the user retweet API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=2244994945 -tweet_id=1228393702244134912
+```
+
+## Delete User Retweet
+This [example](./user-delete-retweet) demonstrates the deleting user retweet API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=2244994945 -tweet_id=1228393702244134912
+```
