@@ -319,6 +319,54 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 	}, nil
 }
 
+// AuthUserLookup will return the authorized user lookup
+func (c *Client) AuthUserLookup(ctx context.Context, opts UserLookupOpts) (*UserLookupResponse, error) {
+	ep := userAuthLookupEndpoint.url(c.Host)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("auth user lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("auth user lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	single := &userraw{}
+	if err := decoder.Decode(single); err != nil {
+		return nil, fmt.Errorf("user lookup single dictionary: %w", err)
+	}
+	raw := &UserRaw{}
+	raw.Users = make([]*UserObj, 1)
+	raw.Users[0] = single.User
+	raw.Includes = single.Includes
+	raw.Errors = single.Errors
+
+	return &UserLookupResponse{
+		Raw: raw,
+	}, nil
+}
+
 // TweetRecentSearch will return a recent search based of a query
 func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts TweetRecentSearchOpts) (*TweetRecentSearchResponse, error) {
 	switch {
