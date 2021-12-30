@@ -25,6 +25,7 @@ Here are the current twitter `v2` API features supported:
 *  [User Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
     * [example](./_examples/user-lookup)
     * [example: by usernames](./_examples/username-lookup)
+    * [example: authorized](./_examples/auth-user-lookup)
 * [User Dictionary](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user) - the user and all of its references related to it
 * [Tweet Counts](https://developer.twitter.com/en/docs/twitter-api/tweets/counts/introduction)
     * [example](./_examples/tweet-recent-counts)
