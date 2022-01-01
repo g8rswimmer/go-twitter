@@ -597,3 +597,145 @@ func TestClient_UserNameLookup(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_AuthUserLookup(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		opts UserLookupOpts
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserLookupResponse
+		wantErr bool
+	}{
+		{
+			name: "Success - Default",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), string(userAuthLookupEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userAuthLookupEndpoint)
+					}
+					body := `{
+						"data": {
+						  "id": "2244994945",
+						  "name": "Twitter Dev",
+						  "username": "TwitterDev"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{},
+			want: &UserLookupResponse{
+				Raw: &UserRaw{
+					Users: []*UserObj{
+						{
+							ID:       "2244994945",
+							Name:     "Twitter Dev",
+							UserName: "TwitterDev",
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Success Optional",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), string(userAuthLookupEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userAuthLookupEndpoint)
+					}
+					body := `{
+						"data": {
+						  "username": "TwitterDev",
+						  "created_at": "2013-12-14T04:35:55.000Z",
+						  "pinned_tweet_id": "1255542774432063488",
+						  "id": "2244994945",
+						  "name": "Twitter Dev"
+						},
+						"includes": {
+						  "tweets": [
+							{
+							  "text": "During these unprecedented times, what’s happening on Twitter can help the world better understand &amp; respond to the pandemic. \n\nWe're launching a free COVID-19 stream endpoint so qualified devs &amp; researchers can study the public conversation in real-time. https://t.co/BPqMcQzhId",
+							  "created_at": "2020-04-29T17:01:38.000Z",
+							  "id": "1255542774432063488"
+							}
+						  ]
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       ioutil.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				opts: UserLookupOpts{
+					Expansions:  []Expansion{ExpansionPinnedTweetID},
+					UserFields:  []UserField{UserFieldCreatedAt},
+					TweetFields: []TweetField{TweetFieldCreatedAt},
+				},
+			},
+			want: &UserLookupResponse{
+				Raw: &UserRaw{
+					Users: []*UserObj{
+						{
+							ID:            "2244994945",
+							Name:          "Twitter Dev",
+							UserName:      "TwitterDev",
+							CreatedAt:     "2013-12-14T04:35:55.000Z",
+							PinnedTweetID: "1255542774432063488",
+						},
+					},
+					Includes: &UserRawIncludes{
+						Tweets: []*TweetObj{
+							{
+								ID:        "1255542774432063488",
+								CreatedAt: "2020-04-29T17:01:38.000Z",
+								Text:      "During these unprecedented times, what’s happening on Twitter can help the world better understand &amp; respond to the pandemic. \n\nWe're launching a free COVID-19 stream endpoint so qualified devs &amp; researchers can study the public conversation in real-time. https://t.co/BPqMcQzhId",
+							},
+						},
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.AuthUserLookup(context.Background(), tt.args.opts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.AuthUserLookup() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.AuthUserLookup() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

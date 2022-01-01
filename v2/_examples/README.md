@@ -43,3 +43,10 @@ This [example](./username-lookup) demonstrates the usernames lookup API call.
 ```
 go run *.go -token=YOUR_API_TOKEN -ids=TwitterDev,MongoDB
 ```
+
+## Authorized User Lookup
+This [example](./auth-user-lookup) demonstrates the authorized user lookup API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN
+```
