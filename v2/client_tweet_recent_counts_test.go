@@ -2,7 +2,7 @@ package twitter
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"reflect"
@@ -59,7 +59,7 @@ func TestClient_TweetRecentCounts(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -116,7 +116,7 @@ func TestClient_TweetRecentCounts(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -175,7 +175,7 @@ func TestClient_TweetRecentCounts(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},

@@ -2,7 +2,7 @@ package twitter
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"reflect"
@@ -47,7 +47,7 @@ func TestClient_TweetLookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -98,7 +98,7 @@ func TestClient_TweetLookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -159,7 +159,7 @@ func TestClient_TweetLookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -228,7 +228,7 @@ func TestClient_TweetLookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -305,7 +305,7 @@ func TestClient_TweetLookup(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -347,7 +347,7 @@ func TestClient_TweetLookup(t *testing.T) {
 						}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
