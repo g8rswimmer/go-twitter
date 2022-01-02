@@ -251,6 +251,58 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 	}, nil
 }
 
+// UserRetweetLookup allows you to get information about users that have retweeted a tweet
+func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts UserRetweetLookuoOpts) (*UserRetweetLookupResponse, error) {
+	switch {
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user retweet lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := userRetweetLookupEndpoint.urlID(c.Host, tweetID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user retweet lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user retweet lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := struct {
+		*UserRetweetRaw
+		Meta *UserRetweetMeta `json:"meta"`
+	}{}
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, fmt.Errorf("user retweet lookup dictionary: %w", err)
+	}
+	return &UserRetweetLookupResponse{
+		Raw:  raw.UserRetweetRaw,
+		Meta: raw.Meta,
+	}, nil
+}
+
 // UserNameLookup returns information about an user or group of users specified by a group of usernames.
 func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts UserLookupOpts) (*UserLookupResponse, error) {
 	ep := userNameLookupEndpoint.url(c.Host)
