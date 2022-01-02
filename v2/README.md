@@ -32,6 +32,9 @@ Here are the current twitter `v2` API features supported:
 * [Manage Tweet](https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/introduction)
     * [create example](./_examples/tweet-create)
     * [delete example](./_examples/tweet-delete)
+* [Manage Retweet](https://developer.twitter.com/en/docs/twitter-api/tweets/retweets/introduction)
+    * [retweet example](./_examples/user-retweet)
+    * [delete retweet example](./_examples/user-delete-retweet)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
