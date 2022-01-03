@@ -241,7 +241,7 @@ func TestClient_UserRetweetLookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -349,7 +349,7 @@ func TestClient_UserRetweetLookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
