@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -446,7 +446,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("tweet recent search response read: %w", err)
 	}
@@ -506,7 +506,7 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("tweet recent counts response read: %w", err)
 	}
@@ -557,7 +557,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user following lookup response read: %w", err)
 	}
@@ -612,7 +612,7 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user followers lookup response read: %w", err)
 	}
@@ -667,7 +667,7 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user tweet timeline response read: %w", err)
 	}
@@ -722,7 +722,7 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user mention timeline response read: %w", err)
 	}
@@ -783,7 +783,7 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) erro
 	}
 	defer resp.Body.Close()
 
-	respBytes, err := ioutil.ReadAll(resp.Body)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("tweet hide replies response read: %w", err)
 	}

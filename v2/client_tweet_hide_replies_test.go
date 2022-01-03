@@ -2,7 +2,7 @@ package twitter
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -40,7 +40,7 @@ func TestClient_TweetHideReplies(t *testing.T) {
 					body := `{"data":{"hidden":true}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},

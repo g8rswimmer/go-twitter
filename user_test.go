@@ -3,7 +3,7 @@ package twitter
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"reflect"
@@ -50,7 +50,7 @@ func TestUser_Lookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -115,7 +115,7 @@ func TestUser_Lookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -178,7 +178,7 @@ func TestUser_Lookup(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -262,7 +262,7 @@ func TestUser_LookupUsername(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -327,7 +327,7 @@ func TestUser_LookupUsername(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -390,7 +390,7 @@ func TestUser_LookupUsername(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -524,7 +524,7 @@ func TestUser_LookupFollowing(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -875,7 +875,7 @@ func TestUser_LookupFollowing(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1261,7 +1261,7 @@ func TestUser_LookupFollowers(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1613,7 +1613,7 @@ func TestUser_LookupFollowers(t *testing.T) {
 					  `
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1963,7 +1963,7 @@ func TestUser_Tweets(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -2052,7 +2052,7 @@ func TestUser_Tweets(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -2184,7 +2184,7 @@ func TestUser_Mentions(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},

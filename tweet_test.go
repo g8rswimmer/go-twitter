@@ -3,7 +3,7 @@ package twitter
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"reflect"
@@ -61,7 +61,7 @@ func TestTweet_Lookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -139,7 +139,7 @@ func TestTweet_Lookup(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -208,7 +208,7 @@ func TestTweet_Lookup(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -336,7 +336,7 @@ func TestTweet_RecentSearch(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -477,7 +477,7 @@ func TestTweet_RecentSearch(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -586,7 +586,7 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusCreated,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -669,7 +669,7 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusCreated,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -713,7 +713,7 @@ func TestTweet_UpdateSearchStreamRules(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -823,7 +823,7 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -869,7 +869,7 @@ func TestTweet_SearchStreamRules(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -951,7 +951,7 @@ func TestTweet_SearchStream(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -996,7 +996,7 @@ func TestTweet_SearchStream(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1076,7 +1076,7 @@ func TestTweet_SampledStream(t *testing.T) {
 					  }`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1121,7 +1121,7 @@ func TestTweet_SampledStream(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1196,7 +1196,7 @@ func TestTweet_Hide(t *testing.T) {
 					body := `{"data":{"hidden":true}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1224,7 +1224,7 @@ func TestTweet_Hide(t *testing.T) {
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1249,7 +1249,7 @@ func TestTweet_Hide(t *testing.T) {
 					body := `{"data":{"hidden":false}}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},
@@ -1278,7 +1278,7 @@ func TestTweet_Hide(t *testing.T) {
 					}`
 					return &http.Response{
 						StatusCode: http.StatusBadRequest,
-						Body:       ioutil.NopCloser(strings.NewReader(body)),
+						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),
 			},

@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -282,7 +282,7 @@ func (u *User) LookupFollowing(ctx context.Context, id string, followOpts UserFo
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user lookup following reading body: %w", err)
 	}
@@ -346,7 +346,7 @@ func (u *User) LookupFollowers(ctx context.Context, id string, followOpts UserFo
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user lookup following reading body: %w", err)
 	}
@@ -410,7 +410,7 @@ func (u *User) Tweets(ctx context.Context, id string, tweetOpts UserTimelineOpts
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user lookup following reading body: %w", err)
 	}
@@ -462,7 +462,7 @@ func (u *User) Mentions(ctx context.Context, id string, tweetOpts UserTimelineOp
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user lookup following reading body: %w", err)
 	}
