@@ -1,4 +1,4 @@
-name: got-test
+name: go-test
 on:
   push:
     tags:
