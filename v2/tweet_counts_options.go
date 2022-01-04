@@ -28,10 +28,10 @@ type TweetRecentCountsOpts struct {
 
 func (t TweetRecentCountsOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
-	if t.StartTime.IsZero() == false {
+	if !t.StartTime.IsZero() {
 		q.Add("start_time", t.StartTime.Format(time.RFC3339))
 	}
-	if t.EndTime.IsZero() == false {
+	if !t.EndTime.IsZero() {
 		q.Add("end_time", t.EndTime.Format(time.RFC3339))
 	}
 	if len(t.SinceID) > 0 {

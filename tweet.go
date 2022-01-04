@@ -206,7 +206,9 @@ func (t *TweetRecentSearch) UnmarshalJSON(b []byte) error {
 	t.Meta = m.Meta
 
 	tl := TweetLookups{}
-	tl.lookups(json.NewDecoder(bytes.NewReader(b)))
+	if err := tl.lookups(json.NewDecoder(bytes.NewReader(b))); err != nil {
+		return err
+	}
 	t.LookUps = tl
 	return nil
 }

@@ -113,10 +113,10 @@ func (u UserTimelineOpts) addQuery(req *http.Request) {
 	if len(u.PaginationToken) > 0 {
 		q.Add("pagination_token", u.PaginationToken)
 	}
-	if u.EndTime.IsZero() == false {
+	if !u.EndTime.IsZero() {
 		q.Add("end_time", u.EndTime.Format(time.RFC3339))
 	}
-	if u.StartTime.IsZero() == false {
+	if !u.StartTime.IsZero() {
 		q.Add("start_time", u.StartTime.Format(time.RFC3339))
 	}
 	if len(q) > 0 {

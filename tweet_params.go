@@ -57,10 +57,10 @@ func (t TweetRecentSearchOptions) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	q.Add("query", t.query)
 
-	if t.StartTime.IsZero() == false {
+	if !t.StartTime.IsZero() {
 		q.Add("start_time", t.StartTime.Format(time.RFC3339))
 	}
-	if t.EndTime.IsZero() == false {
+	if !t.EndTime.IsZero() {
 		q.Add("end_time", t.EndTime.Format(time.RFC3339))
 	}
 	if t.MaxResult >= 10 {
