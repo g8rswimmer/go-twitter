@@ -78,10 +78,10 @@ func (t TweetRecentSearchOpts) addQuery(req *http.Request) {
 	if len(t.UserFields) > 0 {
 		q.Add("user.fields", strings.Join(userFieldStringArray(t.UserFields), ","))
 	}
-	if t.StartTime.IsZero() == false {
+	if !t.StartTime.IsZero() {
 		q.Add("start_time", t.StartTime.Format(time.RFC3339))
 	}
-	if t.EndTime.IsZero() == false {
+	if !t.EndTime.IsZero() {
 		q.Add("end_time", t.EndTime.Format(time.RFC3339))
 	}
 	if t.MaxResults > 0 {
@@ -141,10 +141,10 @@ func (t UserTweetTimelineOpts) addQuery(req *http.Request) {
 	if len(t.Excludes) > 0 {
 		q.Add("exclude", strings.Join(excludeStringArray(t.Excludes), ","))
 	}
-	if t.StartTime.IsZero() == false {
+	if !t.StartTime.IsZero() {
 		q.Add("start_time", t.StartTime.Format(time.RFC3339))
 	}
-	if t.EndTime.IsZero() == false {
+	if !t.EndTime.IsZero() {
 		q.Add("end_time", t.EndTime.Format(time.RFC3339))
 	}
 	if t.MaxResults > 0 {
@@ -200,10 +200,10 @@ func (t UserMentionTimelineOpts) addQuery(req *http.Request) {
 	if len(t.UserFields) > 0 {
 		q.Add("user.fields", strings.Join(userFieldStringArray(t.UserFields), ","))
 	}
-	if t.StartTime.IsZero() == false {
+	if !t.StartTime.IsZero() {
 		q.Add("start_time", t.StartTime.Format(time.RFC3339))
 	}
-	if t.EndTime.IsZero() == false {
+	if !t.EndTime.IsZero() {
 		q.Add("end_time", t.EndTime.Format(time.RFC3339))
 	}
 	if t.MaxResults > 0 {

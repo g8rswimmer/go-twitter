@@ -7,7 +7,7 @@ type CreateTweetRequest struct {
 	DirectMessageDeepLink string           `json:"direct_message_deep_link,omitempty"`
 	ForSuperFollowersOnly bool             `json:"for_super_followers_only,omitempty"`
 	QuoteTweetID          string           `json:"quote_tweet_id,omitempty"`
-	Text                  string           `json:"text,omitemtpy"`
+	Text                  string           `json:"text,omitempty"`
 	ReplySettings         string           `json:"reply_settings"`
 	Geo                   CreateTweetGeo   `json:"geo"`
 	Media                 CreateTweetMedia `json:"media"`
