@@ -21,10 +21,7 @@ jobs:
         go-version: '1.17.5'
 
     - name: Test With Coverage
-      run: go test -gcflags=-l -v  -coverprofile=coverage.txt -covermode=atomic ./...
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      run: go test -gcflags=-l -v  --race --cover -coverprofile=coverage.txt -covermode=atomic ./...
 
     - name: Run Vet & Lint
       run: go vet ./...
