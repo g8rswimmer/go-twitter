@@ -42,7 +42,7 @@ func main() {
 
 	userResponse, err := client.UserBlocksLookup(context.Background(), *id, opts)
 	if err != nil {
-		log.Panicf("user lookup error: %v", err)
+		log.Panicf("user blocks lookup error: %v", err)
 	}
 
 	dictionaries := userResponse.Raw.UserDictionaries()

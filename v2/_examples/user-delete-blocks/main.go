@@ -36,14 +36,14 @@ func main() {
 		Host:   "https://api.twitter.com",
 	}
 
-	fmt.Println("Callout to user blocks callout")
+	fmt.Println("Callout to delete user block callout")
 
-	userBlocksResponse, err := client.UserBlocks(context.Background(), *userID, *targetUserID)
+	userResponse, err := client.DeleteUserBlocks(context.Background(), *userID, *targetUserID)
 	if err != nil {
-		log.Panicf("user block error: %v", err)
+		log.Panicf("user delete block error: %v", err)
 	}
 
-	enc, err := json.MarshalIndent(userBlocksResponse, "", "    ")
+	enc, err := json.MarshalIndent(userResponse, "", "    ")
 	if err != nil {
 		log.Panic(err)
 	}

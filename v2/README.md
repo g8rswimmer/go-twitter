@@ -39,6 +39,7 @@ Here are the current twitter `v2` API features supported:
 * [User Blocks](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction)
 	* [blocks lookup example](./_examples/user-blocks-lookup)
 	* [blocks example](./_examples/user-blocks)
+	* [delete blocks example](./_examples/user-delete-blocks)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
