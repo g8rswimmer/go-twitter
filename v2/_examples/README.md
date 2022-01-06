@@ -71,3 +71,10 @@ This [example](./user-retweet-lookup) demonstrates looking up user that have ret
 ```
 go run *.go -token=YOUR_API_TOKEN -tweet_id=1228393702244134912
 ```
+
+## User Blocks Lookup
+This [example](./user-blocks-lookup) demonstrates looking up user that have been blocked API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
