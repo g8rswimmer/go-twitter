@@ -40,12 +40,22 @@ func (u UserBlocksLookupOpts) addQuery(req *http.Request) {
 // UserBlocksLookupResponse is the list of users that are blocked
 type UserBlocksLookupResponse struct {
 	Raw  *UserRaw
-	Meta *UserBlockedLookupMeta `json:"meta"`
+	Meta *UserBlocksLookupMeta `json:"meta"`
 }
 
-// UserBlockedLookupMeta is the meta associated with the blocked users lookup
-type UserBlockedLookupMeta struct {
+// UserBlocksLookupMeta is the meta associated with the blocked users lookup
+type UserBlocksLookupMeta struct {
 	ResultCount   int    `json:"result_count"`
 	NextToken     string `json:"next_token"`
 	PreviousToken string `json:"previous_token"`
+}
+
+// UserBlocksData indicates if the user is blocked
+type UserBlocksData struct {
+	Blocking bool `json:"blocking"`
+}
+
+// UserBlocksResponse is when a user blocks another
+type UserBlocksResponse struct {
+	Data *UserBlocksData `json:"data"`
 }
