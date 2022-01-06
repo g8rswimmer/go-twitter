@@ -337,3 +337,74 @@ func TestClient_UserBlocks(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_DeleteUserBlocks(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID       string
+		targetUserID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserDeleteBlocksResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodDelete {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), userBlocksEndpoint.urlID("", "6253282")+"/2244994945") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userBlocksEndpoint)
+					}
+					body := `{
+						"data": {
+						  "blocking": false
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				userID:       "6253282",
+				targetUserID: "2244994945",
+			},
+			want: &UserDeleteBlocksResponse{
+				Data: &UserBlocksData{
+					Blocking: false,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.DeleteUserBlocks(context.Background(), tt.args.userID, tt.args.targetUserID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.DeleteUserBlocks() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.DeleteUserBlocks() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

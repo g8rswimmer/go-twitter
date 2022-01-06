@@ -59,3 +59,8 @@ type UserBlocksData struct {
 type UserBlocksResponse struct {
 	Data *UserBlocksData `json:"data"`
 }
+
+// UserDeleteBlocksResponse is when a user unblocks another
+type UserDeleteBlocksResponse struct {
+	Data *UserBlocksData `json:"data"`
+}
