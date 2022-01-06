@@ -16,6 +16,7 @@ const (
 	userMaxNames                 = 100
 	tweetRecentSearchQueryLength = 512
 	tweetRecentCountsQueryLength = 512
+	userBlocksMaxResults         = 1000
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -912,4 +913,63 @@ func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) 
 		return nil, fmt.Errorf("user delete retweet decode response %w", err)
 	}
 	return raw, nil
+}
+
+// UserBlocksLookup returns a list of users who are blocked by the user ID
+func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserBlocksLookupOpts) (*UserBlocksLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user blocked lookup: user id is required: %w", ErrParameter)
+	case opts.MaxResults > userBlocksMaxResults:
+		return nil, fmt.Errorf("user blocked lookup: max results can't be above %d: %w", userBlocksMaxResults, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userBlocksEndpoint.urlID(c.Host, userID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("user blocked lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user blocked lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("user blocked lookup response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	blockedLookup := &UserBlocksLookupResponse{
+		Raw:  &UserRaw{},
+		Meta: &UserBlockedLookupMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, blockedLookup.Raw); err != nil {
+		return nil, fmt.Errorf("user blocked lookup raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, blockedLookup); err != nil {
+		return nil, fmt.Errorf("user blocked lookup meta response error decode: %w", err)
+	}
+
+	return blockedLookup, nil
 }
