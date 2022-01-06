@@ -78,3 +78,9 @@ This [example](./user-blocks-lookup) demonstrates looking up user that have been
 ```
 go run *.go -token=YOUR_API_TOKEN -id=2244994945
 ```
+## User Blocks
+This [example](./user-blocks) demonstrates the user blocking API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
+```

@@ -37,7 +37,8 @@ Here are the current twitter `v2` API features supported:
     * [delete retweet example](./_examples/user-delete-retweet)
     * [retweet lookup example](./_examples/user-retweet-lookup)
 * [User Blocks](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction)
-	* [blocks lookup](./_examples/user-blocks-lookup)
+	* [blocks lookup example](./_examples/user-blocks-lookup)
+	* [blocks example](./_examples/user-blocks)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
