@@ -91,3 +91,23 @@ This [example](./user-blocks) demonstrates the delete a user block API call.
 ```
 go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
 ```
+
+## User Mutes Lookup
+This [example](./user-mutes-lookup) demonstrates looking up user that have been muted API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
+## User Mutes
+This [example](./user-mutes) demonstrates the user muting API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
+```
+
+## User Delete Mutes
+This [example](./user-mutes) demonstrates the delete a user mute API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
+```
