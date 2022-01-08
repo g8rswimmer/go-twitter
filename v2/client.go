@@ -1133,59 +1133,59 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 	return mutedLookup, nil
 }
 
-// func (c *Client) UserBlocks(ctx context.Context, userID, targetUserID string) (*UserBlocksResponse, error) {
-// 	switch {
-// 	case len(userID) == 0:
-// 		return nil, fmt.Errorf("user blocks: user id is required %w", ErrParameter)
-// 	case len(targetUserID) == 0:
-// 		return nil, fmt.Errorf("user blocks: target user id is required %w", ErrParameter)
-// 	default:
-// 	}
+func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*UserMutesResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user mutes: user id is required %w", ErrParameter)
+	case len(targetUserID) == 0:
+		return nil, fmt.Errorf("user mutes: target user id is required %w", ErrParameter)
+	default:
+	}
 
-// 	reqBody := struct {
-// 		TargetUserID string `json:"target_user_id"`
-// 	}{
-// 		TargetUserID: targetUserID,
-// 	}
-// 	enc, err := json.Marshal(reqBody)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("user blocks: json marshal %w", err)
-// 	}
-// 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userBlocksEndpoint.urlID(c.Host, userID), bytes.NewReader(enc))
-// 	if err != nil {
-// 		return nil, fmt.Errorf("user blocks request: %w", err)
-// 	}
-// 	req.Header.Add("Content-Type", "application/json")
-// 	req.Header.Add("Accept", "application/json")
-// 	c.Authorizer.Add(req)
+	reqBody := struct {
+		TargetUserID string `json:"target_user_id"`
+	}{
+		TargetUserID: targetUserID,
+	}
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user mutes: json marshal %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userMutesEndpont.urlID(c.Host, userID), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user mutes request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
 
-// 	resp, err := c.Client.Do(req)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("user blocks response: %w", err)
-// 	}
-// 	defer resp.Body.Close()
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user mutes response: %w", err)
+	}
+	defer resp.Body.Close()
 
-// 	decoder := json.NewDecoder(resp.Body)
+	decoder := json.NewDecoder(resp.Body)
 
-// 	if resp.StatusCode != http.StatusOK {
-// 		e := &ErrorResponse{}
-// 		if err := decoder.Decode(e); err != nil {
-// 			return nil, &HTTPError{
-// 				Status:     resp.Status,
-// 				StatusCode: resp.StatusCode,
-// 				URL:        resp.Request.URL.String(),
-// 			}
-// 		}
-// 		e.StatusCode = resp.StatusCode
-// 		return nil, e
-// 	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
 
-// 	raw := &UserBlocksResponse{}
-// 	if err := decoder.Decode(raw); err != nil {
-// 		return nil, fmt.Errorf("user blocks decode response %w", err)
-// 	}
-// 	return raw, nil
-// }
+	raw := &UserMutesResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user mutes decode response %w", err)
+	}
+	return raw, nil
+}
 
 // func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID string) (*UserDeleteBlocksResponse, error) {
 // 	switch {
