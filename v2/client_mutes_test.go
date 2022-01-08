@@ -337,3 +337,74 @@ func TestClient_UserMutes(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_DeleteUserMutes(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID       string
+		targetUserID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserDeleteMutesResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodDelete {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), userMutesEndpont.urlID("", "6253282")+"/2244994945") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpont)
+					}
+					body := `{
+						"data": {
+						  "muting": false
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				userID:       "6253282",
+				targetUserID: "2244994945",
+			},
+			want: &UserDeleteMutesResponse{
+				Data: &UserMutesData{
+					Muting: false,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.DeleteUserMutes(context.Background(), tt.args.userID, tt.args.targetUserID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.DeleteUserMutes() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.DeleteUserMutes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
