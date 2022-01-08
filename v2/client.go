@@ -16,6 +16,7 @@ const (
 	userMaxNames                 = 100
 	tweetRecentSearchQueryLength = 512
 	tweetRecentCountsQueryLength = 512
+	userBlocksMaxResults         = 1000
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -910,6 +911,166 @@ func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) 
 	raw := &DeleteUserRetweetResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete retweet decode response %w", err)
+	}
+	return raw, nil
+}
+
+// UserBlocksLookup returns a list of users who are blocked by the user ID
+func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserBlocksLookupOpts) (*UserBlocksLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user blocked lookup: user id is required: %w", ErrParameter)
+	case opts.MaxResults > userBlocksMaxResults:
+		return nil, fmt.Errorf("user blocked lookup: max results can't be above %d: %w", userBlocksMaxResults, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userBlocksEndpoint.urlID(c.Host, userID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("user blocked lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user blocked lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("user blocked lookup response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	blockedLookup := &UserBlocksLookupResponse{
+		Raw:  &UserRaw{},
+		Meta: &UserBlocksLookupMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, blockedLookup.Raw); err != nil {
+		return nil, fmt.Errorf("user blocked lookup raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, blockedLookup); err != nil {
+		return nil, fmt.Errorf("user blocked lookup meta response error decode: %w", err)
+	}
+
+	return blockedLookup, nil
+}
+
+// UserBlocks will have the user block the targeted user ID
+func (c *Client) UserBlocks(ctx context.Context, userID, targetUserID string) (*UserBlocksResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user blocks: user id is required %w", ErrParameter)
+	case len(targetUserID) == 0:
+		return nil, fmt.Errorf("user blocks: target user id is required %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		TargetUserID string `json:"target_user_id"`
+	}{
+		TargetUserID: targetUserID,
+	}
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user blocks: json marshal %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userBlocksEndpoint.urlID(c.Host, userID), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user blocks request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user blocks response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserBlocksResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user blocks decode response %w", err)
+	}
+	return raw, nil
+}
+
+// DeleteUserBlocks will remove the target user block
+func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID string) (*UserDeleteBlocksResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user delete blocks: user id is required %w", ErrParameter)
+	case len(targetUserID) == 0:
+		return nil, fmt.Errorf("user delete blocks: target user id is required %w", ErrParameter)
+	default:
+	}
+
+	ep := userBlocksEndpoint.urlID(c.Host, userID) + "/" + targetUserID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user delete blocks request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user delete blocks response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserDeleteBlocksResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user delete blocks decode response %w", err)
 	}
 	return raw, nil
 }
