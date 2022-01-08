@@ -1075,6 +1075,7 @@ func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID stri
 	return raw, nil
 }
 
+// UserMutesLookup returns a list of users who are muted by the user ID
 func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMutesLookupOpts) (*UserMutesLookupResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -1133,6 +1134,7 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 	return mutedLookup, nil
 }
 
+// UserMutes allows an authenticated user ID to mute the target user
 func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*UserMutesResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -1187,6 +1189,7 @@ func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*U
 	return raw, nil
 }
 
+// DeleteUserMutes allows an authenticated user ID to unmute the target user
 func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID string) (*UserDeleteMutesResponse, error) {
 	switch {
 	case len(userID) == 0:
