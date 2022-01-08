@@ -17,6 +17,7 @@ const (
 	tweetRecentSearchQueryLength = 512
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
+	userMutesMaxResults          = 1000
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1081,7 +1082,7 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user muted lookup: user id is required: %w", ErrParameter)
 	case opts.MaxResults > userBlocksMaxResults:
-		return nil, fmt.Errorf("user muted lookup: max results can't be above %d: %w", userBlocksMaxResults, ErrParameter)
+		return nil, fmt.Errorf("user muted lookup: max results can't be above %d: %w", userMutesMaxResults, ErrParameter)
 	default:
 	}
 
