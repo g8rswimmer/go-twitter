@@ -16,6 +16,7 @@ const (
 	userAuthLookupEndpoint      endpoint = "2/users/me"
 	userManageRetweetEndpoint   endpoint = "2/users/{id}/retweets"
 	userBlocksEndpoint          endpoint = "2/users/{id}/blocking"
+	userMutesEndpont            endpoint = "2/users/{id}/muting"
 	userRetweetLookupEndpoint   endpoint = "2/tweets/{id}/retweeted_by"
 	tweetRecentSearchEndpoint   endpoint = "2/tweets/search/recent"
 	tweetRecentCountsEndpoint   endpoint = "2/tweets/counts/recent"

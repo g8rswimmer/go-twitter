@@ -17,6 +17,7 @@ const (
 	tweetRecentSearchQueryLength = 512
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
+	userMutesMaxResults          = 1000
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1071,6 +1072,166 @@ func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID stri
 	raw := &UserDeleteBlocksResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete blocks decode response %w", err)
+	}
+	return raw, nil
+}
+
+// UserMutesLookup returns a list of users who are muted by the user ID
+func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMutesLookupOpts) (*UserMutesLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user muted lookup: user id is required: %w", ErrParameter)
+	case opts.MaxResults > userBlocksMaxResults:
+		return nil, fmt.Errorf("user muted lookup: max results can't be above %d: %w", userMutesMaxResults, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userMutesEndpont.urlID(c.Host, userID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("user muted lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user muted lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("user muted lookup response read: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := json.Unmarshal(respBytes, e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	mutedLookup := &UserMutesLookupResponse{
+		Raw:  &UserRaw{},
+		Meta: &UserMutesLookupMeta{},
+	}
+
+	if err := json.Unmarshal(respBytes, mutedLookup.Raw); err != nil {
+		return nil, fmt.Errorf("user muted lookup raw response error decode: %w", err)
+	}
+
+	if err := json.Unmarshal(respBytes, mutedLookup); err != nil {
+		return nil, fmt.Errorf("user muted lookup meta response error decode: %w", err)
+	}
+
+	return mutedLookup, nil
+}
+
+// UserMutes allows an authenticated user ID to mute the target user
+func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*UserMutesResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user mutes: user id is required %w", ErrParameter)
+	case len(targetUserID) == 0:
+		return nil, fmt.Errorf("user mutes: target user id is required %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		TargetUserID string `json:"target_user_id"`
+	}{
+		TargetUserID: targetUserID,
+	}
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user mutes: json marshal %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userMutesEndpont.urlID(c.Host, userID), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user mutes request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user mutes response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserMutesResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user mutes decode response %w", err)
+	}
+	return raw, nil
+}
+
+// DeleteUserMutes allows an authenticated user ID to unmute the target user
+func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID string) (*UserDeleteMutesResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user delete mutes: user id is required %w", ErrParameter)
+	case len(targetUserID) == 0:
+		return nil, fmt.Errorf("user delete mutes: target user id is required %w", ErrParameter)
+	default:
+	}
+
+	ep := userMutesEndpont.urlID(c.Host, userID) + "/" + targetUserID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user delete mutes request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user delete mutes response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserDeleteMutesResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user delete mutes decode response %w", err)
 	}
 	return raw, nil
 }
