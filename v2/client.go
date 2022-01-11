@@ -591,6 +591,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 
 	return followingLookup, nil
 }
+
 func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (*UserFollowsResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -641,6 +642,51 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 	raw := &UserFollowsResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user follows decode response %w", err)
+	}
+	return raw, nil
+}
+
+func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID string) (*UserDeleteFollowsResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user delete follows: user id is required %w", ErrParameter)
+	case len(targetUserID) == 0:
+		return nil, fmt.Errorf("user delete follows: target user id is required %w", ErrParameter)
+	default:
+	}
+
+	ep := userFollowingEndpoint.urlID(c.Host, userID) + "/" + targetUserID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user delete follows request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user delete follows response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserDeleteFollowsResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user delete follows decode response %w", err)
 	}
 	return raw, nil
 }

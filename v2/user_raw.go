@@ -14,6 +14,14 @@ type UserFollowsData struct {
 	PendingFollow bool `json:"pending_follow"`
 }
 
+type UserDeleteFollowsResponse struct {
+	Data *UserDeleteFollowsData `json:"data"`
+}
+
+type UserDeleteFollowsData struct {
+	Following bool `json:"following"`
+}
+
 // UserFollowingLookupResponse is the response for the user following API
 type UserFollowingLookupResponse struct {
 	Raw  *UserRaw
