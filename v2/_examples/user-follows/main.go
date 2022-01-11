@@ -38,12 +38,12 @@ func main() {
 
 	fmt.Println("Callout to user follows callout")
 
-	userBlocksResponse, err := client.UserFollows(context.Background(), *userID, *targetUserID)
+	userFollowsResponse, err := client.UserFollows(context.Background(), *userID, *targetUserID)
 	if err != nil {
 		log.Panicf("user block follows: %v", err)
 	}
 
-	enc, err := json.MarshalIndent(userBlocksResponse, "", "    ")
+	enc, err := json.MarshalIndent(userFollowsResponse, "", "    ")
 	if err != nil {
 		log.Panic(err)
 	}
