@@ -592,6 +592,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 	return followingLookup, nil
 }
 
+// UserFollows allows a user ID to follow another user
 func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (*UserFollowsResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -646,6 +647,7 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 	return raw, nil
 }
 
+// DeleteUserFollows llows a user ID to unfollow another user
 func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID string) (*UserDeleteFollowsResponse, error) {
 	switch {
 	case len(userID) == 0:

@@ -5,19 +5,23 @@ type UserLookupResponse struct {
 	Raw *UserRaw
 }
 
+// UserFollowsResponse is the response from the follows API
 type UserFollowsResponse struct {
 	Data *UserFollowsData `json:"data"`
 }
 
+// UserFollowsData is the data from the follows API
 type UserFollowsData struct {
 	Following     bool `json:"following"`
 	PendingFollow bool `json:"pending_follow"`
 }
 
+// UserDeleteFollowsResponse is the response from the unfollows API
 type UserDeleteFollowsResponse struct {
 	Data *UserDeleteFollowsData `json:"data"`
 }
 
+// UserDeleteFollowsData is the data from the unfollows API
 type UserDeleteFollowsData struct {
 	Following bool `json:"following"`
 }
