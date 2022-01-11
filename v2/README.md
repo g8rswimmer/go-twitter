@@ -43,7 +43,12 @@ Here are the current twitter `v2` API features supported:
 * [User Mutes](https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction)
 	* [mutes lookup example](./_examples/user-mutes-lookup)
 	* [mutes example](./_examples/user-mutes)
-	* [mutes blocks example](./_examples/user-delete-mutes)
+	* [delete mutes example](./_examples/user-delete-mutes)
+* [User Follows](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction)
+	* [user following](./_examples/user-following-lookup)
+	* [user followers](./_examples/user-followers-lookup)
+	* [follows example](./_examples/user-follows)
+	* [delete follows example](./_examples/user-delete-follows)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
