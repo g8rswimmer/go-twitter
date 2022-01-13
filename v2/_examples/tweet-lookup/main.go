@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
-	"log"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
-	"context"
 	"strings"
 
 	twitter "github.com/g8rswimmer/go-twitter/v2"
@@ -55,4 +55,3 @@ func main() {
 	}
 	fmt.Println(string(enc))
 }
-

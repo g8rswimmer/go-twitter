@@ -192,10 +192,10 @@ func TestCreateTweetOps_validate(t *testing.T) {
 				QuoteTweetID:          tt.fields.QuoteTweetID,
 				Text:                  tt.fields.Text,
 				ReplySettings:         tt.fields.ReplySettings,
-				Geo:                   tt.fields.Geo,
-				Media:                 tt.fields.Media,
-				Poll:                  tt.fields.Poll,
-				Reply:                 tt.fields.Reply,
+				Geo:                   &tt.fields.Geo,
+				Media:                 &tt.fields.Media,
+				Poll:                  &tt.fields.Poll,
+				Reply:                 &tt.fields.Reply,
 			}
 			if err := opts.validate(); (err != nil) != tt.wantErr {
 				t.Errorf("CreateTweetOps.validate() error = %v, wantErr %v", err, tt.wantErr)

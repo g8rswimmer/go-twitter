@@ -4,28 +4,34 @@ import "fmt"
 
 // CreateTweetRequest is the details of a tweet to create
 type CreateTweetRequest struct {
-	DirectMessageDeepLink string           `json:"direct_message_deep_link,omitempty"`
-	ForSuperFollowersOnly bool             `json:"for_super_followers_only,omitempty"`
-	QuoteTweetID          string           `json:"quote_tweet_id,omitempty"`
-	Text                  string           `json:"text,omitempty"`
-	ReplySettings         string           `json:"reply_settings"`
-	Geo                   CreateTweetGeo   `json:"geo"`
-	Media                 CreateTweetMedia `json:"media"`
-	Poll                  CreateTweetPoll  `json:"poll"`
-	Reply                 CreateTweetReply `json:"reply"`
+	DirectMessageDeepLink string            `json:"direct_message_deep_link,omitempty"`
+	ForSuperFollowersOnly bool              `json:"for_super_followers_only,omitempty"`
+	QuoteTweetID          string            `json:"quote_tweet_id,omitempty"`
+	Text                  string            `json:"text,omitempty"`
+	ReplySettings         string            `json:"reply_settings,omitempty"`
+	Geo                   *CreateTweetGeo   `json:"geo,omitempty"`
+	Media                 *CreateTweetMedia `json:"media,omitempty"`
+	Poll                  *CreateTweetPoll  `json:"poll,omitempty"`
+	Reply                 *CreateTweetReply `json:"reply,omitempty"`
 }
 
 func (t CreateTweetRequest) validate() error {
-	if err := t.Media.validate(); err != nil {
-		return fmt.Errorf("create tweet error: %w", err)
+	if t.Media != nil {
+		if err := t.Media.validate(); err != nil {
+			return fmt.Errorf("create tweet error: %w", err)
+		}
 	}
-	if err := t.Poll.validate(); err != nil {
-		return fmt.Errorf("create tweet error: %w", err)
+	if t.Poll != nil {
+		if err := t.Poll.validate(); err != nil {
+			return fmt.Errorf("create tweet error: %w", err)
+		}
 	}
-	if err := t.Reply.validate(); err != nil {
-		return fmt.Errorf("create tweet error: %w", err)
+	if t.Poll != nil {
+		if err := t.Reply.validate(); err != nil {
+			return fmt.Errorf("create tweet error: %w", err)
+		}
 	}
-	if len(t.Media.IDs) == 0 && len(t.Text) == 0 {
+	if (t.Media == nil || len(t.Media.IDs) == 0) && len(t.Text) == 0 {
 		return fmt.Errorf("create tweet text is required if no media ids %w", ErrParameter)
 	}
 	return nil
@@ -33,14 +39,14 @@ func (t CreateTweetRequest) validate() error {
 
 // CreateTweetGeo allows for the tweet to coontain geo
 type CreateTweetGeo struct {
-	PlaceID string `json:"place_id"`
+	PlaceID string `json:"place_id,omitempty"`
 }
 
 // CreateTweetMedia allows for updated media to attached.
 // If the tagged user ids are present, then ids must be present.
 type CreateTweetMedia struct {
-	IDs           []string `json:"media_ids"`
-	TaggedUserIDs []string `json:"tagged_user_ids"`
+	IDs           []string `json:"media_ids,omitempty"`
+	TaggedUserIDs []string `json:"tagged_user_ids,omitempty"`
 }
 
 func (m CreateTweetMedia) validate() error {
@@ -52,8 +58,8 @@ func (m CreateTweetMedia) validate() error {
 
 // CreateTweetPoll allows for a poll to be posted as the tweet
 type CreateTweetPoll struct {
-	DurationMinutes int      `json:"duration_minutes"`
-	Options         []string `json:"options"`
+	DurationMinutes int      `json:"duration_minutes,omitempty"`
+	Options         []string `json:"options,omitempty"`
 }
 
 func (p CreateTweetPoll) validate() error {
@@ -65,8 +71,8 @@ func (p CreateTweetPoll) validate() error {
 
 // CreateTweetReply sets the reply setting for the tweet
 type CreateTweetReply struct {
-	ExcludeReplyUserIDs []string `json:"exclude_reply_user_ids"`
-	InReplyToTweetID    string   `json:"in_reply_to_tweet_id"`
+	ExcludeReplyUserIDs []string `json:"exclude_reply_user_ids,omitempty"`
+	InReplyToTweetID    string   `json:"in_reply_to_tweet_id,omitempty"`
 }
 
 func (r CreateTweetReply) validate() error {
