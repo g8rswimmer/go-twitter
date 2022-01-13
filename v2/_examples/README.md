@@ -86,7 +86,7 @@ go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
 ```
 
 ## User Delete Blocks
-This [example](./user-blocks) demonstrates the delete a user block API call.
+This [example](./user-delete-blocks) demonstrates the delete a user block API call.
 
 ```
 go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
@@ -106,7 +106,35 @@ go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
 ```
 
 ## User Delete Mutes
-This [example](./user-mutes) demonstrates the delete a user mute API call.
+This [example](./user-delete-mutes) demonstrates the delete a user mute API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
+```
+
+## User Followers Lookup
+This [example](./user-followers-lookup) demonstrates looking up user's followers API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
+
+## User Following Lookup
+This [example](./user-following-lookup) demonstrates looking up who the user is following API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
+
+## User Follows
+This [example](./user-follows) demonstrates the user follows API call.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
+```
+
+## User Delete Follows
+This [example](./user-delete-follows) demonstrates the delete a user follows API call.
 
 ```
 go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945

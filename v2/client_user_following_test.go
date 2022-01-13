@@ -226,3 +226,147 @@ func TestClient_UserFollowingLookup(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_UserFollows(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID       string
+		targetUserID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserFollowsResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), userFollowingEndpoint.urlID("", "6253282")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userFollowingEndpoint)
+					}
+					body := `{
+						"data": {
+						  "following": true,
+						  "pending_follow": true
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				userID:       "6253282",
+				targetUserID: "2244994945",
+			},
+			want: &UserFollowsResponse{
+				Data: &UserFollowsData{
+					Following:     true,
+					PendingFollow: true,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.UserFollows(context.Background(), tt.args.userID, tt.args.targetUserID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.UserFollows() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.UserFollows() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestClient_DeleteUserFollows(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID       string
+		targetUserID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserDeleteFollowsResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodDelete {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), userFollowingEndpoint.urlID("", "6253282")+"/2244994945") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userFollowingEndpoint)
+					}
+					body := `{
+						"data": {
+						  "following": false
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				userID:       "6253282",
+				targetUserID: "2244994945",
+			},
+			want: &UserDeleteFollowsResponse{
+				Data: &UserDeleteFollowsData{
+					Following: false,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.DeleteUserFollows(context.Background(), tt.args.userID, tt.args.targetUserID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.DeleteUserFollows() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.DeleteUserFollows() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
