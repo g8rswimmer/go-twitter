@@ -18,6 +18,8 @@ const (
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
 	userMutesMaxResults          = 1000
+	tweetUserLikesMaxResults     = 100
+	tweetUserLikesMinResults     = 10
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1382,5 +1384,62 @@ func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts 
 	}
 	return &UserTweetLikesLookupResponse{
 		Raw: raw,
+	}, nil
+}
+
+func (c *Client) TweetUserLikesLookup(ctx context.Context, userID string, opts TweetUserLikesLookupOpts) (*TweetUserLikesLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("tweet user likes lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < tweetUserLikesMinResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a min results [%d] is required [current: %d]: %w", tweetUserLikesMinResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults > tweetUserLikesMaxResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a max results [%d] is required [current: %d]: %w", tweetUserLikesMaxResults, opts.MaxResults, ErrParameter)
+	default:
+	}
+
+	ep := tweetUserLikesEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *TweetUserLikesMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup dictionary: %w", err)
+	}
+	return &TweetUserLikesLookupResponse{
+		Raw:  respBody.TweetRaw,
+		Meta: respBody.Meta,
 	}, nil
 }
