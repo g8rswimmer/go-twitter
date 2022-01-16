@@ -1336,3 +1336,51 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	}
 	return raw, nil
 }
+
+func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts UserTweetLikesLookupOpts) (*UserTweetLikesLookupResponse, error) {
+	switch {
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user tweet likes lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := userTweetLikesEndpoint.urlID(c.Host, tweetID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user tweet likes lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user tweet likes lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserTweetLikesRaw{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, fmt.Errorf("user tweet likes lookup dictionary: %w", err)
+	}
+	return &UserTweetLikesLookupResponse{
+		Raw: raw,
+	}, nil
+}

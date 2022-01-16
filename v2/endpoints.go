@@ -25,6 +25,7 @@ const (
 	userTweetTimelineEndpoint   endpoint = "2/users/{id}/tweets"
 	userMentionTimelineEndpoint endpoint = "2/users/{id}/mentions"
 	tweetHideRepliesEndpoint    endpoint = "2/tweets/{id}/hidden"
+	userTweetLikesEndpoint      endpoint = "2/tweets/{id}/liking_users"
 
 	idTag = "{id}"
 )
