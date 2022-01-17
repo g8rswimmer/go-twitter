@@ -5,32 +5,39 @@ import (
 	"strings"
 )
 
+// UserLikesResponse the response for the user likes
 type UserLikesResponse struct {
 	Data *UserLikesData `json:"data"`
 }
 
+// DeteleUserLikesResponse the response for the user unlike
 type DeteleUserLikesResponse struct {
 	Data *UserLikesData `json:"data"`
 }
 
+// UserLikesData is the data from the user like management
 type UserLikesData struct {
 	Liked bool `json:"liked"`
 }
 
+// UserTweetLikesLookupResponse is the user from the tweet likes
 type UserTweetLikesLookupResponse struct {
 	Raw  *UserTweetLikesRaw
 }
 
+// UserTweetLikesRaw is the raw data from the user tweet likes
 type UserTweetLikesRaw struct {
 	Users    []*UserObj              `json:"data"`
 	Includes *UserTweetLikesRawIncludes `json:"includes,omitempty"`
 	Errors   []*ErrorObj             `json:"errors,omitempty"`
 }
 
+// UserTweetLikesRawIncludes is the objects that relate to the user
 type UserTweetLikesRawIncludes struct {
 	Tweets []*TweetObj `json:"tweets,omitempty"`
 }
 
+// UserTweetLikesLookupOpts the user like lookup options
 type UserTweetLikesLookupOpts struct {
 	Expansions  []Expansion
 	TweetFields []TweetField
