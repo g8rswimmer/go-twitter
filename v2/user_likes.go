@@ -22,19 +22,7 @@ type UserLikesData struct {
 
 // UserTweetLikesLookupResponse is the user from the tweet likes
 type UserTweetLikesLookupResponse struct {
-	Raw  *UserTweetLikesRaw
-}
-
-// UserTweetLikesRaw is the raw data from the user tweet likes
-type UserTweetLikesRaw struct {
-	Users    []*UserObj              `json:"data"`
-	Includes *UserTweetLikesRawIncludes `json:"includes,omitempty"`
-	Errors   []*ErrorObj             `json:"errors,omitempty"`
-}
-
-// UserTweetLikesRawIncludes is the objects that relate to the user
-type UserTweetLikesRawIncludes struct {
-	Tweets []*TweetObj `json:"tweets,omitempty"`
+	Raw  *UserRaw
 }
 
 // UserTweetLikesLookupOpts the user like lookup options
