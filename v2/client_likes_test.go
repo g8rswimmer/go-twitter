@@ -68,7 +68,7 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 				tweetID: "tweet-1234",
 			},
 			want: &UserTweetLikesLookupResponse{
-				Raw: &UserTweetLikesRaw{
+				Raw: &UserRaw{
 					Users: []*UserObj{
 						{
 							ID:       "1065249714214457345",
@@ -175,7 +175,7 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 				},
 			},
 			want: &UserTweetLikesLookupResponse{
-				Raw: &UserTweetLikesRaw{
+				Raw: &UserRaw{
 					Users: []*UserObj{
 						{
 							ID:            "1065249714214457345",
@@ -216,7 +216,7 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 							Description:   "Tweets about changes and service issues. Follow @TwitterDev for more.",
 						},
 					},
-					Includes: &UserTweetLikesRawIncludes{
+					Includes: &UserRawIncludes{
 						Tweets: []*TweetObj{
 							{
 								ID:   "1389270063807598594",

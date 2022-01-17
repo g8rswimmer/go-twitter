@@ -139,3 +139,17 @@ This [example](./user-delete-follows) demonstrates the delete a user follows API
 ```
 go run *.go -token=YOUR_API_TOKEN -user_id=6253282 -target_user_id=2244994945
 ```
+
+## User Likes Lookup
+This [example](./user-like-lookup) demonstrates user tweet likes API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
+
+## Tweet Likes Lookup
+This [example](./tweet-like-lookup) demonstrates tweet user likes API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
