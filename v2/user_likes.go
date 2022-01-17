@@ -5,6 +5,17 @@ import (
 	"strings"
 )
 
+type UserLikesResponse struct {
+	Data *UserLikesData `json:"data"`
+}
+
+type DeteleUserLikesResponse struct {
+	Data *UserLikesData `json:"data"`
+}
+
+type UserLikesData struct {
+	Liked bool `json:"liked"`
+}
 
 type UserTweetLikesLookupResponse struct {
 	Raw  *UserTweetLikesRaw

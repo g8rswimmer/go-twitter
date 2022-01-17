@@ -518,3 +518,145 @@ func TestClient_TweetUserLikesLookup(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_UserLikes(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID  string
+		tweetID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserLikesResponse
+		wantErr bool
+	}{
+		{
+			name: "Success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), userLikesEndpoint.urlID("", "user-1234")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userLikesEndpoint)
+					}
+					body := `{
+						"data": {
+						  "liked": true
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				userID:  "user-1234",
+				tweetID: "tweet-1234",
+			},
+			want: &UserLikesResponse{
+				Data: &UserLikesData{
+					Liked: true,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.UserLikes(context.Background(), tt.args.userID, tt.args.tweetID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.UserLikes() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.UserLikes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestClient_DeleteUserLikes(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID  string
+		tweetID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *DeteleUserLikesResponse
+		wantErr bool
+	}{
+		{
+			name: "Success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodDelete {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodDelete)
+					}
+					if strings.Contains(req.URL.String(), userLikesEndpoint.urlID("", "user-1234")+"/tweet-1234") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userLikesEndpoint)
+					}
+					body := `{
+							"data": {
+							  "liked": false
+							}
+						  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				userID:  "user-1234",
+				tweetID: "tweet-1234",
+			},
+			want: &DeteleUserLikesResponse{
+				Data: &UserLikesData{
+					Liked: false,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.DeleteUserLikes(context.Background(), tt.args.userID, tt.args.tweetID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.DeleteUserLikes() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.DeleteUserLikes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
