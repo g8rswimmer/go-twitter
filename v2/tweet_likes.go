@@ -6,17 +6,20 @@ import (
 	"strings"
 )
 
+// TweetUserLikesLookupResponse is the tweets from the user likes
 type TweetUserLikesLookupResponse struct {
 	Raw  *TweetRaw
 	Meta *TweetUserLikesMeta `json:"meta"`
 }
 
+// TweetUserLikesMeta is the meta data from the response
 type TweetUserLikesMeta struct {
 	ResultCount   int    `json:"result_count"`
 	NextToken     string `json:"next_token"`
 	PreviousToken string `json:"previous_token"`
 }
 
+// TweetUserLikesLookupOpts the tweet like lookup options
 type TweetUserLikesLookupOpts struct {
 	Expansions      []Expansion
 	MediaFields     []MediaField

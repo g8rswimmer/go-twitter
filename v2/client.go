@@ -1339,6 +1339,7 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	return raw, nil
 }
 
+// UserTweetLikesLookup gets information abotu a tweet's likeing users.  The response will have at most 100 users who liked the tweet
 func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts UserTweetLikesLookupOpts) (*UserTweetLikesLookupResponse, error) {
 	switch {
 	case len(tweetID) == 0:
@@ -1387,6 +1388,7 @@ func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts 
 	}, nil
 }
 
+// TweetUserLikesLookup gets informaiton about a user's liked tweets.
 func (c *Client) TweetUserLikesLookup(ctx context.Context, userID string, opts TweetUserLikesLookupOpts) (*TweetUserLikesLookupResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -1444,6 +1446,7 @@ func (c *Client) TweetUserLikesLookup(ctx context.Context, userID string, opts T
 	}, nil
 }
 
+// UserLikes will like the targeted tweet
 func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLikesResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -1498,6 +1501,7 @@ func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLi
 	return raw, nil
 }
 
+// DeleteUserLikes will unlike the targeted tweet
 func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*DeteleUserLikesResponse, error) {
 	switch {
 	case len(userID) == 0:
