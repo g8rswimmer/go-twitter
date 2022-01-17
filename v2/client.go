@@ -1378,7 +1378,7 @@ func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts 
 		return nil, e
 	}
 
-	raw := &UserTweetLikesRaw{}
+	raw := &UserRaw{}
 
 	if err := decoder.Decode(&raw); err != nil {
 		return nil, fmt.Errorf("user tweet likes lookup dictionary: %w", err)
