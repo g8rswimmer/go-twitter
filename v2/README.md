@@ -49,6 +49,8 @@ Here are the current twitter `v2` API features supported:
 	* [user followers](./_examples/user-followers-lookup)
 	* [follows example](./_examples/user-follows)
 	* [delete follows example](./_examples/user-delete-follows)
+* [Tweet Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
+
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
