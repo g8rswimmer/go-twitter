@@ -1339,7 +1339,7 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	return raw, nil
 }
 
-// UserTweetLikesLookup gets information abotu a tweet's likeing users.  The response will have at most 100 users who liked the tweet
+// UserTweetLikesLookup gets information about a tweet's liking users.  The response will have at most 100 users who liked the tweet
 func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts UserTweetLikesLookupOpts) (*UserTweetLikesLookupResponse, error) {
 	switch {
 	case len(tweetID) == 0:
