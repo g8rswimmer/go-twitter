@@ -81,7 +81,6 @@ func Test_StartTweetStreamMessage(t *testing.T) {
 					case err := <-stream.Err():
 						t.Errorf("StartTweetStreamMessage error %v", err)
 						return
-					default:
 					}
 				}
 			}()
@@ -163,7 +162,6 @@ func Test_StartTweetStreamSystem(t *testing.T) {
 					case err := <-stream.Err():
 						t.Errorf("StartTweetStreamMessage error %v", err)
 						return
-					default:
 					}
 				}
 			}()
@@ -291,7 +289,6 @@ func Test_StartTweetStream(t *testing.T) {
 					case err := <-stream.Err():
 						t.Errorf("StartTweetStreamMessage error %v", err)
 						return
-					default:
 					}
 				}
 			}()
