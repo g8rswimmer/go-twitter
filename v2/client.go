@@ -1434,7 +1434,7 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 
 	respBody := struct {
 		*TweetRaw
-		Meta *TweetUserLikesMeta `json:"meta"`
+		Meta *UserLikesMeta `json:"meta"`
 	}{}
 
 	if err := decoder.Decode(&respBody); err != nil {
