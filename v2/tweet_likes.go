@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// TweetUserLikesLookupResponse is the tweets from the user likes
-type TweetUserLikesLookupResponse struct {
+// UserLikesLookupResponse is the tweets from the user likes
+type UserLikesLookupResponse struct {
 	Raw  *TweetRaw
 	Meta *TweetUserLikesMeta `json:"meta"`
 }
@@ -19,8 +19,8 @@ type TweetUserLikesMeta struct {
 	PreviousToken string `json:"previous_token"`
 }
 
-// TweetUserLikesLookupOpts the tweet like lookup options
-type TweetUserLikesLookupOpts struct {
+// UserLikesLookupOpts the tweet like lookup options
+type UserLikesLookupOpts struct {
 	Expansions      []Expansion
 	MediaFields     []MediaField
 	PlaceFields     []PlaceField
@@ -31,7 +31,7 @@ type TweetUserLikesLookupOpts struct {
 	PaginationToken string
 }
 
-func (t TweetUserLikesLookupOpts) addQuery(req *http.Request) {
+func (t UserLikesLookupOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(t.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))

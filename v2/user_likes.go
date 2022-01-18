@@ -20,13 +20,13 @@ type UserLikesData struct {
 	Liked bool `json:"liked"`
 }
 
-// UserTweetLikesLookupResponse is the user from the tweet likes
-type UserTweetLikesLookupResponse struct {
+// TweetLikesLookupResponse is the user from the tweet likes
+type TweetLikesLookupResponse struct {
 	Raw  *UserRaw
 }
 
-// UserTweetLikesLookupOpts the user like lookup options
-type UserTweetLikesLookupOpts struct {
+// TweetLikesLookupOpts the user like lookup options
+type TweetLikesLookupOpts struct {
 	Expansions  []Expansion
 	TweetFields []TweetField
 	UserFields  []UserField
@@ -35,7 +35,7 @@ type UserTweetLikesLookupOpts struct {
 	PollFields  []PollField
 }
 
-func (u UserTweetLikesLookupOpts) addQuery(req *http.Request) {
+func (u TweetLikesLookupOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(u.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(u.Expansions), ","))
