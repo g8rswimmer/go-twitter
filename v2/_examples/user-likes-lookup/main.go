@@ -34,19 +34,19 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.UserTweetLikesLookupOpts{
+	opts := twitter.TweetLikesLookupOpts{
 		Expansions:  []twitter.Expansion{twitter.ExpansionPinnedTweetID},
 		TweetFields: []twitter.TweetField{twitter.TweetFieldContextAnnotations},
 	}
 
 	fmt.Println("Callout to user likes lookup callout")
 
-	userResponse, err := client.UserTweetLikesLookup(context.Background(), *id, opts)
+	userResponse, err := client.UserLikesLookup(context.Background(), *id, opts)
 	if err != nil {
 		log.Panicf("user likes lookup error: %v", err)
 	}
 
-	dictionaries := userResponse.Raw.UserDictionaries()
+	dictionaries := userResponse.Raw.TweetDictionaries()
 
 	enc, err := json.MarshalIndent(dictionaries, "", "    ")
 	if err != nil {

@@ -1339,8 +1339,8 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	return raw, nil
 }
 
-// UserTweetLikesLookup gets information about a tweet's liking users.  The response will have at most 100 users who liked the tweet
-func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts UserTweetLikesLookupOpts) (*UserTweetLikesLookupResponse, error) {
+// TweetLikesLookup gets information about a tweet's liking users.  The response will have at most 100 users who liked the tweet
+func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts TweetLikesLookupOpts) (*TweetLikesLookupResponse, error) {
 	switch {
 	case len(tweetID) == 0:
 		return nil, fmt.Errorf("user tweet likes lookup: an id is required: %w", ErrParameter)
@@ -1383,13 +1383,13 @@ func (c *Client) UserTweetLikesLookup(ctx context.Context, tweetID string, opts 
 	if err := decoder.Decode(&raw); err != nil {
 		return nil, fmt.Errorf("user tweet likes lookup dictionary: %w", err)
 	}
-	return &UserTweetLikesLookupResponse{
+	return &TweetLikesLookupResponse{
 		Raw: raw,
 	}, nil
 }
 
-// TweetUserLikesLookup gets informaiton about a user's liked tweets.
-func (c *Client) TweetUserLikesLookup(ctx context.Context, userID string, opts TweetUserLikesLookupOpts) (*TweetUserLikesLookupResponse, error) {
+// UserLikesLookup gets informaiton about a user's liked tweets.
+func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLikesLookupOpts) (*UserLikesLookupResponse, error) {
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("tweet user likes lookup: an id is required: %w", ErrParameter)
@@ -1440,7 +1440,7 @@ func (c *Client) TweetUserLikesLookup(ctx context.Context, userID string, opts T
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, fmt.Errorf("tweet user likes lookup dictionary: %w", err)
 	}
-	return &TweetUserLikesLookupResponse{
+	return &UserLikesLookupResponse{
 		Raw:  respBody.TweetRaw,
 		Meta: respBody.Meta,
 	}, nil

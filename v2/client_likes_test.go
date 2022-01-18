@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestClient_UserTweetLikesLookup(t *testing.T) {
+func TestClient_TweetLikesLookup(t *testing.T) {
 	type fields struct {
 		Authorizer Authorizer
 		Client     *http.Client
@@ -18,13 +18,13 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 	}
 	type args struct {
 		tweetID string
-		opts    UserTweetLikesLookupOpts
+		opts    TweetLikesLookupOpts
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *UserTweetLikesLookupResponse
+		want    *TweetLikesLookupResponse
 		wantErr bool
 	}{
 		{
@@ -67,7 +67,7 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 			args: args{
 				tweetID: "tweet-1234",
 			},
-			want: &UserTweetLikesLookupResponse{
+			want: &TweetLikesLookupResponse{
 				Raw: &UserRaw{
 					Users: []*UserObj{
 						{
@@ -168,13 +168,13 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 			},
 			args: args{
 				tweetID: "tweet-1234",
-				opts: UserTweetLikesLookupOpts{
+				opts: TweetLikesLookupOpts{
 					Expansions:  []Expansion{ExpansionPinnedTweetID},
 					UserFields:  []UserField{UserFieldCreatedAt, UserFieldDescription},
 					TweetFields: []TweetField{TweetFieldCreatedAt},
 				},
 			},
-			want: &UserTweetLikesLookupResponse{
+			want: &TweetLikesLookupResponse{
 				Raw: &UserRaw{
 					Users: []*UserObj{
 						{
@@ -244,19 +244,19 @@ func TestClient_UserTweetLikesLookup(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := c.UserTweetLikesLookup(context.Background(), tt.args.tweetID, tt.args.opts)
+			got, err := c.TweetLikesLookup(context.Background(), tt.args.tweetID, tt.args.opts)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Client.UserTweetLikesLookup() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Client.TweetLikesLookup() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Client.UserTweetLikesLookup() = %v, want %v", got, tt.want)
+				t.Errorf("Client.TweetLikesLookup() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestClient_TweetUserLikesLookup(t *testing.T) {
+func TestClient_UserLikesLookup(t *testing.T) {
 	type fields struct {
 		Authorizer Authorizer
 		Client     *http.Client
@@ -264,13 +264,13 @@ func TestClient_TweetUserLikesLookup(t *testing.T) {
 	}
 	type args struct {
 		userID string
-		opts   TweetUserLikesLookupOpts
+		opts   UserLikesLookupOpts
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *TweetUserLikesLookupResponse
+		want    *UserLikesLookupResponse
 		wantErr bool
 	}{
 		{
@@ -310,7 +310,7 @@ func TestClient_TweetUserLikesLookup(t *testing.T) {
 			args: args{
 				userID: "2244994945",
 			},
-			want: &TweetUserLikesLookupResponse{
+			want: &UserLikesLookupResponse{
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
@@ -419,14 +419,14 @@ func TestClient_TweetUserLikesLookup(t *testing.T) {
 			},
 			args: args{
 				userID: "2244994945",
-				opts: TweetUserLikesLookupOpts{
+				opts: UserLikesLookupOpts{
 					TweetFields: []TweetField{TweetFieldCreatedAt, TweetFieldAuthorID, TweetFieldConversationID, TweetFieldPublicMetrics, TweetFieldContextAnnotations},
 					UserFields:  []UserField{UserFieldUserName},
 					Expansions:  []Expansion{ExpansionAuthorID},
 					MaxResults:  10,
 				},
 			},
-			want: &TweetUserLikesLookupResponse{
+			want: &UserLikesLookupResponse{
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
@@ -507,13 +507,13 @@ func TestClient_TweetUserLikesLookup(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := c.TweetUserLikesLookup(context.Background(), tt.args.userID, tt.args.opts)
+			got, err := c.UserLikesLookup(context.Background(), tt.args.userID, tt.args.opts)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Client.TweetUserLikesLookup() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Client.UserLikesLookup() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Client.TweetUserLikesLookup() = %v, want %v", got, tt.want)
+				t.Errorf("Client.UserLikesLookup() = %v, want %v", got, tt.want)
 			}
 		})
 	}
