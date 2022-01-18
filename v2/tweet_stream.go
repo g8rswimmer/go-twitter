@@ -4,12 +4,16 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"time"
 )
 
 // SystemMessageType stream system message types
 type SystemMessageType string
+
+// StreamErrorType is the type of streaming error
+type StreamErrorType string
 
 const (
 	// InfoMessageType is the information system message type
@@ -20,7 +24,41 @@ const (
 	ErrorMessageType SystemMessageType = "error"
 
 	tweetStart = "data"
+
+	// TweetErrorType represents the tweet stream errrors
+	TweetErrorType StreamErrorType = "tweet"
+	// SystemErrorType represents the system stream errors
+	SystemErrorType StreamErrorType = "system"
 )
+
+// StreamError is the error from the streaming
+type StreamError struct {
+	Type StreamErrorType
+	Msg  string
+	Err  error
+}
+
+func (e StreamError) Error() string {
+	msg := fmt.Sprintf("%s: %s", e.Type, e.Msg)
+	if e.Err == nil {
+		return msg
+	}
+	return fmt.Sprintf("%s %s", msg, e.Err.Error())
+}
+
+// Is will compare the error against the stream error and type
+func (e *StreamError) Is(target error) bool {
+	cmp, ok := target.(*StreamError)
+	if !ok {
+		return false
+	}
+	return cmp.Type == e.Type
+}
+
+// Unwrap will return any error assocaited
+func (e *StreamError) Unwrap() error {
+	return e.Err
+}
 
 // TweetMessage is the tweet stream message
 type TweetMessage struct {
@@ -83,14 +121,18 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 
 		msgMap := map[string]interface{}{}
 		if err := json.Unmarshal(msg, &msgMap); err != nil {
-			ts.err <- err
+			ts.err <- fmt.Errorf("stream error: unmarshal error %w", err)
 			continue
 		}
 
 		if _, tweet := msgMap[tweetStart]; tweet {
 			single := &tweetraw{}
 			if err := json.Unmarshal(msg, single); err != nil {
-				ts.err <- err
+				ts.err <- &StreamError{
+					Type: TweetErrorType,
+					Msg:  "umarshal tweet stream",
+					Err:  err,
+				}
 				continue
 			}
 			raw := &TweetRaw{}
@@ -108,7 +150,11 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 
 		sysMsg := map[SystemMessageType]SystemMessage{}
 		if err := json.Unmarshal(msg, &sysMsg); err != nil {
-			ts.err <- err
+			ts.err <- &StreamError{
+				Type: SystemErrorType,
+				Msg:  "umarshal system stream",
+				Err:  err,
+			}
 			continue
 		}
 		ts.system <- sysMsg

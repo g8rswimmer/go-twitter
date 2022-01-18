@@ -1,6 +1,8 @@
 package twitter
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"reflect"
 	"strings"
@@ -349,4 +351,129 @@ func Test_streamSeperator(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestStreamError_Error(t *testing.T) {
+	type fields struct {
+		Type StreamErrorType
+		Msg  string
+		Err  error
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "message with error",
+			fields: fields{
+				Type: TweetErrorType,
+				Msg:  "test message",
+				Err:  errors.New("wow"),
+			},
+			want: fmt.Sprintf("%s: test message wow", TweetErrorType),
+		},
+		{
+			name: "message",
+			fields: fields{
+				Type: TweetErrorType,
+				Msg:  "test message",
+			},
+			want: fmt.Sprintf("%s: test message", TweetErrorType),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := StreamError{
+				Type: tt.fields.Type,
+				Msg:  tt.fields.Msg,
+				Err:  tt.fields.Err,
+			}
+			if got := e.Error(); got != tt.want {
+				t.Errorf("StreamError.Error() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStreamError_Is(t *testing.T) {
+	type fields struct {
+		Type StreamErrorType
+		Msg  string
+		Err  error
+	}
+	type args struct {
+		target error
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Type: TweetErrorType,
+			},
+			args: args{
+				target: &StreamError{
+					Type: TweetErrorType,
+				},
+			},
+			want: true,
+		},
+		{
+			name: "success wrapped",
+			fields: fields{
+				Type: TweetErrorType,
+			},
+			args: args{
+				target: func() error {
+					e := &StreamError{
+						Type: TweetErrorType,
+					}
+					return fmt.Errorf("some error %w", e)
+				}(),
+			},
+			want: true,
+		},
+		{
+			name: "fail",
+			fields: fields{
+				Type: TweetErrorType,
+			},
+			args: args{
+				target: &StreamError{
+					Type: SystemErrorType,
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &StreamError{
+				Type: tt.fields.Type,
+				Msg:  tt.fields.Msg,
+				Err:  tt.fields.Err,
+			}
+			if got := errors.Is(tt.args.target, e); got != tt.want {
+				t.Errorf("StreamError.Is() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStreamError_Wrap(t *testing.T) {
+
+	werr := errors.New("wow")
+
+	e := &StreamError{
+		Err: werr,
+	}
+	if !errors.Is(e, werr) {
+		t.Error("want error unwrapped")
+	}
+
 }
