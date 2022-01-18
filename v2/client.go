@@ -18,8 +18,8 @@ const (
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
 	userMutesMaxResults          = 1000
-	tweetUserLikesMaxResults     = 100
-	tweetUserLikesMinResults     = 10
+	userLikesMaxResults          = 100
+	userLikesMinResults          = 10
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1347,7 +1347,7 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 	default:
 	}
 
-	ep := userTweetLikesEndpoint.urlID(c.Host, tweetID)
+	ep := tweetLikesEndpoint.urlID(c.Host, tweetID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
@@ -1394,14 +1394,14 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 	case len(userID) == 0:
 		return nil, fmt.Errorf("tweet user likes lookup: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
-	case opts.MaxResults < tweetUserLikesMinResults:
-		return nil, fmt.Errorf("tweet user likes lookup: a min results [%d] is required [current: %d]: %w", tweetUserLikesMinResults, opts.MaxResults, ErrParameter)
-	case opts.MaxResults > tweetUserLikesMaxResults:
-		return nil, fmt.Errorf("tweet user likes lookup: a max results [%d] is required [current: %d]: %w", tweetUserLikesMaxResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults < userLikesMinResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a min results [%d] is required [current: %d]: %w", userLikesMinResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults > userLikesMaxResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a max results [%d] is required [current: %d]: %w", userLikesMaxResults, opts.MaxResults, ErrParameter)
 	default:
 	}
 
-	ep := tweetUserLikesEndpoint.urlID(c.Host, userID)
+	ep := userLikedTweetEndpoint.urlID(c.Host, userID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
