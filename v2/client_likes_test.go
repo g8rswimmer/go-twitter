@@ -323,7 +323,7 @@ func TestClient_UserLikesLookup(t *testing.T) {
 						},
 					},
 				},
-				Meta: &TweetUserLikesMeta{
+				Meta: &UserLikesMeta{
 					ResultCount: 2,
 					NextToken:   "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i",
 				},
@@ -492,7 +492,7 @@ func TestClient_UserLikesLookup(t *testing.T) {
 						},
 					},
 				},
-				Meta: &TweetUserLikesMeta{
+				Meta: &UserLikesMeta{
 					ResultCount: 2,
 					NextToken:   "7140dibdnow9c7btw3w29n4v1mtag9kegr0gr7y26pnw3",
 				},
