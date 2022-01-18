@@ -36,8 +36,8 @@ func TestClient_TweetLikesLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), userTweetLikesEndpoint.urlID("", "tweet-1234")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetLikesEndpoint)
+					if strings.Contains(req.URL.String(), tweetLikesEndpoint.urlID("", "tweet-1234")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLikesEndpoint)
 					}
 					body := `{
 						"data": [
@@ -99,8 +99,8 @@ func TestClient_TweetLikesLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), userTweetLikesEndpoint.urlID("", "tweet-1234")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetLikesEndpoint)
+					if strings.Contains(req.URL.String(), tweetLikesEndpoint.urlID("", "tweet-1234")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetLikesEndpoint)
 					}
 					body := `{
 						"data": [
@@ -282,8 +282,8 @@ func TestClient_UserLikesLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), tweetUserLikesEndpoint.urlID("", "2244994945")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetUserLikesEndpoint)
+					if strings.Contains(req.URL.String(), userLikedTweetEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userLikedTweetEndpoint)
 					}
 					body := `{
 						"data": [
@@ -339,8 +339,8 @@ func TestClient_UserLikesLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), tweetUserLikesEndpoint.urlID("", "2244994945")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetUserLikesEndpoint)
+					if strings.Contains(req.URL.String(), userLikedTweetEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userLikedTweetEndpoint)
 					}
 					body := `{
 						"data": [
