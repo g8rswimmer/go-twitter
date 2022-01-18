@@ -71,7 +71,7 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 		default:
 		}
 
-		if scanner.Scan() == false {
+		if !scanner.Scan() {
 			continue
 		}
 
