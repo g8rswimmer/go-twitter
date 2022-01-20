@@ -1,4 +1,5 @@
 ![](https://img.shields.io/endpoint?url=https%3A%2F%2Ftwbadges.glitch.me%2Fbadges%2Fv2)
+![golang-lint-ci workflow]((https://github.com/g8rswimmer/go-twitter/actions/workflows/golangci-lint.yml/badge.svg))
 # go-twitter
 This is a go library for Twitter v2 API integration.
 
