@@ -101,7 +101,7 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 	defer close(ts.err)
 
 	scanner := bufio.NewScanner(stream)
-	scanner.Split(streamSeperator)
+	scanner.Split(streamSeparator)
 	for {
 		select {
 		case <-ts.close:

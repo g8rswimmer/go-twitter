@@ -338,7 +338,7 @@ func Test_streamSeperator(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := streamSeperator(tt.args.data, tt.args.atEOF)
+			got, got1, err := streamSeparator(tt.args.data, tt.args.atEOF)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("streamSeperator() error = %v, wantErr %v", err, tt.wantErr)
 				return
