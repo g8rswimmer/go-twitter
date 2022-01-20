@@ -55,7 +55,7 @@ func (e *StreamError) Is(target error) bool {
 	return cmp.Type == e.Type
 }
 
-// Unwrap will return any error assocaited
+// Unwrap will return any error associated
 func (e *StreamError) Unwrap() error {
 	return e.Err
 }
@@ -181,7 +181,7 @@ func (ts *TweetStream) Close() {
 	ts.close <- true
 }
 
-func streamSeperator(data []byte, atEOF bool) (int, []byte, error) {
+func streamSeparator(data []byte, atEOF bool) (int, []byte, error) {
 	if atEOF && len(data) == 0 {
 		return 0, nil, nil
 	}
