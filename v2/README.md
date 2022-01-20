@@ -1,3 +1,8 @@
+![](https://img.shields.io/endpoint?url=https%3A%2F%2Ftwbadges.glitch.me%2Fbadges%2Fv2)
+[![golangci-lint](https://github.com/g8rswimmer/go-twitter/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/g8rswimmer/go-twitter/actions/workflows/golangci-lint.yml)
+[![go-test](https://github.com/g8rswimmer/go-twitter/actions/workflows/go-test.yml/badge.svg)](https://github.com/g8rswimmer/go-twitter/actions/workflows/go-test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 # go-twitter v2
 
 > It seems like every v1 is just a prototype.
