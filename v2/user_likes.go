@@ -21,11 +21,6 @@ type UserLikesData struct {
 	Liked bool `json:"liked"`
 }
 
-// TweetLikesLookupResponse is the user from the tweet likes
-type TweetLikesLookupResponse struct {
-	Raw *UserRaw
-}
-
 // UserLikesLookupResponse is the tweets from the user likes
 type UserLikesLookupResponse struct {
 	Raw  *TweetRaw

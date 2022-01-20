@@ -1,9 +1,14 @@
-package twitter 
+package twitter
 
 import (
 	"net/http"
 	"strings"
 )
+
+// TweetLikesLookupResponse is the user from the tweet likes
+type TweetLikesLookupResponse struct {
+	Raw *UserRaw
+}
 
 // TweetLikesLookupOpts the user like lookup options
 type TweetLikesLookupOpts struct {
