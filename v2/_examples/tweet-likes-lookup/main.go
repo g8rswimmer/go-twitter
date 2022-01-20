@@ -34,8 +34,8 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.UserLikesLookupOpts{
-		Expansions:  []twitter.Expansion{twitter.ExpansionEntitiesMentionsUserName, twitter.ExpansionAuthorID},
+	opts := twitter.TweetLikesLookupOpts{
+		Expansions:  []twitter.Expansion{twitter.ExpansionPinnedTweetID},
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldConversationID, twitter.TweetFieldAttachments},
 	}
 

@@ -34,7 +34,7 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.TweetLikesLookupOpts{
+	opts := twitter.UserLikesLookupOpts{
 		Expansions:  []twitter.Expansion{twitter.ExpansionPinnedTweetID},
 		TweetFields: []twitter.TweetField{twitter.TweetFieldContextAnnotations},
 	}
@@ -53,4 +53,10 @@ func main() {
 		log.Panic(err)
 	}
 	fmt.Println(string(enc))
+
+	meta, err := json.MarshalIndent(userResponse.Meta, "", "    ")
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println(string(meta))
 }
