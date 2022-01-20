@@ -18,6 +18,8 @@ const (
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
 	userMutesMaxResults          = 1000
+	userLikesMaxResults          = 100
+	userLikesMinResults          = 10
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1333,6 +1335,214 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	raw := &UserDeleteMutesResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete mutes decode response %w", err)
+	}
+	return raw, nil
+}
+
+// TweetLikesLookup gets information about a tweet's liking users.  The response will have at most 100 users who liked the tweet
+func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts TweetLikesLookupOpts) (*TweetLikesLookupResponse, error) {
+	switch {
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user tweet likes lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := tweetLikesEndpoint.urlID(c.Host, tweetID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user tweet likes lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user tweet likes lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserRaw{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, fmt.Errorf("user tweet likes lookup dictionary: %w", err)
+	}
+	return &TweetLikesLookupResponse{
+		Raw: raw,
+	}, nil
+}
+
+// UserLikesLookup gets informaiton about a user's liked tweets.
+func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLikesLookupOpts) (*UserLikesLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("tweet user likes lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < userLikesMinResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a min results [%d] is required [current: %d]: %w", userLikesMinResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults > userLikesMaxResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a max results [%d] is required [current: %d]: %w", userLikesMaxResults, opts.MaxResults, ErrParameter)
+	default:
+	}
+
+	ep := userLikedTweetEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *UserLikesMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup dictionary: %w", err)
+	}
+	return &UserLikesLookupResponse{
+		Raw:  respBody.TweetRaw,
+		Meta: respBody.Meta,
+	}, nil
+}
+
+// UserLikes will like the targeted tweet
+func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLikesResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user likes: user id is required %w", ErrParameter)
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user likes: tweet id is required %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		TweetID string `json:"tweet_id"`
+	}{
+		TweetID: tweetID,
+	}
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user likes: json marshal %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userLikesEndpoint.urlID(c.Host, userID), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user likes request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user likes response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &UserLikesResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user likes decode response %w", err)
+	}
+	return raw, nil
+}
+
+// DeleteUserLikes will unlike the targeted tweet
+func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*DeteleUserLikesResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user delete likes: user id is required %w", ErrParameter)
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("user delete likes: tweet id is required %w", ErrParameter)
+	default:
+	}
+
+	ep := userLikesEndpoint.urlID(c.Host, userID) + "/" + tweetID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user delete likes request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user delete likes response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	raw := &DeteleUserLikesResponse{}
+	if err := decoder.Decode(raw); err != nil {
+		return nil, fmt.Errorf("user likes retweet decode response %w", err)
 	}
 	return raw, nil
 }
