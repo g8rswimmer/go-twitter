@@ -121,17 +121,24 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 
 		msgMap := map[string]interface{}{}
 		if err := json.Unmarshal(msg, &msgMap); err != nil {
-			ts.err <- fmt.Errorf("stream error: unmarshal error %w", err)
+			select {
+			case ts.err <- fmt.Errorf("stream error: unmarshal error %w", err):
+			default:
+			}
 			continue
 		}
 
 		if _, tweet := msgMap[tweetStart]; tweet {
 			single := &tweetraw{}
 			if err := json.Unmarshal(msg, single); err != nil {
-				ts.err <- &StreamError{
+				sErr := &StreamError{
 					Type: TweetErrorType,
 					Msg:  "umarshal tweet stream",
 					Err:  err,
+				}
+				select {
+				case ts.err <- sErr:
+				default:
 				}
 				continue
 			}
@@ -144,20 +151,31 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 			tweetMsg := &TweetMessage{
 				Raw: raw,
 			}
-			ts.tweets <- tweetMsg
+
+			select {
+			case ts.tweets <- tweetMsg:
+			default:
+			}
 			continue
 		}
 
 		sysMsg := map[SystemMessageType]SystemMessage{}
 		if err := json.Unmarshal(msg, &sysMsg); err != nil {
-			ts.err <- &StreamError{
+			sErr := &StreamError{
 				Type: SystemErrorType,
 				Msg:  "umarshal system stream",
 				Err:  err,
 			}
+			select {
+			case ts.err <- sErr:
+			default:
+			}
 			continue
 		}
-		ts.system <- sysMsg
+		select {
+		case ts.system <- sysMsg:
+		default:
+		}
 	}
 }
 
