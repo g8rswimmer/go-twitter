@@ -153,3 +153,10 @@ This [example](./tweet-like-lookup) demonstrates tweet user likes API.
 ```
 go run *.go -token=YOUR_API_TOKEN -id=2244994945
 ```
+
+## Tweet Likes Lookup
+This [example](./tweet-sample-stream) demonstrates tweet sample stream API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -output=output.txt
+```

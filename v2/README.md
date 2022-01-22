@@ -55,8 +55,11 @@ Here are the current twitter `v2` API features supported:
 	* [follows example](./_examples/user-follows)
 	* [delete follows example](./_examples/user-delete-follows)
 * [Tweet Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
-
-
+	* [user likes lookup](./_examples/user-likes-lookup)
+	* [tweets likes lookup](./_examples/tweet-likes-lookup)
+* [Tweet Sample Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/volume-streams/introduction)
+	*[tweet sample stream](./_examples/tweet-sample-stream)
+	
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
 

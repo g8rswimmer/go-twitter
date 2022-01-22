@@ -20,6 +20,7 @@ const (
 	userMutesMaxResults          = 1000
 	userLikesMaxResults          = 100
 	userLikesMinResults          = 10
+	sampleStreamMaxBackoffMin    = 5
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1545,4 +1546,43 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 		return nil, fmt.Errorf("user likes retweet decode response %w", err)
 	}
 	return raw, nil
+}
+
+// TweetSampleStream will return a streamer for streaming 1% of all tweets real-time
+func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOpts) (*TweetStream, error) {
+	switch {
+	case opts.BackfillMinutes == 0:
+	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
+		return nil, fmt.Errorf("tweet sample stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetSampleStreamEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet sample stream request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet sample stream response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+		e := &ErrorResponse{}
+		if err := json.NewDecoder(resp.Body).Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	return StartTweetStream(resp.Body), nil
 }
