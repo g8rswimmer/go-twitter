@@ -113,23 +113,15 @@ func (t TweetSearchStreamRuleID) validate() error {
 	return nil
 }
 
-type TweetSeachStreamRuleIDs []TweetSearchStreamRuleID
+type tweetSeachStreamRuleIDs []TweetSearchStreamRuleID
 
-func (t TweetSeachStreamRuleIDs) validate() error {
+func (t tweetSeachStreamRuleIDs) validate() error {
 	for _, id := range t {
 		if err := id.validate(); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func ToTweetRuleStreamIDs(ids []string) TweetSeachStreamRuleIDs {
-	ruleIDs := make([]TweetSearchStreamRuleID, len(ids))
-	for i := range ids {
-		ruleIDs[i] = TweetSearchStreamRuleID(ids[i])
-	}
-	return TweetSeachStreamRuleIDs(ruleIDs)
 }
 
 type TweetSearchStreamRuleEntity struct {
@@ -141,6 +133,11 @@ type TweetSearchStreamAddRuleResponse struct {
 	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
 	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
 	Errors []*ErrorObj                    `json:"errors,omitempty"`
+}
+
+type TweetSearchStreamDeleteRuleResponse struct {
+	Meta   *TweetSearchStreamRuleMeta `json:"meta"`
+	Errors []*ErrorObj                `json:"errors,omitempty"`
 }
 
 type TweetSearchStreamRuleMeta struct {

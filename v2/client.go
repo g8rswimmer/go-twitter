@@ -536,6 +536,58 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	return ruleResponse, nil
 }
 
+func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []TweetSearchStreamRuleID) (*TweetSearchStreamDeleteRuleResponse, error) {
+	if len(ruleIDs) == 0 {
+		return nil, fmt.Errorf("tweet search stream delete rule: rule ids are required: %w", ErrParameter)
+	}
+	body := struct {
+		Delete tweetSeachStreamRuleIDs `json:"delete"`
+	}{
+		Delete: tweetSeachStreamRuleIDs(ruleIDs),
+	}
+	if err := body.Delete.validate(); err != nil {
+		return nil, err
+	}
+	enc, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule body encoding %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tweetSearchStreamRulesEndpoint.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamDeleteRuleResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
 // TweetRecentCounts will return a recent tweet counts based of a query
 func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts TweetRecentCountsOpts) (*TweetRecentCountsResponse, error) {
 	switch {
