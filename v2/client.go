@@ -484,6 +484,58 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	return recentSearch, nil
 }
 
+func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSearchStreamRule) (*TweetSearchStreamAddRuleResponse, error) {
+	if len(rules) == 0 {
+		return nil, fmt.Errorf("tweet search stream add rule: rules are required: %w", ErrParameter)
+	}
+	body := struct {
+		Add tweetSearchStreamRules `json:"add"`
+	}{
+		Add: tweetSearchStreamRules(rules),
+	}
+	if err := body.Add.validate(); err != nil {
+		return nil, err
+	}
+	enc, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule body encoding %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tweetSearchStreamRulesEndpoint.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamAddRuleResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
 // TweetRecentCounts will return a recent tweet counts based of a query
 func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts TweetRecentCountsOpts) (*TweetRecentCountsResponse, error) {
 	switch {

@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -78,4 +79,78 @@ type TweetRecentSearchMeta struct {
 	OldestID    string `json:"oldest_id"`
 	ResultCount int    `json:"result_count"`
 	NextToken   string `json:"next_token"`
+}
+
+type TweetSearchStreamRule struct {
+	Value string `json:"value"`
+	Tag   string `json:"tag,omitempty"`
+}
+
+func (t TweetSearchStreamRule) validate() error {
+	if len(t.Value) == 0 {
+		return fmt.Errorf("tweet search stream rule value is required: %w", ErrParameter)
+	}
+	return nil
+}
+
+type tweetSearchStreamRules []TweetSearchStreamRule
+
+func (t tweetSearchStreamRules) validate() error {
+	for _, rule := range t {
+		if err := rule.validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type TweetSearchStreamRuleID string
+
+func (t TweetSearchStreamRuleID) validate() error {
+	if len(t) == 0 {
+		return fmt.Errorf("tweet search rule id is required %w", ErrParameter)
+	}
+	return nil
+}
+
+type TweetSeachStreamRuleIDs []TweetSearchStreamRuleID
+
+func (t TweetSeachStreamRuleIDs) validate() error {
+	for _, id := range t {
+		if err := id.validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ToTweetRuleStreamIDs(ids []string) TweetSeachStreamRuleIDs {
+	ruleIDs := make([]TweetSearchStreamRuleID, len(ids))
+	for i := range ids {
+		ruleIDs[i] = TweetSearchStreamRuleID(ids[i])
+	}
+	return TweetSeachStreamRuleIDs(ruleIDs)
+}
+
+type TweetSearchStreamRuleEntity struct {
+	ID TweetSearchStreamRuleID `json:"id"`
+	TweetSearchStreamRule
+}
+
+type TweetSearchStreamAddRuleResponse struct {
+	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
+	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
+	Errors []*ErrorObj                    `json:"errors,omitempty"`
+}
+
+type TweetSearchStreamRuleMeta struct {
+	Sent    time.Time                    `json:"sent"`
+	Summary TweetSearchStreamRuleSummary `json:"summary"`
+}
+
+type TweetSearchStreamRuleSummary struct {
+	Created    int `json:"created"`
+	NotCreated int `json:"not_created"`
+	Deleted    int `json:"deleted"`
+	NotDeleted int `json:"not_deleted"`
 }
