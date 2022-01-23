@@ -6,6 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
+	"strconv"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -23,13 +27,53 @@ const (
 	// ErrorMessageType is the error system message type
 	ErrorMessageType SystemMessageType = "error"
 
-	tweetStart = "data"
+	tweetStart  = "data"
+	keepAliveTO = 11 * time.Second
 
 	// TweetErrorType represents the tweet stream errrors
 	TweetErrorType StreamErrorType = "tweet"
 	// SystemErrorType represents the system stream errors
 	SystemErrorType StreamErrorType = "system"
 )
+
+// TweetSampleStreamOpts are the options for sample tweet stream
+type TweetSampleStreamOpts struct {
+	BackfillMinutes int
+	Expansions      []Expansion
+	MediaFields     []MediaField
+	PlaceFields     []PlaceField
+	PollFields      []PollField
+	TweetFields     []TweetField
+	UserFields      []UserField
+}
+
+func (t TweetSampleStreamOpts) addQuery(req *http.Request) {
+	q := req.URL.Query()
+	if len(t.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
+	}
+	if len(t.MediaFields) > 0 {
+		q.Add("media.fields", strings.Join(mediaFieldStringArray(t.MediaFields), ","))
+	}
+	if len(t.PlaceFields) > 0 {
+		q.Add("place.fields", strings.Join(placeFieldStringArray(t.PlaceFields), ","))
+	}
+	if len(t.PollFields) > 0 {
+		q.Add("poll.fields", strings.Join(pollFieldStringArray(t.PollFields), ","))
+	}
+	if len(t.TweetFields) > 0 {
+		q.Add("tweet.fields", strings.Join(tweetFieldStringArray(t.TweetFields), ","))
+	}
+	if len(t.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(t.UserFields), ","))
+	}
+	if t.BackfillMinutes > 0 {
+		q.Add("backfill_minutes", strconv.Itoa(t.BackfillMinutes))
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
 
 // StreamError is the error from the streaming
 type StreamError struct {
@@ -77,6 +121,8 @@ type TweetStream struct {
 	system chan map[SystemMessageType]SystemMessage
 	close  chan bool
 	err    chan error
+	alive  bool
+	mutex  sync.RWMutex
 }
 
 // StartTweetStream will start the tweet streaming
@@ -86,11 +132,26 @@ func StartTweetStream(stream io.ReadCloser) *TweetStream {
 		system: make(chan map[SystemMessageType]SystemMessage, 10),
 		close:  make(chan bool),
 		err:    make(chan error),
+		mutex:  sync.RWMutex{},
+		alive:  true,
 	}
 
 	go ts.handle(stream)
 
 	return ts
+}
+
+func (ts *TweetStream) heartbeat(beat bool) {
+	ts.mutex.Lock()
+	defer ts.mutex.Unlock()
+	ts.alive = beat
+}
+
+// Connection returns if the connect is still alive
+func (ts *TweetStream) Connection() bool {
+	ts.mutex.RLock()
+	defer ts.mutex.RUnlock()
+	return ts.alive
 }
 
 func (ts *TweetStream) handle(stream io.ReadCloser) {
@@ -102,16 +163,23 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 
 	scanner := bufio.NewScanner(stream)
 	scanner.Split(streamSeparator)
+	timer := time.NewTimer(keepAliveTO)
 	for {
 		select {
 		case <-ts.close:
 			return
+		case <-timer.C:
+			ts.heartbeat(false)
 		default:
 		}
 
 		if !scanner.Scan() {
 			continue
 		}
+
+		timer.Stop()
+		timer.Reset(keepAliveTO)
+		ts.heartbeat(true)
 
 		msg := scanner.Bytes()
 
@@ -121,17 +189,24 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 
 		msgMap := map[string]interface{}{}
 		if err := json.Unmarshal(msg, &msgMap); err != nil {
-			ts.err <- fmt.Errorf("stream error: unmarshal error %w", err)
+			select {
+			case ts.err <- fmt.Errorf("stream error: unmarshal error %w", err):
+			default:
+			}
 			continue
 		}
 
 		if _, tweet := msgMap[tweetStart]; tweet {
 			single := &tweetraw{}
 			if err := json.Unmarshal(msg, single); err != nil {
-				ts.err <- &StreamError{
+				sErr := &StreamError{
 					Type: TweetErrorType,
 					Msg:  "umarshal tweet stream",
 					Err:  err,
+				}
+				select {
+				case ts.err <- sErr:
+				default:
 				}
 				continue
 			}
@@ -144,20 +219,31 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 			tweetMsg := &TweetMessage{
 				Raw: raw,
 			}
-			ts.tweets <- tweetMsg
+
+			select {
+			case ts.tweets <- tweetMsg:
+			default:
+			}
 			continue
 		}
 
 		sysMsg := map[SystemMessageType]SystemMessage{}
 		if err := json.Unmarshal(msg, &sysMsg); err != nil {
-			ts.err <- &StreamError{
+			sErr := &StreamError{
 				Type: SystemErrorType,
 				Msg:  "umarshal system stream",
 				Err:  err,
 			}
+			select {
+			case ts.err <- sErr:
+			default:
+			}
 			continue
 		}
-		ts.system <- sysMsg
+		select {
+		case ts.system <- sysMsg:
+		default:
+		}
 	}
 }
 
