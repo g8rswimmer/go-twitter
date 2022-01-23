@@ -484,7 +484,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	return recentSearch, nil
 }
 
-func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSearchStreamRule) (*TweetSearchStreamAddRuleResponse, error) {
+func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSearchStreamRule, dryRun bool) (*TweetSearchStreamAddRuleResponse, error) {
 	if len(rules) == 0 {
 		return nil, fmt.Errorf("tweet search stream add rule: rules are required: %w", ErrParameter)
 	}
@@ -507,6 +507,11 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	c.Authorizer.Add(req)
+	if dryRun {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
@@ -536,7 +541,7 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	return ruleResponse, nil
 }
 
-func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []TweetSearchStreamRuleID) (*TweetSearchStreamDeleteRuleResponse, error) {
+func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []TweetSearchStreamRuleID, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
 	if len(ruleIDs) == 0 {
 		return nil, fmt.Errorf("tweet search stream delete rule: rule ids are required: %w", ErrParameter)
 	}
@@ -559,6 +564,11 @@ func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []Twee
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	c.Authorizer.Add(req)
+	if dryRun {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
