@@ -124,9 +124,23 @@ func (t tweetSeachStreamRuleIDs) validate() error {
 	return nil
 }
 
+func (t tweetSeachStreamRuleIDs) toStringArray() []string {
+	ids := make([]string, len(t))
+	for i, id := range t {
+		ids[i] = string(id)
+	}
+	return ids
+}
+
 type TweetSearchStreamRuleEntity struct {
 	ID TweetSearchStreamRuleID `json:"id"`
 	TweetSearchStreamRule
+}
+
+type TweetSearchStreamRulesResponse struct {
+	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
+	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
+	Errors []*ErrorObj                    `json:"errors,omitempty"`
 }
 
 type TweetSearchStreamAddRuleResponse struct {

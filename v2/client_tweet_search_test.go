@@ -602,3 +602,106 @@ func TestClient_TweetSearchStreamDeleteRule(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_TweetSearchStreamRules(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		ids []TweetSearchStreamRuleID
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *TweetSearchStreamRulesResponse
+		wantErr bool
+	}{
+		{
+			name: "sucess",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), string(tweetSearchStreamRulesEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSearchStreamRulesEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"value": "meme",
+							"tag": "funny things",
+							"id": "1166895166390583299"
+						  },
+						  {
+							"value": "cat has:media",
+							"tag": "cats with media",
+							"id": "1166895166390583297"
+						  }
+						],
+						"meta": {
+						  "sent": "2019-08-29T02:07:42.205Z"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				ids: []TweetSearchStreamRuleID{
+					"1166895166390583299",
+					"1166895166390583297",
+				},
+			},
+			want: &TweetSearchStreamRulesResponse{
+				Rules: []*TweetSearchStreamRuleEntity{
+					{
+						ID: "1166895166390583299",
+						TweetSearchStreamRule: TweetSearchStreamRule{
+							Value: "meme",
+							Tag:   "funny things",
+						},
+					},
+					{
+						ID: "1166895166390583297",
+						TweetSearchStreamRule: TweetSearchStreamRule{
+							Value: "cat has:media",
+							Tag:   "cats with media",
+						},
+					},
+				},
+				Meta: &TweetSearchStreamRuleMeta{
+					Sent: func() time.Time {
+						t, _ := time.Parse(time.RFC3339, "2019-08-29T02:07:42.205Z")
+						return t
+					}(),
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.TweetSearchStreamRules(context.Background(), tt.args.ids)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.TweetSearchStreamRules() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.TweetSearchStreamRules() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -607,6 +607,53 @@ func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []Twee
 	return ruleResponse, nil
 }
 
+// TweetSearchStreamRules will return a list of rules active on the streaming endpoint
+func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSearchStreamRuleID) (*TweetSearchStreamRulesResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetSearchStreamRulesEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	if len(ruleIDs) > 0 {
+		ruleArr := tweetSeachStreamRuleIDs(ruleIDs)
+		if err := ruleArr.validate(); err != nil {
+			return nil, err
+		}
+		q := req.URL.Query()
+		q.Add("ids", strings.Join(ruleArr.toStringArray(), ","))
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamRulesResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream rules json response %w", err)
+	}
+	return ruleResponse, nil
+
+}
+
 // TweetRecentCounts will return a recent tweet counts based of a query
 func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts TweetRecentCountsOpts) (*TweetRecentCountsResponse, error) {
 	switch {
