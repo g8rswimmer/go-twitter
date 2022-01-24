@@ -591,7 +591,7 @@ func TestClient_TweetSearchStreamDeleteRule(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := c.TweetSearchStreamDeleteRule(context.Background(), tt.args.ruleIDs, tt.args.dryRun)
+			got, err := c.TweetSearchStreamDeleteRuleByID(context.Background(), tt.args.ruleIDs, tt.args.dryRun)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.TweetSearchStreamDeleteRule() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -701,6 +701,90 @@ func TestClient_TweetSearchStreamRules(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Client.TweetSearchStreamRules() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestClient_TweetSearchStreamDeleteRuleByValue(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		ruleValues []string
+		dryRun     bool
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *TweetSearchStreamDeleteRuleResponse
+		wantErr bool
+	}{
+		{
+			name: "sucess",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodPost {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
+					}
+					if strings.Contains(req.URL.String(), string(tweetSearchStreamRulesEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetSearchStreamRulesEndpoint)
+					}
+					body := `{
+						"meta": {
+						  "sent": "2019-08-29T01:48:54.633Z",
+						  "summary": {
+							"deleted": 2,
+							"not_deleted": 0
+						  }
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				ruleValues: []string{
+					"cat has:media",
+					"meme",
+				},
+				dryRun: false,
+			},
+			want: &TweetSearchStreamDeleteRuleResponse{
+				Meta: &TweetSearchStreamRuleMeta{
+					Sent: func() time.Time {
+						t, _ := time.Parse(time.RFC3339, "2019-08-29T01:48:54.633Z")
+						return t
+					}(),
+					Summary: TweetSearchStreamRuleSummary{
+						Deleted: 2,
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.TweetSearchStreamDeleteRuleByValue(context.Background(), tt.args.ruleValues, tt.args.dryRun)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.TweetSearchStreamDeleteRuleByValue() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.TweetSearchStreamDeleteRuleByValue() = %v, want %v", got, tt.want)
 			}
 		})
 	}

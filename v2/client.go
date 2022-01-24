@@ -542,8 +542,8 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	return ruleResponse, nil
 }
 
-// TweetSearchStreamDeleteRule will delete one or more rules for search sampling. Set dry run to true to validate the rules before commit
-func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []TweetSearchStreamRuleID, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
+// TweetSearchStreamDeleteRuleByID will delete one or more rules for search sampling using the rule ids. Set dry run to true to validate the rules before commit
+func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []TweetSearchStreamRuleID, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
 	if len(ruleIDs) == 0 {
 		return nil, fmt.Errorf("tweet search stream delete rule: rule ids are required: %w", ErrParameter)
 	}
@@ -561,6 +561,67 @@ func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []Twee
 	}
 	body := requestBody{
 		Delete: deleteIDs,
+	}
+	enc, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule body encoding %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tweetSearchStreamRulesEndpoint.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	c.Authorizer.Add(req)
+	if dryRun {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamDeleteRuleResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
+// TweetSearchStreamDeleteRuleByValue will delete one or more rules for search sampling using the rule values. Set dry run to true to validate the rules before commit
+func (c *Client) TweetSearchStreamDeleteRuleByValue(ctx context.Context, ruleValues []string, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
+	if len(ruleValues) == 0 {
+		return nil, fmt.Errorf("tweet search stream delete rule: rule values are required: %w", ErrParameter)
+	}
+	type values struct {
+		Values []string `json:"values"`
+	}
+	type requestBody struct {
+		Delete values `json:"delete"`
+	}
+	body := requestBody{
+		Delete: values{
+			Values: ruleValues,
+		},
 	}
 	enc, err := json.Marshal(body)
 	if err != nil {
