@@ -30,6 +30,7 @@ const (
 	userLikesEndpoint              endpoint = "2/users/{id}/likes"
 	tweetSampleStreamEndpoint      endpoint = "2/tweets/sample/stream"
 	tweetSearchStreamRulesEndpoint endpoint = "2/tweets/search/stream/rules"
+	tweetSearchStreamEndpoint      endpoint = "2/tweets/search/stream"
 
 	idTag = "{id}"
 )

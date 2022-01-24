@@ -651,7 +651,44 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 		return nil, fmt.Errorf("tweet search stream rules json response %w", err)
 	}
 	return ruleResponse, nil
+}
 
+func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
+	switch {
+	case opts.BackfillMinutes == 0:
+	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
+		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetSearchStreamEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+		e := &ErrorResponse{}
+		if err := json.NewDecoder(resp.Body).Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	return StartTweetStream(resp.Body), nil
 }
 
 // TweetRecentCounts will return a recent tweet counts based of a query
