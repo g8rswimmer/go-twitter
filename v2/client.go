@@ -484,6 +484,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	return recentSearch, nil
 }
 
+// TweetSearchStreamAddRule will create on or more rules for search sampling.  Set dry run to true to validate the rules before commit
 func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSearchStreamRule, dryRun bool) (*TweetSearchStreamAddRuleResponse, error) {
 	if len(rules) == 0 {
 		return nil, fmt.Errorf("tweet search stream add rule: rules are required: %w", ErrParameter)
@@ -541,17 +542,25 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	return ruleResponse, nil
 }
 
+// TweetSearchStreamDeleteRule will delete one or more rules for search sampling. Set dry run to true to validate the rules before commit
 func (c *Client) TweetSearchStreamDeleteRule(ctx context.Context, ruleIDs []TweetSearchStreamRuleID, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
 	if len(ruleIDs) == 0 {
 		return nil, fmt.Errorf("tweet search stream delete rule: rule ids are required: %w", ErrParameter)
 	}
-	body := struct {
-		Delete tweetSeachStreamRuleIDs `json:"delete"`
-	}{
-		Delete: tweetSeachStreamRuleIDs(ruleIDs),
+	type ids struct {
+		IDs tweetSeachStreamRuleIDs `json:"ids"`
 	}
-	if err := body.Delete.validate(); err != nil {
+	deleteIDs := ids{
+		IDs: tweetSeachStreamRuleIDs(ruleIDs),
+	}
+	if err := deleteIDs.IDs.validate(); err != nil {
 		return nil, err
+	}
+	type requestBody struct {
+		Delete ids `json:"delete"`
+	}
+	body := requestBody{
+		Delete: deleteIDs,
 	}
 	enc, err := json.Marshal(body)
 	if err != nil {
