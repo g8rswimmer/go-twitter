@@ -522,7 +522,7 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 
 	decoder := json.NewDecoder(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
 			return nil, &HTTPError{
