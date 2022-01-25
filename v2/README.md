@@ -58,8 +58,13 @@ Here are the current twitter `v2` API features supported:
 	* [user likes lookup](./_examples/user-likes-lookup)
 	* [tweets likes lookup](./_examples/tweet-likes-lookup)
 * [Tweet Sample Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/volume-streams/introduction)
-	*[tweet sample stream](./_examples/tweet-sample-stream)
-	
+	* [tweet sample stream](./_examples/tweet-sample-stream)
+* [Tweet Search Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/introduction)
+	* [tweet search stream add rules](./_examples/tweet-search-stream-add-rule)
+	* [tweet search stream delete rules](./_examples/tweet-search-stream-delete-rule)
+	* [tweet search stream rules](./_examples/tweet-search-stream-rules)
+	* [tweet search stream](./_examples/tweet-search-stream)
+
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
 
