@@ -75,6 +75,7 @@ func (t TweetSampleStreamOpts) addQuery(req *http.Request) {
 	}
 }
 
+// TweetSearchStreamOpts are the options for the search stream
 type TweetSearchStreamOpts struct {
 	BackfillMinutes int
 	Expansions      []Expansion

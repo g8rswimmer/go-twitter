@@ -714,6 +714,7 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 	return ruleResponse, nil
 }
 
+// TweetSearchStream will stream in real-time based on a specific set of filter rules
 func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
 	switch {
 	case opts.BackfillMinutes == 0:

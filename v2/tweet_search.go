@@ -81,6 +81,7 @@ type TweetRecentSearchMeta struct {
 	NextToken   string `json:"next_token"`
 }
 
+// TweetSearchStreamRule is the search stream filter rule
 type TweetSearchStreamRule struct {
 	Value string `json:"value"`
 	Tag   string `json:"tag,omitempty"`
@@ -104,6 +105,7 @@ func (t tweetSearchStreamRules) validate() error {
 	return nil
 }
 
+// TweetSearchStreamRuleID is the filter rule id
 type TweetSearchStreamRuleID string
 
 func (t TweetSearchStreamRuleID) validate() error {
@@ -132,33 +134,39 @@ func (t tweetSeachStreamRuleIDs) toStringArray() []string {
 	return ids
 }
 
+// TweetSearchStreamRuleEntity is the search filter rule entity
 type TweetSearchStreamRuleEntity struct {
 	ID TweetSearchStreamRuleID `json:"id"`
 	TweetSearchStreamRule
 }
 
+// TweetSearchStreamRulesResponse is the response to getting the search rules
 type TweetSearchStreamRulesResponse struct {
 	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
 	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
 	Errors []*ErrorObj                    `json:"errors,omitempty"`
 }
 
+// TweetSearchStreamAddRuleResponse is the response from adding rules
 type TweetSearchStreamAddRuleResponse struct {
 	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
 	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
 	Errors []*ErrorObj                    `json:"errors,omitempty"`
 }
 
+// TweetSearchStreamDeleteRuleResponse is the respnse from deleting rules
 type TweetSearchStreamDeleteRuleResponse struct {
 	Meta   *TweetSearchStreamRuleMeta `json:"meta"`
 	Errors []*ErrorObj                `json:"errors,omitempty"`
 }
 
+// TweetSearchStreamRuleMeta is the meta data object from the request
 type TweetSearchStreamRuleMeta struct {
 	Sent    time.Time                    `json:"sent"`
 	Summary TweetSearchStreamRuleSummary `json:"summary"`
 }
 
+// TweetSearchStreamRuleSummary is the summary of the search filters
 type TweetSearchStreamRuleSummary struct {
 	Created    int `json:"created"`
 	NotCreated int `json:"not_created"`
