@@ -154,8 +154,36 @@ This [example](./tweet-like-lookup) demonstrates tweet user likes API.
 go run *.go -token=YOUR_API_TOKEN -id=2244994945
 ```
 
-## Tweet Likes Lookup
+## Tweet Sample Stream
 This [example](./tweet-sample-stream) demonstrates tweet sample stream API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -output=output.txt
+```
+
+## Tweet Search Stream Add Rules
+The [example](./tweet-search-stream-add-rule) demostrates tweet search stream add rules API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -rule='cat has:images' -tag 'cat with images'
+```
+
+## Tweet Search Stream Rules
+The [example](./tweet-search-stream-rules) demostrates tweet search stream rules API.
+
+```
+go run *.go -token=YOUR_API_TOKEN
+```
+
+## Tweet Search Stream Delete Rules
+The [example](./tweet-search-stream-delete-rule) demostrates tweet search stream delete rules API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -ids=14858,122345
+```
+
+## Tweet Search Stream
+This [example](./tweet-search-stream) demonstrates tweet sample stream API.
 
 ```
 go run *.go -token=YOUR_API_TOKEN -output=output.txt

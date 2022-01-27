@@ -484,6 +484,275 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	return recentSearch, nil
 }
 
+// TweetSearchStreamAddRule will create on or more rules for search sampling.  Set dry run to true to validate the rules before commit
+func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSearchStreamRule, dryRun bool) (*TweetSearchStreamAddRuleResponse, error) {
+	if len(rules) == 0 {
+		return nil, fmt.Errorf("tweet search stream add rule: rules are required: %w", ErrParameter)
+	}
+	body := struct {
+		Add tweetSearchStreamRules `json:"add"`
+	}{
+		Add: tweetSearchStreamRules(rules),
+	}
+	if err := body.Add.validate(); err != nil {
+		return nil, err
+	}
+	enc, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule body encoding %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tweetSearchStreamRulesEndpoint.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	c.Authorizer.Add(req)
+	if dryRun {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusCreated {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamAddRuleResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream add rule json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
+// TweetSearchStreamDeleteRuleByID will delete one or more rules for search sampling using the rule ids. Set dry run to true to validate the rules before commit
+func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []TweetSearchStreamRuleID, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
+	if len(ruleIDs) == 0 {
+		return nil, fmt.Errorf("tweet search stream delete rule: rule ids are required: %w", ErrParameter)
+	}
+	type ids struct {
+		IDs tweetSeachStreamRuleIDs `json:"ids"`
+	}
+	deleteIDs := ids{
+		IDs: tweetSeachStreamRuleIDs(ruleIDs),
+	}
+	if err := deleteIDs.IDs.validate(); err != nil {
+		return nil, err
+	}
+	type requestBody struct {
+		Delete ids `json:"delete"`
+	}
+	body := requestBody{
+		Delete: deleteIDs,
+	}
+	enc, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule body encoding %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tweetSearchStreamRulesEndpoint.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	c.Authorizer.Add(req)
+	if dryRun {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamDeleteRuleResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
+// TweetSearchStreamDeleteRuleByValue will delete one or more rules for search sampling using the rule values. Set dry run to true to validate the rules before commit
+func (c *Client) TweetSearchStreamDeleteRuleByValue(ctx context.Context, ruleValues []string, dryRun bool) (*TweetSearchStreamDeleteRuleResponse, error) {
+	if len(ruleValues) == 0 {
+		return nil, fmt.Errorf("tweet search stream delete rule: rule values are required: %w", ErrParameter)
+	}
+	type values struct {
+		Values []string `json:"values"`
+	}
+	type requestBody struct {
+		Delete values `json:"delete"`
+	}
+	body := requestBody{
+		Delete: values{
+			Values: ruleValues,
+		},
+	}
+	enc, err := json.Marshal(body)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule body encoding %w", err)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, tweetSearchStreamRulesEndpoint.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	c.Authorizer.Add(req)
+	if dryRun {
+		q := req.URL.Query()
+		q.Add("dry_run", "true")
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamDeleteRuleResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream delete rule json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
+// TweetSearchStreamRules will return a list of rules active on the streaming endpoint
+func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSearchStreamRuleID) (*TweetSearchStreamRulesResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetSearchStreamRulesEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules http request %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	if len(ruleIDs) > 0 {
+		ruleArr := tweetSeachStreamRuleIDs(ruleIDs)
+		if err := ruleArr.validate(); err != nil {
+			return nil, err
+		}
+		q := req.URL.Query()
+		q.Add("ids", strings.Join(ruleArr.toStringArray(), ","))
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream rules http response %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	ruleResponse := &TweetSearchStreamRulesResponse{}
+	if err := decoder.Decode(ruleResponse); err != nil {
+		return nil, fmt.Errorf("tweet search stream rules json response %w", err)
+	}
+	return ruleResponse, nil
+}
+
+// TweetSearchStream will stream in real-time based on a specific set of filter rules
+func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
+	switch {
+	case opts.BackfillMinutes == 0:
+	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
+		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetSearchStreamEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search stream response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		defer resp.Body.Close()
+		e := &ErrorResponse{}
+		if err := json.NewDecoder(resp.Body).Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	return StartTweetStream(resp.Body), nil
+}
+
 // TweetRecentCounts will return a recent tweet counts based of a query
 func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts TweetRecentCountsOpts) (*TweetRecentCountsResponse, error) {
 	switch {
