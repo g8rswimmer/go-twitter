@@ -56,8 +56,12 @@ func TestClient_TweetLikesLookup(t *testing.T) {
 							"name": "Twitter Data",
 							"username": "TwitterData"
 						  }
-						]
-					  }`
+						],
+						"meta": {
+							"result_count": 2,
+							"next_token": "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i"
+						  }
+						}`
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
@@ -86,6 +90,10 @@ func TestClient_TweetLikesLookup(t *testing.T) {
 							UserName: "TwitterData",
 						},
 					},
+				},
+				Meta: &TweetLikesMeta{
+					ResultCount: 2,
+					NextToken:   "7140dibdnow9c7btw3w29grvxfcgvpb9n9coehpk7xz5i",
 				},
 			},
 			wantErr: false,
