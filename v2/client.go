@@ -18,8 +18,8 @@ const (
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
 	userMutesMaxResults          = 1000
-	userLikesMaxResults          = 100
-	userLikesMinResults          = 10
+	likesMaxResults              = 100
+	likesMinResults              = 10
 	sampleStreamMaxBackoffMin    = 5
 )
 
@@ -1614,6 +1614,11 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 	switch {
 	case len(tweetID) == 0:
 		return nil, fmt.Errorf("user tweet likes lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < likesMinResults:
+		return nil, fmt.Errorf("tweet tweet likes lookup: a min results [%d] is required [current: %d]: %w", likesMinResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults > likesMaxResults:
+		return nil, fmt.Errorf("tweet tweet likes lookup: a max results [%d] is required [current: %d]: %w", likesMaxResults, opts.MaxResults, ErrParameter)
 	default:
 	}
 
@@ -1648,13 +1653,18 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 		return nil, e
 	}
 
-	raw := &UserRaw{}
+	respBody := struct {
+		*UserRaw
+		Meta *TweetLikesMeta `json:"meta"`
+	}{}
 
-	if err := decoder.Decode(&raw); err != nil {
-		return nil, fmt.Errorf("user tweet likes lookup dictionary: %w", err)
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("tweet user likes lookup dictionary: %w", err)
 	}
+
 	return &TweetLikesLookupResponse{
-		Raw: raw,
+		Raw:  respBody.UserRaw,
+		Meta: respBody.Meta,
 	}, nil
 }
 
@@ -1664,10 +1674,10 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 	case len(userID) == 0:
 		return nil, fmt.Errorf("tweet user likes lookup: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
-	case opts.MaxResults < userLikesMinResults:
-		return nil, fmt.Errorf("tweet user likes lookup: a min results [%d] is required [current: %d]: %w", userLikesMinResults, opts.MaxResults, ErrParameter)
-	case opts.MaxResults > userLikesMaxResults:
-		return nil, fmt.Errorf("tweet user likes lookup: a max results [%d] is required [current: %d]: %w", userLikesMaxResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults < likesMinResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a min results [%d] is required [current: %d]: %w", likesMinResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults > likesMaxResults:
+		return nil, fmt.Errorf("tweet user likes lookup: a max results [%d] is required [current: %d]: %w", likesMaxResults, opts.MaxResults, ErrParameter)
 	default:
 	}
 

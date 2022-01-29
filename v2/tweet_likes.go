@@ -2,22 +2,33 @@ package twitter
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 // TweetLikesLookupResponse is the user from the tweet likes
 type TweetLikesLookupResponse struct {
-	Raw *UserRaw
+	Raw  *UserRaw
+	Meta *TweetLikesMeta `json:"meta"`
+}
+
+// TweetLikesMeta is the meta data from the response
+type TweetLikesMeta struct {
+	ResultCount   int    `json:"result_count"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
 }
 
 // TweetLikesLookupOpts the user like lookup options
 type TweetLikesLookupOpts struct {
-	Expansions  []Expansion
-	TweetFields []TweetField
-	UserFields  []UserField
-	MediaFields []MediaField
-	PlaceFields []PlaceField
-	PollFields  []PollField
+	Expansions      []Expansion
+	TweetFields     []TweetField
+	UserFields      []UserField
+	MediaFields     []MediaField
+	PlaceFields     []PlaceField
+	PollFields      []PollField
+	MaxResults      int
+	PaginationToken string
 }
 
 func (u TweetLikesLookupOpts) addQuery(req *http.Request) {
@@ -39,6 +50,12 @@ func (u TweetLikesLookupOpts) addQuery(req *http.Request) {
 	}
 	if len(u.PollFields) > 0 {
 		q.Add("poll.fields", strings.Join(pollFieldStringArray(u.PollFields), ","))
+	}
+	if u.MaxResults > 0 {
+		q.Add("max_results", strconv.Itoa(u.MaxResults))
+	}
+	if len(u.PaginationToken) > 0 {
+		q.Add("pagination_token", u.PaginationToken)
 	}
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
