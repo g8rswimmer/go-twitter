@@ -195,3 +195,10 @@ This [example](./list-lookup) demonstrates list lookup API.
 ```
 go run *.go -token=YOUR_API_TOKEN -id=84839422
 ```
+
+## List Lookup
+This [example](./user-list-lookup) demonstrates user list lookup API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=2244994945
+```
