@@ -1865,3 +1865,55 @@ func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOp
 
 	return StartTweetStream(resp.Body), nil
 }
+
+// ListLookup returns the details of a specified list
+func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupOpts) (*ListLookupResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("list lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := listLookupEndpoint.urlID(c.Host, listID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("list lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("list lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*ListRaw
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("list lookup dictionary: %w", err)
+	}
+
+	return &ListLookupResponse{
+		Raw: respBody.ListRaw,
+	}, nil
+}

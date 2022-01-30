@@ -22,6 +22,8 @@ const (
 	ExpansionReferencedTweetsIDAuthorID Expansion = "referenced_tweets.id.author_id"
 	// ExpansionPinnedTweetID returns a Tweet object representing the Tweet pinned to the top of the user’s profile
 	ExpansionPinnedTweetID Expansion = "pinned_tweet_id"
+	// ExpansionOwnerID returns an owner in the includes
+	ExpansionOwnerID Expansion = "owner_id"
 )
 
 func expansionStringArray(arr []Expansion) []string {

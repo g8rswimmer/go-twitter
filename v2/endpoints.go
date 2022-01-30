@@ -31,6 +31,7 @@ const (
 	tweetSampleStreamEndpoint      endpoint = "2/tweets/sample/stream"
 	tweetSearchStreamRulesEndpoint endpoint = "2/tweets/search/stream/rules"
 	tweetSearchStreamEndpoint      endpoint = "2/tweets/search/stream"
+	listLookupEndpoint             endpoint = "2/lists/{id}"
 
 	idTag = "{id}"
 )
