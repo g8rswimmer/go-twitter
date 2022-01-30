@@ -1921,7 +1921,7 @@ func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupO
 
 func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserListLookupOpts) (*UserListLookupResponse, error) {
 	switch {
-	case len(listID) == 0:
+	case len(userID) == 0:
 		return nil, fmt.Errorf("user list lookup: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > userListMaxResults:
@@ -1929,7 +1929,7 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 	default:
 	}
 
-	ep := userListLookupEndpoint.urlID(c.Host, listID)
+	ep := userListLookupEndpoint.urlID(c.Host, userID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {

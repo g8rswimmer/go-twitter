@@ -77,13 +77,13 @@ func (l UserListLookupOpts) addQuery(req *http.Request) {
 }
 
 type UserListRaw struct {
-	List     []*ListObj       `json:"data"`
+	Lists    []*ListObj       `json:"data"`
 	Includes *ListRawIncludes `json:"includes,omitempty"`
 	Errors   []*ErrorObj      `json:"errors,omitempty"`
 }
 
 type UserListLookupResponse struct {
-	Raw  *ListRaw
+	Raw  *UserListRaw
 	Meta *UserListLookupMeta `json:"meta"`
 }
 
