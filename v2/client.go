@@ -1919,6 +1919,7 @@ func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupO
 	}, nil
 }
 
+// UserListLookup returns all lists owned by the specified user
 func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserListLookupOpts) (*UserListLookupResponse, error) {
 	switch {
 	case len(userID) == 0:

@@ -46,6 +46,7 @@ type ListLookupResponse struct {
 	Raw *ListRaw
 }
 
+//UserListLookupOpts are the response field options
 type UserListLookupOpts struct {
 	Expansions      []Expansion
 	ListFields      []ListField
@@ -76,17 +77,20 @@ func (l UserListLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserListRaw is the raw response
 type UserListRaw struct {
 	Lists    []*ListObj       `json:"data"`
 	Includes *ListRawIncludes `json:"includes,omitempty"`
 	Errors   []*ErrorObj      `json:"errors,omitempty"`
 }
 
+// UserListLookupResponse is the raw ressponse with meta
 type UserListLookupResponse struct {
 	Raw  *UserListRaw
 	Meta *UserListLookupMeta `json:"meta"`
 }
 
+// UserListLookupMeta is the meta data for the lists
 type UserListLookupMeta struct {
 	ResultCount   int    `json:"result_count"`
 	PreviousToken string `json:"previous_token"`
