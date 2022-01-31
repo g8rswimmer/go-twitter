@@ -64,6 +64,9 @@ Here are the current twitter `v2` API features supported:
 	* [tweet search stream delete rules](./_examples/tweet-search-stream-delete-rule)
 	* [tweet search stream rules](./_examples/tweet-search-stream-rules)
 	* [tweet search stream](./_examples/tweet-search-stream)
+* [List Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/introduction)
+	* [list lookup](./_examples/list-lookup)
+	* [user list lookup](./_examples/user-list-lookup)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.

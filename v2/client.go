@@ -21,6 +21,7 @@ const (
 	likesMaxResults              = 100
 	likesMinResults              = 10
 	sampleStreamMaxBackoffMin    = 5
+	userListMaxResults           = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1864,4 +1865,113 @@ func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOp
 	}
 
 	return StartTweetStream(resp.Body), nil
+}
+
+// ListLookup returns the details of a specified list
+func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupOpts) (*ListLookupResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("list lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := listLookupEndpoint.urlID(c.Host, listID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("list lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("list lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*ListRaw
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("list lookup dictionary: %w", err)
+	}
+
+	return &ListLookupResponse{
+		Raw: respBody.ListRaw,
+	}, nil
+}
+
+// UserListLookup returns all lists owned by the specified user
+func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserListLookupOpts) (*UserListLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user list lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > userListMaxResults:
+		return nil, fmt.Errorf("user list lookup: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := userListLookupEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user list lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user list lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserListRaw
+		Meta *UserListLookupMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("user list lookup dictionary: %w", err)
+	}
+
+	return &UserListLookupResponse{
+		Raw:  respBody.UserListRaw,
+		Meta: respBody.Meta,
+	}, nil
 }
