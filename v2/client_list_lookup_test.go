@@ -307,3 +307,160 @@ func TestClient_UserListLookup(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_ListTweetLookup(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		listID string
+		opts   ListTweetLookupOpts
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *ListTweetLookupResponse
+		wantErr bool
+	}{
+		{
+			name: "success no options",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), listTweetLookupEndpoint.urlID("", "list-1234")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), listTweetLookupEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"id": "1067094924124872705",
+							"text": "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN"
+						  }
+						],
+						"meta": {
+						  "result_count": 1
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				listID: "list-1234",
+			},
+			want: &ListTweetLookupResponse{
+				Raw: &TweetRaw{
+					Tweets: []*TweetObj{
+						{
+							ID:   "1067094924124872705",
+							Text: "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+						},
+					},
+				},
+				Meta: &ListTweetLookupMeta{
+					ResultCount: 1,
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "success with options",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), listTweetLookupEndpoint.urlID("", "list-1234")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), listTweetLookupEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"id": "1067094924124872705",
+							"text": "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+							"author_id": "2244994945"
+						  }
+						],
+						"includes": {
+							"users": [
+							  {
+								"verified": true,
+								"username": "TwitterDev",
+								"id": "2244994945",
+								"name": "Twitter Dev"
+							  }
+							]
+						  },
+						"meta": {
+						  "result_count": 1
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				listID: "list-1234",
+				opts: ListTweetLookupOpts{
+					Expansions: []Expansion{ExpansionAuthorID},
+					UserFields: []UserField{UserFieldVerified},
+				},
+			},
+			want: &ListTweetLookupResponse{
+				Raw: &TweetRaw{
+					Tweets: []*TweetObj{
+						{
+							ID:       "1067094924124872705",
+							Text:     "Just getting started with Twitter APIs? Find out what you need in order to build an app. Watch this video! https://t.co/Hg8nkfoizN",
+							AuthorID: "2244994945",
+						},
+					},
+					Includes: &TweetRawIncludes{
+						Users: []*UserObj{
+							{
+								Verified: true,
+								UserName: "TwitterDev",
+								ID:       "2244994945",
+								Name:     "Twitter Dev",
+							},
+						},
+					},
+				},
+				Meta: &ListTweetLookupMeta{
+					ResultCount: 1,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.ListTweetLookup(context.Background(), tt.args.listID, tt.args.opts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.ListTweetLookup() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.ListTweetLookup() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
