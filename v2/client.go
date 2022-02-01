@@ -2034,7 +2034,8 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 	}, nil
 }
 
-func (c *Client) CreateList(ctx context.Context, list ListManageRequest) (*ListCreateResponse, error) {
+// CreateList enables the authenticated user to create a list
+func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreateResponse, error) {
 	switch {
 	case len(*list.Name) == 0:
 		return nil, fmt.Errorf("create list: a name is required: %w", ErrParameter)
@@ -2085,7 +2086,8 @@ func (c *Client) CreateList(ctx context.Context, list ListManageRequest) (*ListC
 	return respBody, nil
 }
 
-func (c *Client) UpdateList(ctx context.Context, listID string, update ListManageRequest) (*ListUpdateResponse, error) {
+// UpdateList enables the authenticated user to update the meta data of a list
+func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaData) (*ListUpdateResponse, error) {
 	switch {
 	case len(listID) == 0:
 		return nil, fmt.Errorf("update list: an id is required: %w", ErrParameter)
@@ -2136,6 +2138,7 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListManag
 	return respBody, nil
 }
 
+// DeleteList anables the authenticated user to delete a list
 func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResponse, error) {
 	switch {
 	case len(listID) == 0:

@@ -36,7 +36,7 @@ func main() {
 		Host:   "https://api.twitter.com",
 	}
 
-	update := twitter.ListManageRequest{
+	update := twitter.ListMetaData{
 		Description: description,
 	}
 

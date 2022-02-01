@@ -17,7 +17,7 @@ func TestClient_CreateList(t *testing.T) {
 		Host       string
 	}
 	type args struct {
-		list ListManageRequest
+		list ListMetaData
 	}
 	tests := []struct {
 		name    string
@@ -51,7 +51,7 @@ func TestClient_CreateList(t *testing.T) {
 				}),
 			},
 			args: args{
-				list: ListManageRequest{
+				list: ListMetaData{
 					Name: func() *string {
 						str := "test v2 create list"
 						return &str
@@ -93,7 +93,7 @@ func TestClient_UpdateList(t *testing.T) {
 	}
 	type args struct {
 		listID string
-		update ListManageRequest
+		update ListMetaData
 	}
 	tests := []struct {
 		name    string
@@ -127,7 +127,7 @@ func TestClient_UpdateList(t *testing.T) {
 			},
 			args: args{
 				listID: "list-1234",
-				update: ListManageRequest{
+				update: ListMetaData{
 					Name: func() *string {
 						str := "test v2 create list"
 						return &str

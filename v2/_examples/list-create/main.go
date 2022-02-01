@@ -35,7 +35,7 @@ func main() {
 		Host:   "https://api.twitter.com",
 	}
 
-	list := twitter.ListManageRequest{
+	list := twitter.ListMetaData{
 		Name: name,
 	}
 
