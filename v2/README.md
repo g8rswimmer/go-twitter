@@ -67,6 +67,8 @@ Here are the current twitter `v2` API features supported:
 * [List Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/introduction)
 	* [list lookup](./_examples/list-lookup)
 	* [user list lookup](./_examples/user-list-lookup)
+* [List Tweets Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-tweets/introduction)
+	* [list tweet lookup](./_examples/list-tweet-lookup)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.

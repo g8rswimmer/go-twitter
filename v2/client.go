@@ -22,6 +22,7 @@ const (
 	likesMinResults              = 10
 	sampleStreamMaxBackoffMin    = 5
 	userListMaxResults           = 100
+	listTweetMaxResults          = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1972,6 +1973,63 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 
 	return &UserListLookupResponse{
 		Raw:  respBody.UserListRaw,
+		Meta: respBody.Meta,
+	}, nil
+}
+
+// ListTweetLookup returns a list of tweets from the specified list
+func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTweetLookupOpts) (*ListTweetLookupResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("list tweet lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > listTweetMaxResults:
+		return nil, fmt.Errorf("list tweet lookup: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listTweetMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := listTweetLookupEndpoint.urlID(c.Host, listID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("list tweet lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("list tweet lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *ListTweetLookupMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("list tweet lookup dictionary: %w", err)
+	}
+
+	return &ListTweetLookupResponse{
+		Raw:  respBody.TweetRaw,
 		Meta: respBody.Meta,
 	}, nil
 }

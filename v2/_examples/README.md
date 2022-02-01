@@ -196,7 +196,14 @@ This [example](./list-lookup) demonstrates list lookup API.
 go run *.go -token=YOUR_API_TOKEN -id=84839422
 ```
 
-## List Lookup
+## List Tweet Lookup
+This [example](./list-tweet-lookup) demonstrates list tweet ookup API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=84839422
+```
+
+## User List Lookup
 This [example](./user-list-lookup) demonstrates user list lookup API.
 
 ```
