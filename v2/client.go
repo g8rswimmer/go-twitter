@@ -2036,7 +2036,7 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 
 func (c *Client) CreateList(ctx context.Context, list ListManageRequest) (*ListCreateResponse, error) {
 	switch {
-	case len(list.Name) == 0:
+	case len(*list.Name) == 0:
 		return nil, fmt.Errorf("create list: a name is required: %w", ErrParameter)
 	default:
 	}
@@ -2046,7 +2046,7 @@ func (c *Client) CreateList(ctx context.Context, list ListManageRequest) (*ListC
 		return nil, fmt.Errorf("create list: unable to encode json request %w", err)
 	}
 
-	ep := listCreateEndpoint.urlID(c.Host)
+	ep := listCreateEndpoint.url(c.Host)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
 	if err != nil {
 		return nil, fmt.Errorf("create list request: %w", err)
@@ -2087,7 +2087,7 @@ func (c *Client) CreateList(ctx context.Context, list ListManageRequest) (*ListC
 
 func (c *Client) UpdateList(ctx context.Context, listID string, update ListManageRequest) (*ListUpdateResponse, error) {
 	switch {
-	case len(llistID) == 0:
+	case len(listID) == 0:
 		return nil, fmt.Errorf("update list: an id is required: %w", ErrParameter)
 	default:
 	}
@@ -2138,7 +2138,7 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListManag
 
 func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResponse, error) {
 	switch {
-	case len(llistID) == 0:
+	case len(listID) == 0:
 		return nil, fmt.Errorf("delete list: an id is required: %w", ErrParameter)
 	default:
 	}
