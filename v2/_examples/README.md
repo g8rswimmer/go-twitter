@@ -209,3 +209,24 @@ This [example](./user-list-lookup) demonstrates user list lookup API.
 ```
 go run *.go -token=YOUR_API_TOKEN -id=2244994945
 ```
+
+## List Create
+This [example](./list-create) demonstrates list create API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -name='my cool list'
+```
+
+## List Update
+This [example](./list-update) demonstrates list update API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id='LIST_ID -description='this is a cool list'
+```
+
+## List Delete
+This [example](./list-delete) demonstrates list delete API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id='LIST_ID
+```
