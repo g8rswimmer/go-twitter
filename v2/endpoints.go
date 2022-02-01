@@ -34,6 +34,9 @@ const (
 	listLookupEndpoint             endpoint = "2/lists/{id}"
 	userListLookupEndpoint         endpoint = "2/users/{id}/owned_lists"
 	listTweetLookupEndpoint        endpoint = "2/lists/{id}/tweets"
+	listCreateEndpoint             endpoint = "2/lists"
+	listUpdateEndpoint             endpoint = "2/lists/{id}"
+	listDeleteEndpoint             endpoint = "2/lists/{id}"
 
 	idTag = "{id}"
 )
