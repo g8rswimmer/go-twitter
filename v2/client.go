@@ -23,6 +23,7 @@ const (
 	sampleStreamMaxBackoffMin    = 5
 	userListMaxResults           = 100
 	listTweetMaxResults          = 100
+	userListMembershipMaxResults = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -2289,4 +2290,60 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 	}
 
 	return respBody, nil
+}
+
+func (c *Client) UserListMemberships(ctx context.Context, userID string, opts UserListMembershipsOpts) (*UserListMembershipsResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user list membership: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > userListMembershipMaxResults:
+		return nil, fmt.Errorf("user list membership: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListMembershipMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := userListMemberEndpoint.urlID(c.Host, listID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user list membership request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user list membership response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserListMembershipsRaw
+		Meta *UserListMembershipsMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("user list membership dictionary: %w", err)
+	}
+
+	return &UserListMembershipsResponse{
+		Raw:  respBody.UserListMembershipsRaw,
+		Meta: respBody.Meta,
+	}, nil
 }

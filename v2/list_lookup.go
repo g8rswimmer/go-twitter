@@ -140,3 +140,50 @@ type ListTweetLookupMeta struct {
 	PreviousToken string `json:"previous_token"`
 	NextToken     string `json:"next_token"`
 }
+
+type UserListMembershipsOpts struct {
+	Expansions      []Expansion
+	ListFields      []ListField
+	UserFields      []UserField
+	MaxResults      int
+	PaginationToken string
+}
+
+func (l UserListMembershipsOpts) addQuery(req *http.Request) {
+	q := req.URL.Query()
+	if len(l.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))
+	}
+	if len(l.ListFields) > 0 {
+		q.Add("list.fields", strings.Join(listFieldStringArray(l.ListFields), ","))
+	}
+	if len(l.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(l.UserFields), ","))
+	}
+	if l.MaxResults > 0 {
+		q.Add("max_results", strconv.Itoa(l.MaxResults))
+	}
+	if len(l.PaginationToken) > 0 {
+		q.Add("pagination_token", l.PaginationToken)
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+type UserListMembershipsRaw struct {
+	Lists    []*ListObj       `json:"data"`
+	Includes *ListRawIncludes `json:"includes,omitempty"`
+	Errors   []*ErrorObj      `json:"errors,omitempty"`
+}
+
+type UserListMembershipsMeta struct {
+	ResultCount   int    `json:"result_count"`
+	PreviousToken string `json:"previous_token"`
+	NextToken     string `json:"next_token"`
+}
+
+type UserListMembershipsResponse struct {
+	Raw  *UserListMembershipsRaw
+	Meta *UserListMembershipsMeta `json:"meta"`
+}
