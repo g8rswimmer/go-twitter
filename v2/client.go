@@ -2359,7 +2359,7 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 	default:
 	}
 
-	ep := userListMemberEndpoint.urlID(c.Host, listID)
+	ep := userListMemberEndpoint.urlID(c.Host, userID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
