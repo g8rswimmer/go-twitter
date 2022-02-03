@@ -37,3 +37,15 @@ type ListDeleteResponse struct {
 type ListDeleteData struct {
 	Deleted bool `json:"deleted"`
 }
+
+type ListMemberData struct {
+	Member bool `json:"is_member"`
+}
+
+type ListAddMemberResponse struct {
+	List *ListMemberData `json:"data"`
+}
+
+type ListRemoveMemberResponse struct {
+	List *ListMemberData `json:"data"`
+}
