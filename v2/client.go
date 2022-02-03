@@ -2033,3 +2033,154 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 		Meta: respBody.Meta,
 	}, nil
 }
+
+// CreateList enables the authenticated user to create a list
+func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreateResponse, error) {
+	switch {
+	case len(*list.Name) == 0:
+		return nil, fmt.Errorf("create list: a name is required: %w", ErrParameter)
+	default:
+	}
+
+	enc, err := json.Marshal(list)
+	if err != nil {
+		return nil, fmt.Errorf("create list: unable to encode json request %w", err)
+	}
+
+	ep := listCreateEndpoint.url(c.Host)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("create list request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("create list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &ListCreateResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("create list tweet lookup dictionary: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// UpdateList enables the authenticated user to update the meta data of a list
+func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaData) (*ListUpdateResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("update list: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	enc, err := json.Marshal(update)
+	if err != nil {
+		return nil, fmt.Errorf("update list: unable to encode json request %w", err)
+	}
+
+	ep := listUpdateEndpoint.urlID(c.Host, listID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("create list request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("update list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &ListUpdateResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("update list tweet lookup dictionary: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// DeleteList anables the authenticated user to delete a list
+func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("delete list: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := listDeleteEndpoint.urlID(c.Host, listID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("delete list request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("delete list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &ListDeleteResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("delete list tweet lookup dictionary: %w", err)
+	}
+
+	return respBody, nil
+}
