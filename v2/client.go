@@ -2066,7 +2066,7 @@ func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreate
 
 	decoder := json.NewDecoder(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
 			return nil, &HTTPError{
