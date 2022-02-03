@@ -187,3 +187,44 @@ type UserListMembershipsResponse struct {
 	Raw  *UserListMembershipsRaw
 	Meta *UserListMembershipsMeta `json:"meta"`
 }
+
+type ListUserMembersOpts struct {
+	Expansions      []Expansion
+	TweetFields     []TweetField
+	UserFields      []UserField
+	MaxResults      int
+	PaginationToken string
+}
+
+func (l ListUserMembersOpts) addQuery(req *http.Request) {
+	q := req.URL.Query()
+	if len(l.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))
+	}
+	if len(l.TweetFields) > 0 {
+		q.Add("tweet.fields", strings.Join(tweetFieldStringArray(l.TweetFields), ","))
+	}
+	if len(l.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(l.UserFields), ","))
+	}
+	if l.MaxResults > 0 {
+		q.Add("max_results", strconv.Itoa(l.MaxResults))
+	}
+	if len(l.PaginationToken) > 0 {
+		q.Add("pagination_token", l.PaginationToken)
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+type ListUserMembersMeta struct {
+	ResultCount   int    `json:"result_count"`
+	PreviousToken string `json:"previous_token"`
+	NextToken     string `json:"next_token"`
+}
+
+type ListUserMembersResponse struct {
+	Raw  *UserRaw
+	Meta *ListUserMembersMeta `json:"meta"`
+}
