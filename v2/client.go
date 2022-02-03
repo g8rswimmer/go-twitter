@@ -2243,3 +2243,50 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 
 	return respBody, nil
 }
+
+func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*ListRemoveMemberResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("remove list member: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("remove list member: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := listMemberEndpoint.urlID(c.Host, listID) + "/" + userID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("remove list member request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("remove list member response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &ListRemoveMemberResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("remove list tweet lookup dictionary: %w", err)
+	}
+
+	return respBody, nil
+}
