@@ -39,5 +39,5 @@ type ErrorResponse struct {
 }
 
 func (e *ErrorResponse) Error() string {
-	return fmt.Sprintf("twiiter callout status %d %s:%s", e.StatusCode, e.Title, e.Detail)
+	return fmt.Sprintf("twitter callout status %d %s:%s", e.StatusCode, e.Title, e.Detail)
 }
