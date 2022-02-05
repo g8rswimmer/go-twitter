@@ -37,7 +37,7 @@ const (
 	listCreateEndpoint             endpoint = "2/lists"
 	listUpdateEndpoint             endpoint = "2/lists/{id}"
 	listDeleteEndpoint             endpoint = "2/lists/{id}"
-	listMemberEndpoint             endpoint = "2/list/{id}/members"
+	listMemberEndpoint             endpoint = "2/lists/{id}/members"
 	userListMemberEndpoint         endpoint = "2/users/{id}/list_memberships"
 
 	idTag = "{id}"
