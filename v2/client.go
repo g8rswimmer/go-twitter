@@ -2187,6 +2187,7 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 	return respBody, nil
 }
 
+// AddListMember enables the authenticated user to add a member to a list
 func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*ListAddMemberResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2246,6 +2247,7 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 	return respBody, nil
 }
 
+// RemoveListMember enables the authenticated user to remove a member to a list
 func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*ListRemoveMemberResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2293,6 +2295,7 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 	return respBody, nil
 }
 
+// ListUserMembers returns a list of users who are member of the list
 func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUserMembersOpts) (*ListUserMembersResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2349,6 +2352,7 @@ func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUs
 	}, nil
 }
 
+// UserListMemberships returns all list a user is a member of
 func (c *Client) UserListMemberships(ctx context.Context, userID string, opts UserListMembershipsOpts) (*UserListMembershipsResponse, error) {
 	switch {
 	case len(userID) == 0:

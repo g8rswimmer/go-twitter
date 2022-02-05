@@ -38,14 +38,17 @@ type ListDeleteData struct {
 	Deleted bool `json:"deleted"`
 }
 
+// ListMemberData is the list member data
 type ListMemberData struct {
 	Member bool `json:"is_member"`
 }
 
+// ListAddMemberResponse is the list add member response
 type ListAddMemberResponse struct {
 	List *ListMemberData `json:"data"`
 }
 
+// ListRemoveMemberResponse is the list remove member response
 type ListRemoveMemberResponse struct {
 	List *ListMemberData `json:"data"`
 }

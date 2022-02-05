@@ -141,6 +141,7 @@ type ListTweetLookupMeta struct {
 	NextToken     string `json:"next_token"`
 }
 
+// UserListMembershipsOpts the user list member options
 type UserListMembershipsOpts struct {
 	Expansions      []Expansion
 	ListFields      []ListField
@@ -171,23 +172,27 @@ func (l UserListMembershipsOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserListMembershipsRaw the raw data from the user list memberships
 type UserListMembershipsRaw struct {
 	Lists    []*ListObj       `json:"data"`
 	Includes *ListRawIncludes `json:"includes,omitempty"`
 	Errors   []*ErrorObj      `json:"errors,omitempty"`
 }
 
+// UserListMembershipsMeta the response meta data
 type UserListMembershipsMeta struct {
 	ResultCount   int    `json:"result_count"`
 	PreviousToken string `json:"previous_token"`
 	NextToken     string `json:"next_token"`
 }
 
+// UserListMembershipsResponse the user list membership response
 type UserListMembershipsResponse struct {
 	Raw  *UserListMembershipsRaw
 	Meta *UserListMembershipsMeta `json:"meta"`
 }
 
+// ListUserMembersOpts is the list user member options
 type ListUserMembersOpts struct {
 	Expansions      []Expansion
 	TweetFields     []TweetField
@@ -218,12 +223,14 @@ func (l ListUserMembersOpts) addQuery(req *http.Request) {
 	}
 }
 
+// ListUserMembersMeta is the meta data of the response
 type ListUserMembersMeta struct {
 	ResultCount   int    `json:"result_count"`
 	PreviousToken string `json:"previous_token"`
 	NextToken     string `json:"next_token"`
 }
 
+// ListUserMembersResponse is the response to the list user members
 type ListUserMembersResponse struct {
 	Raw  *UserRaw
 	Meta *ListUserMembersMeta `json:"meta"`
