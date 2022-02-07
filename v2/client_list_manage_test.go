@@ -45,7 +45,7 @@ func TestClient_CreateList(t *testing.T) {
 						}
 					  }`
 					return &http.Response{
-						StatusCode: http.StatusOK,
+						StatusCode: http.StatusCreated,
 						Body:       io.NopCloser(strings.NewReader(body)),
 					}
 				}),

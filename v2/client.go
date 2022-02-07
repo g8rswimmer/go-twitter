@@ -23,6 +23,8 @@ const (
 	sampleStreamMaxBackoffMin    = 5
 	userListMaxResults           = 100
 	listTweetMaxResults          = 100
+	userListMembershipMaxResults = 100
+	listUserMemberMaxResults     = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -2064,7 +2066,7 @@ func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreate
 
 	decoder := json.NewDecoder(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
 			return nil, &HTTPError{
@@ -2183,4 +2185,226 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 	}
 
 	return respBody, nil
+}
+
+// AddListMember enables the authenticated user to add a member to a list
+func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*ListAddMemberResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("add list member: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("add list member: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		UserID string `json:"user_id"`
+	}{
+		UserID: userID,
+	}
+
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("add list member: unable to encode json request %w", err)
+	}
+
+	ep := listMemberEndpoint.urlID(c.Host, listID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("add list member request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("create list member response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &ListAddMemberResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("create list tweet lookup dictionary: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// RemoveListMember enables the authenticated user to remove a member to a list
+func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*ListRemoveMemberResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("remove list member: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("remove list member: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := listMemberEndpoint.urlID(c.Host, listID) + "/" + userID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("remove list member request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("remove list member response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &ListRemoveMemberResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("remove list tweet lookup dictionary: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// ListUserMembers returns a list of users who are member of the list
+func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUserMembersOpts) (*ListUserMembersResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("list user members: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > listUserMemberMaxResults:
+		return nil, fmt.Errorf("list user members: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listUserMemberMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := listMemberEndpoint.urlID(c.Host, listID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("list user members request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("list user members response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserRaw
+		Meta *ListUserMembersMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("list user members dictionary: %w", err)
+	}
+
+	return &ListUserMembersResponse{
+		Raw:  respBody.UserRaw,
+		Meta: respBody.Meta,
+	}, nil
+}
+
+// UserListMemberships returns all list a user is a member of
+func (c *Client) UserListMemberships(ctx context.Context, userID string, opts UserListMembershipsOpts) (*UserListMembershipsResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user list membership: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > userListMembershipMaxResults:
+		return nil, fmt.Errorf("user list membership: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListMembershipMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := userListMemberEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user list membership request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user list membership response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserListMembershipsRaw
+		Meta *UserListMembershipsMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("user list membership dictionary: %w", err)
+	}
+
+	return &UserListMembershipsResponse{
+		Raw:  respBody.UserListMembershipsRaw,
+		Meta: respBody.Meta,
+	}, nil
 }

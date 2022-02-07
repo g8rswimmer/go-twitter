@@ -221,12 +221,40 @@ go run *.go -token=YOUR_API_TOKEN -name='my cool list'
 This [example](./list-update) demonstrates list update API.
 
 ```
-go run *.go -token=YOUR_API_TOKEN -id='LIST_ID -description='this is a cool list'
+go run *.go -token=YOUR_API_TOKEN -id='LIST_ID' -description='this is a cool list'
 ```
 
 ## List Delete
 This [example](./list-delete) demonstrates list delete API.
 
 ```
-go run *.go -token=YOUR_API_TOKEN -id='LIST_ID
+go run *.go -token=YOUR_API_TOKEN -id='LIST_ID'
+```
+
+## List Add Member
+This [example](./list-add-member) demonstrates list add member API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -list_id='LIST_ID' -user_id='USER_ID'
+```
+
+## List Remove Member
+This [example](./list-remove-member) demonstrates list remove member API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -list_id='LIST_ID' -user_id='USER_ID'
+```
+
+## List Members
+This [example](./list-members) demonstrates list members API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -list_id='LIST_ID'
+```
+
+## List Memberships
+This [example](./list-memberships) demonstrates list memberships API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID'
 ```
