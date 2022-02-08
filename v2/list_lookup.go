@@ -236,13 +236,13 @@ type ListUserMembersResponse struct {
 	Meta *ListUserMembersMeta `json:"meta"`
 }
 
-type UserPinnedListOpts struct {
+type UserPinnedListsOpts struct {
 	Expansions []Expansion
 	ListFields []ListField
 	UserFields []UserField
 }
 
-func (l UserPinnedListOpts) addQuery(req *http.Request) {
+func (l UserPinnedListsOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(l.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))

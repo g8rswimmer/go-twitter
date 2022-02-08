@@ -160,7 +160,7 @@ func TestClient_UserPinnedLists(t *testing.T) {
 	}
 	type args struct {
 		userID string
-		opts   UserPinnedListOpts
+		opts   UserPinnedListsOpts
 	}
 	tests := []struct {
 		name    string
@@ -258,7 +258,7 @@ func TestClient_UserPinnedLists(t *testing.T) {
 			},
 			args: args{
 				userID: "user-1234",
-				opts: UserPinnedListOpts{
+				opts: UserPinnedListsOpts{
 					Expansions: []Expansion{ExpansionOwnerID},
 					ListFields: []ListField{ListFieldFollowerCount},
 					UserFields: []UserField{UserFieldCreatedAt},

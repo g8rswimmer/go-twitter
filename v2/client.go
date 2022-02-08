@@ -2515,7 +2515,7 @@ func (c *Client) RemoveUserPinList(ctx context.Context, userID, listID string) (
 	return respBody, nil
 }
 
-func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPinnedListOpts) (*UserPinnedListsResponse, error) {
+func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPinnedListsOpts) (*UserPinnedListsResponse, error) {
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user pinned list: an id is required: %w", ErrParameter)
