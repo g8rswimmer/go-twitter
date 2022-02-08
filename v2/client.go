@@ -2409,6 +2409,7 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 	}, nil
 }
 
+// UserPinList enables the user to pin a list
 func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserPinListResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2468,6 +2469,7 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 	return respBody, nil
 }
 
+// UserUnpinList enables a user to unpin a list
 func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*UserUnpinListResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2515,6 +2517,7 @@ func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*Use
 	return respBody, nil
 }
 
+// UserPinnedLists returns the lists pinned by a user
 func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPinnedListsOpts) (*UserPinnedListsResponse, error) {
 	switch {
 	case len(userID) == 0:

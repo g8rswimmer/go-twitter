@@ -236,6 +236,7 @@ type ListUserMembersResponse struct {
 	Meta *ListUserMembersMeta `json:"meta"`
 }
 
+// UserPinnedListsOpts pinned list options
 type UserPinnedListsOpts struct {
 	Expansions []Expansion
 	ListFields []ListField
@@ -258,17 +259,20 @@ func (l UserPinnedListsOpts) addQuery(req *http.Request) {
 	}
 }
 
+// UserPinnedListsResponse pinned list response
 type UserPinnedListsResponse struct {
 	Raw  *UserPinnedListsRaw
 	Meta *UserPinnedListsMeta `json:"meta"`
 }
 
+// UserPinnedListsRaw the raw data for pinned lists
 type UserPinnedListsRaw struct {
 	Lists    []*ListObj       `json:"data"`
 	Includes *ListRawIncludes `json:"includes,omitempty"`
 	Errors   []*ErrorObj      `json:"errors,omitempty"`
 }
 
+// UserPinnedListsMeta the meta for pinned lista
 type UserPinnedListsMeta struct {
 	ResultCount int `json:"result_count"`
 }
