@@ -258,3 +258,24 @@ This [example](./list-memberships) demonstrates list memberships API.
 ```
 go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID'
 ```
+
+## User Pin List
+This [example](./user-pin-list) demonstrates user pin list API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID' -list_id='LIST_ID'
+```
+
+## User Unpin List
+This [example](./user-unpin-list) demonstrates user unpin list API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID' -list_id='LIST_ID'
+```
+
+## User Pinned Lists
+This [example](./user-pinned-lists) demonstrates user pinned lists API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID'
+```

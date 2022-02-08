@@ -78,6 +78,10 @@ Here are the current twitter `v2` API features supported:
 	* [list remove members](./_examples/list-remove-member)
 	* [list members](./_examples/list-members)
 	* [list membersships](./_examples/list-memberships)
+* [Pinned Lists](https://developer.twitter.com/en/docs/twitter-api/lists/pinned-lists/introduction)
+	* [user pin list](./examples/user-pin-list)
+	* [user unpin list](./examples/user-unpin-list)
+	* [user pinned lists](./examples/user-pinned-lists)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
