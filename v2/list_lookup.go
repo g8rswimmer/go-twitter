@@ -235,3 +235,40 @@ type ListUserMembersResponse struct {
 	Raw  *UserRaw
 	Meta *ListUserMembersMeta `json:"meta"`
 }
+
+type UserPinnedListOpts struct {
+	Expansions []Expansion
+	ListFields []ListField
+	UserFields []UserField
+}
+
+func (l UserPinnedListLookupOpts) addQuery(req *http.Request) {
+	q := req.URL.Query()
+	if len(l.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))
+	}
+	if len(l.ListFields) > 0 {
+		q.Add("list.fields", strings.Join(listFieldStringArray(l.ListFields), ","))
+	}
+	if len(l.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(l.UserFields), ","))
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+type UserPinnedListsResponse struct {
+	Raw  *UserPinnedListsRaw
+	Meta *UserPinnedListsMeta `json:"meta"`
+}
+
+type UserPinnedListsRaw struct {
+	Lists    []*ListObj       `json:"data"`
+	Includes *ListRawIncludes `json:"includes,omitempty"`
+	Errors   []*ErrorObj      `json:"errors,omitempty"`
+}
+
+type UserPinnedListsMeta struct {
+	ResultCount int `json:"result_count"`
+}
