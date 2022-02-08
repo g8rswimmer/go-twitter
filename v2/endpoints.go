@@ -39,6 +39,7 @@ const (
 	listDeleteEndpoint             endpoint = "2/lists/{id}"
 	listMemberEndpoint             endpoint = "2/lists/{id}/members"
 	userListMemberEndpoint         endpoint = "2/users/{id}/list_memberships"
+	userPinnedListEndpoint         endpoint = "2/users/{id}/pinned_lists"
 
 	idTag = "{id}"
 )
