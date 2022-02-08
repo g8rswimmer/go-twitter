@@ -2563,7 +2563,7 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 	}
 
 	return &UserPinnedListsResponse{
-		Raw:  respBody.UserPinnedListRaw,
+		Raw:  respBody.UserPinnedListsRaw,
 		Meta: respBody.Meta,
 	}, nil
 }
