@@ -24,7 +24,7 @@ func TestClient_AddUserPinList(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *AddUserPinListResponse
+		want    *UserPinListResponse
 		wantErr bool
 	}{
 		{
@@ -54,7 +54,7 @@ func TestClient_AddUserPinList(t *testing.T) {
 				userID: "user-1234",
 				listID: "list-1234",
 			},
-			want: &AddUserPinListResponse{
+			want: &UserPinListResponse{
 				List: &UserPinListData{
 					Pinned: true,
 				},
@@ -69,7 +69,7 @@ func TestClient_AddUserPinList(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := c.AddUserPinList(context.Background(), tt.args.userID, tt.args.listID)
+			got, err := c.UserPinList(context.Background(), tt.args.userID, tt.args.listID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.AddUserPinList() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -95,7 +95,7 @@ func TestClient_RemoveUserPinList(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *RemoveUserPinListResponse
+		want    *UserUnpinListResponse
 		wantErr bool
 	}{
 		{
@@ -125,7 +125,7 @@ func TestClient_RemoveUserPinList(t *testing.T) {
 				userID: "user-1234",
 				listID: "list-1234",
 			},
-			want: &RemoveUserPinListResponse{
+			want: &UserUnpinListResponse{
 				List: &UserPinListData{
 					Pinned: false,
 				},
@@ -140,7 +140,7 @@ func TestClient_RemoveUserPinList(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := c.RemoveUserPinList(context.Background(), tt.args.userID, tt.args.listID)
+			got, err := c.UserUnpinList(context.Background(), tt.args.userID, tt.args.listID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.RemoveUserPinList() error = %v, wantErr %v", err, tt.wantErr)
 				return

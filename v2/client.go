@@ -2409,7 +2409,7 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 	}, nil
 }
 
-func (c *Client) AddUserPinList(ctx context.Context, userID, listID string) (*AddUserPinListResponse, error) {
+func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserPinListResponse, error) {
 	switch {
 	case len(listID) == 0:
 		return nil, fmt.Errorf("add user pin list: a list id is required: %w", ErrParameter)
@@ -2459,7 +2459,7 @@ func (c *Client) AddUserPinList(ctx context.Context, userID, listID string) (*Ad
 		return nil, e
 	}
 
-	respBody := &AddUserPinListResponse{}
+	respBody := &UserPinListResponse{}
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("add user pin list decode: %w", err)
@@ -2468,7 +2468,7 @@ func (c *Client) AddUserPinList(ctx context.Context, userID, listID string) (*Ad
 	return respBody, nil
 }
 
-func (c *Client) RemoveUserPinList(ctx context.Context, userID, listID string) (*RemoveUserPinListResponse, error) {
+func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*UserUnpinListResponse, error) {
 	switch {
 	case len(listID) == 0:
 		return nil, fmt.Errorf("remove user pin list: a list id is required: %w", ErrParameter)
@@ -2506,7 +2506,7 @@ func (c *Client) RemoveUserPinList(ctx context.Context, userID, listID string) (
 		return nil, e
 	}
 
-	respBody := &RemoveUserPinListResponse{}
+	respBody := &UserUnpinListResponse{}
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("remove user pin list decode: %w", err)

@@ -57,10 +57,10 @@ type UserPinListData struct {
 	Pinned bool `json:"pinned"`
 }
 
-type AddUserPinListResponse struct {
+type UserPinListResponse struct {
 	List *UserPinListData `json:"data"`
 }
 
-type RemoveUserPinListResponse struct {
+type UserUnpinListResponse struct {
 	List *UserPinListData `json:"data"`
 }
