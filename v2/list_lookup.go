@@ -242,7 +242,7 @@ type UserPinnedListOpts struct {
 	UserFields []UserField
 }
 
-func (l UserPinnedListLookupOpts) addQuery(req *http.Request) {
+func (l UserPinnedListOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(l.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))
