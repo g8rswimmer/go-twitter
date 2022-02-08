@@ -2413,9 +2413,9 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserPinListResponse, error) {
 	switch {
 	case len(listID) == 0:
-		return nil, fmt.Errorf("add user pin list: a list id is required: %w", ErrParameter)
+		return nil, fmt.Errorf("user pin list: a list id is required: %w", ErrParameter)
 	case len(userID) == 0:
-		return nil, fmt.Errorf("add user pin list: an user id is required: %w", ErrParameter)
+		return nil, fmt.Errorf("user pin list: an user id is required: %w", ErrParameter)
 	default:
 	}
 
@@ -2427,13 +2427,13 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 
 	enc, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, fmt.Errorf("add user pin list: unable to encode json request %w", err)
+		return nil, fmt.Errorf("user pin list: unable to encode json request %w", err)
 	}
 
 	ep := userPinnedListEndpoint.urlID(c.Host, userID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
 	if err != nil {
-		return nil, fmt.Errorf("add user pin list request: %w", err)
+		return nil, fmt.Errorf("user pin list request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
@@ -2441,7 +2441,7 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("add user pin list response: %w", err)
+		return nil, fmt.Errorf("user pin list response: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -2463,7 +2463,7 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 	respBody := &UserPinListResponse{}
 
 	if err := decoder.Decode(respBody); err != nil {
-		return nil, fmt.Errorf("add user pin list decode: %w", err)
+		return nil, fmt.Errorf("user pin list decode: %w", err)
 	}
 
 	return respBody, nil
@@ -2473,23 +2473,23 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*UserUnpinListResponse, error) {
 	switch {
 	case len(listID) == 0:
-		return nil, fmt.Errorf("remove user pin list: a list id is required: %w", ErrParameter)
+		return nil, fmt.Errorf("user unpin list: a list id is required: %w", ErrParameter)
 	case len(userID) == 0:
-		return nil, fmt.Errorf("remove user pin list: an user id is required: %w", ErrParameter)
+		return nil, fmt.Errorf("user unpin list: an user id is required: %w", ErrParameter)
 	default:
 	}
 
 	ep := userPinnedListEndpoint.urlID(c.Host, userID) + "/" + listID
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
 	if err != nil {
-		return nil, fmt.Errorf("remove user pin list request: %w", err)
+		return nil, fmt.Errorf("user unpin list request: %w", err)
 	}
 	req.Header.Add("Accept", "application/json")
 	c.Authorizer.Add(req)
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("remove user pin list response: %w", err)
+		return nil, fmt.Errorf("user unpin list response: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -2511,7 +2511,7 @@ func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*Use
 	respBody := &UserUnpinListResponse{}
 
 	if err := decoder.Decode(respBody); err != nil {
-		return nil, fmt.Errorf("remove user pin list decode: %w", err)
+		return nil, fmt.Errorf("user unpin list decode: %w", err)
 	}
 
 	return respBody, nil
