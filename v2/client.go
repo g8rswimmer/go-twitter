@@ -2573,6 +2573,7 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 	}, nil
 }
 
+// UserFollowList enables an user to follow a list
 func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*UserFollowListResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2632,6 +2633,7 @@ func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*Us
 	return respBody, nil
 }
 
+// UserUnfollowList enables an user to unfollow a list
 func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*UserUnfollowListResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2679,6 +2681,7 @@ func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*
 	return respBody, nil
 }
 
+// UserFollowedLists returns all list an user follows
 func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts UserFollowedListsOpts) (*UserFollowedListsResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -2735,6 +2738,7 @@ func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts User
 	}, nil
 }
 
+// ListUserFollowers returns a list of users who are followers of a list
 func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts ListUserFollowersOpts) (*ListUserFollowersResponse, error) {
 	switch {
 	case len(listID) == 0:
