@@ -2745,7 +2745,7 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 	default:
 	}
 
-	ep := listUserFollowersEndpoint.urlID(c.Host, userID)
+	ep := listUserFollowersEndpoint.urlID(c.Host, listID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
