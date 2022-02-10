@@ -2570,3 +2570,109 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 		Meta: respBody.Meta,
 	}, nil
 }
+
+func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*UserFollowListResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("user follow list: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user follow list: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		ListID string `json:"list_id"`
+	}{
+		ListID: listID,
+	}
+
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user follow list: unable to encode json request %w", err)
+	}
+
+	ep := userFollowedListEndpont.urlID(c.Host, userID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user follow list request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user follow list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &UserFollowListResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("user follow list decode: %w", err)
+	}
+
+	return respBody, nil
+}
+
+func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*UserUnfollowListResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("user unfollow list: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user unfollow list: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := userFollowedListEndpont.urlID(c.Host, userID) + "/" + listID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user unfollow list request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user unfollow list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &UserUnfollowListResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("user unfollow list decode: %w", err)
+	}
+
+	return respBody, nil
+}

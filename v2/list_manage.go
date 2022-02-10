@@ -67,3 +67,15 @@ type UserPinListResponse struct {
 type UserUnpinListResponse struct {
 	List *UserPinListData `json:"data"`
 }
+
+type UserFollowListData struct {
+	Following bool `json:"following"`
+}
+
+type UserFollowListResponse struct {
+	List *UserFollowListData `json:"data"`
+}
+
+type UserUnfollowListResponse struct {
+	List *UserFollowListData `json:"data"`
+}
