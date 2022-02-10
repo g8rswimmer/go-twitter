@@ -25,6 +25,7 @@ const (
 	listTweetMaxResults          = 100
 	userListMembershipMaxResults = 100
 	listUserMemberMaxResults     = 100
+	userListFollowedMaxResults   = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -2675,4 +2676,60 @@ func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*
 	}
 
 	return respBody, nil
+}
+
+func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts UserFollowedListsOpts) (*UserFollowedListsResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user followed list: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > userListFollowedMaxResults:
+		return nil, fmt.Errorf("user followed list: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListFollowedMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := userFollowedListEndpont.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user followed list request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user followed list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserFollowedListsRaw
+		Meta *UserFollowedListsMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("user followed list dictionary: %w", err)
+	}
+
+	return &UserFollowedListsResponse{
+		Raw:  respBody.UserFollowedListsRaw,
+		Meta: respBody.Meta,
+	}, nil
 }
