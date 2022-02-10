@@ -40,9 +40,9 @@ const (
 	listMemberEndpoint             endpoint = "2/lists/{id}/members"
 	userListMemberEndpoint         endpoint = "2/users/{id}/list_memberships"
 	userPinnedListEndpoint         endpoint = "2/users/{id}/pinned_lists"
-	userFollowedListEndpont        endpoint = "2/users/{id}/followed_lists"
-
-	idTag = "{id}"
+	userFollowedListEndpoint       endpoint = "2/users/{id}/followed_lists"
+	listUserFollowersEndpoint      endpoint = "2/lists/{id}/followers"
+	idTag                                   = "{id}"
 )
 
 func (e endpoint) url(host string) string {
