@@ -52,3 +52,18 @@ type ListAddMemberResponse struct {
 type ListRemoveMemberResponse struct {
 	List *ListMemberData `json:"data"`
 }
+
+// UserPinListData pinned data
+type UserPinListData struct {
+	Pinned bool `json:"pinned"`
+}
+
+// UserPinListResponse pin list response
+type UserPinListResponse struct {
+	List *UserPinListData `json:"data"`
+}
+
+// UserUnpinListResponse upin list response
+type UserUnpinListResponse struct {
+	List *UserPinListData `json:"data"`
+}

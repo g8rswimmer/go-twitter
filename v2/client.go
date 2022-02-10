@@ -2408,3 +2408,165 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 		Meta: respBody.Meta,
 	}, nil
 }
+
+// UserPinList enables the user to pin a list
+func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserPinListResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("user pin list: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user pin list: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		ListID string `json:"list_id"`
+	}{
+		ListID: listID,
+	}
+
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user pin list: unable to encode json request %w", err)
+	}
+
+	ep := userPinnedListEndpoint.urlID(c.Host, userID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user pin list request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user pin list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &UserPinListResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("user pin list decode: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// UserUnpinList enables a user to unpin a list
+func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*UserUnpinListResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("user unpin list: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user unpin list: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := userPinnedListEndpoint.urlID(c.Host, userID) + "/" + listID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user unpin list request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user unpin list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &UserUnpinListResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("user unpin list decode: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// UserPinnedLists returns the lists pinned by a user
+func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPinnedListsOpts) (*UserPinnedListsResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user pinned list: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := userPinnedListEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user pinned list request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user pinned list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserPinnedListsRaw
+		Meta *UserPinnedListsMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("user pinned list dictionary: %w", err)
+	}
+
+	return &UserPinnedListsResponse{
+		Raw:  respBody.UserPinnedListsRaw,
+		Meta: respBody.Meta,
+	}, nil
+}
