@@ -279,3 +279,31 @@ This [example](./user-pinned-lists) demonstrates user pinned lists API.
 ```
 go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID'
 ```
+
+## User Follow List
+This [example](./user-follow-list) demonstrates user follow list API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID' -list_id='LIST_ID'
+```
+
+## User Unfollow List
+This [example](./user-unfollow-list) demonstrates user unfollow list API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID' -list_id='LIST_ID'
+```
+
+## User Followed Lists
+This [example](./user-followed-lists) demonstrates user followed lists API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -user_id='USER_ID'
+```
+
+## List Followers
+This [example](./list-followers) demonstrates list followers API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -list_id='LIST_ID'
+```

@@ -276,3 +276,98 @@ type UserPinnedListsRaw struct {
 type UserPinnedListsMeta struct {
 	ResultCount int `json:"result_count"`
 }
+
+// UserFollowedListsOpts are the options for the user followed lists
+type UserFollowedListsOpts struct {
+	Expansions      []Expansion
+	ListFields      []ListField
+	UserFields      []UserField
+	MaxResults      int
+	PaginationToken string
+}
+
+func (l UserFollowedListsOpts) addQuery(req *http.Request) {
+	q := req.URL.Query()
+	if len(l.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))
+	}
+	if len(l.ListFields) > 0 {
+		q.Add("list.fields", strings.Join(listFieldStringArray(l.ListFields), ","))
+	}
+	if len(l.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(l.UserFields), ","))
+	}
+	if l.MaxResults > 0 {
+		q.Add("max_results", strconv.Itoa(l.MaxResults))
+	}
+	if len(l.PaginationToken) > 0 {
+		q.Add("pagination_token", l.PaginationToken)
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+// UserFollowedListsResponse is the user followed response
+type UserFollowedListsResponse struct {
+	Raw  *UserFollowedListsRaw
+	Meta *UserFollowedListsMeta `json:"meta"`
+}
+
+// UserFollowedListsRaw is the raw response for the user followed
+type UserFollowedListsRaw struct {
+	Lists    []*ListObj       `json:"data"`
+	Includes *ListRawIncludes `json:"includes,omitempty"`
+	Errors   []*ErrorObj      `json:"errors,omitempty"`
+}
+
+// UserFollowedListsMeta is the meta for the user followed
+type UserFollowedListsMeta struct {
+	ResultCount   int    `json:"result_count"`
+	PreviousToken string `json:"previous_token"`
+	NextToken     string `json:"next_token"`
+}
+
+// ListUserFollowersOpts is the list followers options
+type ListUserFollowersOpts struct {
+	Expansions      []Expansion
+	TweetFields     []TweetField
+	UserFields      []UserField
+	MaxResults      int
+	PaginationToken string
+}
+
+func (l ListUserFollowersOpts) addQuery(req *http.Request) {
+	q := req.URL.Query()
+	if len(l.Expansions) > 0 {
+		q.Add("expansions", strings.Join(expansionStringArray(l.Expansions), ","))
+	}
+	if len(l.TweetFields) > 0 {
+		q.Add("tweet.fields", strings.Join(tweetFieldStringArray(l.TweetFields), ","))
+	}
+	if len(l.UserFields) > 0 {
+		q.Add("user.fields", strings.Join(userFieldStringArray(l.UserFields), ","))
+	}
+	if l.MaxResults > 0 {
+		q.Add("max_results", strconv.Itoa(l.MaxResults))
+	}
+	if len(l.PaginationToken) > 0 {
+		q.Add("pagination_token", l.PaginationToken)
+	}
+	if len(q) > 0 {
+		req.URL.RawQuery = q.Encode()
+	}
+}
+
+// ListUserFollowersMeta is the meta for the list followers
+type ListUserFollowersMeta struct {
+	ResultCount   int    `json:"result_count"`
+	PreviousToken string `json:"previous_token"`
+	NextToken     string `json:"next_token"`
+}
+
+// ListUserFollowersResponse is the response for the list followers
+type ListUserFollowersResponse struct {
+	Raw  *UserRaw
+	Meta *ListUserFollowersMeta `json:"meta"`
+}

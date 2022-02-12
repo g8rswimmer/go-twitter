@@ -82,6 +82,11 @@ Here are the current twitter `v2` API features supported:
 	* [user pin list](./examples/user-pin-list)
 	* [user unpin list](./examples/user-unpin-list)
 	* [user pinned lists](./examples/user-pinned-lists)
+* [List Follows](https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/introduction)
+	* [user follow list](./examples/user-follow-list)
+	* [user unfollow list](./examples/user-unfollow-list)
+	* [user followed lists](./examples/user-followed-lists)
+	* [list followers](./examples/list-followers)
 
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.

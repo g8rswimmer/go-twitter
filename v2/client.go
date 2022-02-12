@@ -25,6 +25,8 @@ const (
 	listTweetMaxResults          = 100
 	userListMembershipMaxResults = 100
 	listUserMemberMaxResults     = 100
+	userListFollowedMaxResults   = 100
+	listuserFollowersMaxResults  = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -2567,6 +2569,228 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 
 	return &UserPinnedListsResponse{
 		Raw:  respBody.UserPinnedListsRaw,
+		Meta: respBody.Meta,
+	}, nil
+}
+
+// UserFollowList enables an user to follow a list
+func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*UserFollowListResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("user follow list: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user follow list: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	reqBody := struct {
+		ListID string `json:"list_id"`
+	}{
+		ListID: listID,
+	}
+
+	enc, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("user follow list: unable to encode json request %w", err)
+	}
+
+	ep := userFollowedListEndpoint.urlID(c.Host, userID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("user follow list request: %w", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user follow list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &UserFollowListResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("user follow list decode: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// UserUnfollowList enables an user to unfollow a list
+func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*UserUnfollowListResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("user unfollow list: a list id is required: %w", ErrParameter)
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user unfollow list: an user id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := userFollowedListEndpoint.urlID(c.Host, userID) + "/" + listID
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user unfollow list request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user unfollow list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := &UserUnfollowListResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, fmt.Errorf("user unfollow list decode: %w", err)
+	}
+
+	return respBody, nil
+}
+
+// UserFollowedLists returns all list an user follows
+func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts UserFollowedListsOpts) (*UserFollowedListsResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user followed list: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > userListFollowedMaxResults:
+		return nil, fmt.Errorf("user followed list: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListFollowedMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := userFollowedListEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("user followed list request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user followed list response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserFollowedListsRaw
+		Meta *UserFollowedListsMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("user followed list dictionary: %w", err)
+	}
+
+	return &UserFollowedListsResponse{
+		Raw:  respBody.UserFollowedListsRaw,
+		Meta: respBody.Meta,
+	}, nil
+}
+
+// ListUserFollowers returns a list of users who are followers of a list
+func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts ListUserFollowersOpts) (*ListUserFollowersResponse, error) {
+	switch {
+	case len(listID) == 0:
+		return nil, fmt.Errorf("list user followers: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > listuserFollowersMaxResults:
+		return nil, fmt.Errorf("list user followers: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listuserFollowersMaxResults, ErrParameter)
+	default:
+	}
+
+	ep := listUserFollowersEndpoint.urlID(c.Host, listID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("list user followers request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("list user followers response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		return nil, e
+	}
+
+	respBody := struct {
+		*UserRaw
+		Meta *ListUserFollowersMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, fmt.Errorf("list user followers dictionary: %w", err)
+	}
+
+	return &ListUserFollowersResponse{
+		Raw:  respBody.UserRaw,
 		Meta: respBody.Meta,
 	}, nil
 }
