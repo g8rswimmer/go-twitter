@@ -2,19 +2,22 @@ package twitter
 
 // TweetLookupResponse contains all of the information from a tweet lookup callout
 type TweetLookupResponse struct {
-	Raw *TweetRaw
+	Raw       *TweetRaw
+	RateLimit *RateLimit
 }
 
 // UserMentionTimelineResponse contains the information from the user mention timelint callout
 type UserMentionTimelineResponse struct {
-	Raw  *TweetRaw
-	Meta *UserTimelineMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *UserTimelineMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserTweetTimelineResponse contains the information from the user tweet timeline callout
 type UserTweetTimelineResponse struct {
-	Raw  *TweetRaw
-	Meta *UserTimelineMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *UserTimelineMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserTimelineMeta contains the meta data from the timeline callout

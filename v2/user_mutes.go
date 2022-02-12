@@ -39,8 +39,9 @@ func (u UserMutesLookupOpts) addQuery(req *http.Request) {
 
 // UserMutesLookupResponse is the list of users that are muted
 type UserMutesLookupResponse struct {
-	Raw  *UserRaw
-	Meta *UserMutesLookupMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *UserMutesLookupMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserMutesLookupMeta is the meta associated with the muted users lookup
@@ -57,10 +58,12 @@ type UserMutesData struct {
 
 // UserMutesResponse is when a user mutes another
 type UserMutesResponse struct {
-	Data *UserMutesData `json:"data"`
+	Data      *UserMutesData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // UserDeleteMutesResponse is when a user unmutes another
 type UserDeleteMutesResponse struct {
-	Data *UserMutesData `json:"data"`
+	Data      *UserMutesData `json:"data"`
+	RateLimit *RateLimit
 }

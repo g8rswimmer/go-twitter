@@ -8,8 +8,9 @@ import (
 
 // TweetLikesLookupResponse is the user from the tweet likes
 type TweetLikesLookupResponse struct {
-	Raw  *UserRaw
-	Meta *TweetLikesMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *TweetLikesMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // TweetLikesMeta is the meta data from the response

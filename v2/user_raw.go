@@ -2,12 +2,14 @@ package twitter
 
 // UserLookupResponse contains all of the information from an user lookup callout
 type UserLookupResponse struct {
-	Raw *UserRaw
+	Raw       *UserRaw
+	RateLimit *RateLimit
 }
 
 // UserFollowsResponse is the response from the follows API
 type UserFollowsResponse struct {
-	Data *UserFollowsData `json:"data"`
+	Data      *UserFollowsData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // UserFollowsData is the data from the follows API
@@ -18,7 +20,8 @@ type UserFollowsData struct {
 
 // UserDeleteFollowsResponse is the response from the unfollows API
 type UserDeleteFollowsResponse struct {
-	Data *UserDeleteFollowsData `json:"data"`
+	Data      *UserDeleteFollowsData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // UserDeleteFollowsData is the data from the unfollows API
@@ -28,8 +31,9 @@ type UserDeleteFollowsData struct {
 
 // UserFollowingLookupResponse is the response for the user following API
 type UserFollowingLookupResponse struct {
-	Raw  *UserRaw
-	Meta *UserFollowinghMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *UserFollowinghMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserFollowinghMeta is the meta data returned by the user following API
@@ -41,8 +45,9 @@ type UserFollowinghMeta struct {
 
 // UserFollowersLookupResponse is the response for the user followers API
 type UserFollowersLookupResponse struct {
-	Raw  *UserRaw
-	Meta *UserFollowershMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *UserFollowershMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserFollowershMeta is the meta data returned by the user followers API

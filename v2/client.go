@@ -64,6 +64,8 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusCreated {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -71,9 +73,11 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -81,6 +85,7 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("create tweet decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -106,6 +111,8 @@ func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetRespon
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -113,9 +120,11 @@ func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetRespon
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -123,6 +132,7 @@ func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetRespon
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("delete tweet decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -160,6 +170,8 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -167,9 +179,11 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -190,7 +204,8 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 		}
 	}
 	return &TweetLookupResponse{
-		Raw: raw,
+		Raw:       raw,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -228,6 +243,8 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -235,9 +252,11 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -258,7 +277,8 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 		}
 	}
 	return &UserLookupResponse{
-		Raw: raw,
+		Raw:       raw,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -288,6 +308,8 @@ func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts Use
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -295,9 +317,11 @@ func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts Use
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -309,8 +333,9 @@ func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts Use
 		return nil, fmt.Errorf("user retweet lookup dictionary: %w", err)
 	}
 	return &UserRetweetLookupResponse{
-		Raw:  raw.UserRetweetRaw,
-		Meta: raw.Meta,
+		Raw:       raw.UserRetweetRaw,
+		Meta:      raw.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -348,6 +373,8 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -355,9 +382,11 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -378,7 +407,8 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 		}
 	}
 	return &UserLookupResponse{
-		Raw: raw,
+		Raw:       raw,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -402,6 +432,8 @@ func (c *Client) AuthUserLookup(ctx context.Context, opts UserLookupOpts) (*User
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -409,9 +441,11 @@ func (c *Client) AuthUserLookup(ctx context.Context, opts UserLookupOpts) (*User
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -426,7 +460,8 @@ func (c *Client) AuthUserLookup(ctx context.Context, opts UserLookupOpts) (*User
 	raw.Errors = single.Errors
 
 	return &UserLookupResponse{
-		Raw: raw,
+		Raw:       raw,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -461,6 +496,9 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	if err != nil {
 		return nil, fmt.Errorf("tweet recent search response read: %w", err)
 	}
+
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := json.Unmarshal(respBytes, e); err != nil {
@@ -468,15 +506,18 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
 	recentSearch := &TweetRecentSearchResponse{
-		Raw:  &TweetRaw{},
-		Meta: &TweetRecentSearchMeta{},
+		Raw:       &TweetRaw{},
+		Meta:      &TweetRecentSearchMeta{},
+		RateLimit: rl,
 	}
 
 	if err := json.Unmarshal(respBytes, recentSearch.Raw); err != nil {
@@ -528,6 +569,8 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusCreated {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -535,9 +578,11 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -545,6 +590,7 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, fmt.Errorf("tweet search stream add rule json response %w", err)
 	}
+	ruleResponse.RateLimit = rl
 	return ruleResponse, nil
 }
 
@@ -593,6 +639,8 @@ func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -600,9 +648,11 @@ func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -610,6 +660,7 @@ func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, fmt.Errorf("tweet search stream delete rule json response %w", err)
 	}
+	ruleResponse.RateLimit = rl
 	return ruleResponse, nil
 }
 
@@ -654,6 +705,8 @@ func (c *Client) TweetSearchStreamDeleteRuleByValue(ctx context.Context, ruleVal
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -661,9 +714,11 @@ func (c *Client) TweetSearchStreamDeleteRuleByValue(ctx context.Context, ruleVal
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -671,6 +726,7 @@ func (c *Client) TweetSearchStreamDeleteRuleByValue(ctx context.Context, ruleVal
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, fmt.Errorf("tweet search stream delete rule json response %w", err)
 	}
+	ruleResponse.RateLimit = rl
 	return ruleResponse, nil
 }
 
@@ -700,6 +756,8 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -707,9 +765,11 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -717,6 +777,7 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, fmt.Errorf("tweet search stream rules json response %w", err)
 	}
+	ruleResponse.RateLimit = rl
 	return ruleResponse, nil
 }
 
@@ -742,6 +803,8 @@ func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOp
 		return nil, fmt.Errorf("tweet search stream response: %w", err)
 	}
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		defer resp.Body.Close()
 		e := &ErrorResponse{}
@@ -750,13 +813,17 @@ func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOp
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
-	return StartTweetStream(resp.Body), nil
+	stream := StartTweetStream(resp.Body)
+	stream.RateLimit = rl
+	return stream, nil
 }
 
 // TweetRecentCounts will return a recent tweet counts based of a query
@@ -786,6 +853,8 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("tweet recent counts response read: %w", err)
@@ -797,9 +866,11 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -811,7 +882,7 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 	if err := json.Unmarshal(respBytes, recentCounts); err != nil {
 		return nil, fmt.Errorf("tweet recent counts response error decode: %w", err)
 	}
-
+	recentCounts.RateLimit = rl
 	return recentCounts, nil
 }
 
@@ -837,6 +908,8 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user following lookup response read: %w", err)
@@ -848,9 +921,11 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -866,7 +941,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 	if err := json.Unmarshal(respBytes, followingLookup); err != nil {
 		return nil, fmt.Errorf("user following lookup meta response error decode: %w", err)
 	}
-
+	followingLookup.RateLimit = rl
 	return followingLookup, nil
 }
 
@@ -905,6 +980,8 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -912,9 +989,11 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -922,6 +1001,7 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user follows decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -951,6 +1031,8 @@ func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID str
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -958,9 +1040,11 @@ func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID str
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -968,6 +1052,7 @@ func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID str
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete follows decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -993,6 +1078,8 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user followers lookup response read: %w", err)
@@ -1004,9 +1091,11 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1022,7 +1111,7 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 	if err := json.Unmarshal(respBytes, followersLookup); err != nil {
 		return nil, fmt.Errorf("user followers lookup meta response error decode: %w", err)
 	}
-
+	followersLookup.RateLimit = rl
 	return followersLookup, nil
 }
 
@@ -1048,6 +1137,8 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user tweet timeline response read: %w", err)
@@ -1059,9 +1150,11 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1077,7 +1170,7 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 	if err := json.Unmarshal(respBytes, timeline); err != nil {
 		return nil, fmt.Errorf("user tweet timeline meta response error decode: %w", err)
 	}
-
+	timeline.RateLimit = rl
 	return timeline, nil
 }
 
@@ -1103,6 +1196,8 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user mention timeline response read: %w", err)
@@ -1114,9 +1209,11 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1132,7 +1229,7 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	if err := json.Unmarshal(respBytes, timeline); err != nil {
 		return nil, fmt.Errorf("user mention timeline meta response error decode: %w", err)
 	}
-
+	timeline.RateLimit = rl
 	return timeline, nil
 }
 
@@ -1164,6 +1261,8 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) erro
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("tweet hide replies response read: %w", err)
@@ -1175,9 +1274,11 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) erro
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		errResp.StatusCode = resp.StatusCode
+		errResp.RateLimit = rl
 		return errResp
 	}
 
@@ -1229,6 +1330,8 @@ func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*User
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1236,9 +1339,11 @@ func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*User
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1246,6 +1351,7 @@ func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*User
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user retweet decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1275,6 +1381,8 @@ func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) 
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1282,9 +1390,11 @@ func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) 
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1292,6 +1402,7 @@ func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) 
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete retweet decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1321,6 +1432,8 @@ func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserB
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user blocked lookup response read: %w", err)
@@ -1332,9 +1445,11 @@ func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserB
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1350,7 +1465,7 @@ func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserB
 	if err := json.Unmarshal(respBytes, blockedLookup); err != nil {
 		return nil, fmt.Errorf("user blocked lookup meta response error decode: %w", err)
 	}
-
+	blockedLookup.RateLimit = rl
 	return blockedLookup, nil
 }
 
@@ -1389,6 +1504,8 @@ func (c *Client) UserBlocks(ctx context.Context, userID, targetUserID string) (*
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1396,9 +1513,11 @@ func (c *Client) UserBlocks(ctx context.Context, userID, targetUserID string) (*
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1406,6 +1525,7 @@ func (c *Client) UserBlocks(ctx context.Context, userID, targetUserID string) (*
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user blocks decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1435,6 +1555,8 @@ func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID stri
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1442,9 +1564,11 @@ func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID stri
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1452,6 +1576,7 @@ func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID stri
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete blocks decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1481,6 +1606,8 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 	}
 	defer resp.Body.Close()
 
+	rl := rateFromHeader(resp.Header)
+
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("user muted lookup response read: %w", err)
@@ -1492,9 +1619,11 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1510,7 +1639,7 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 	if err := json.Unmarshal(respBytes, mutedLookup); err != nil {
 		return nil, fmt.Errorf("user muted lookup meta response error decode: %w", err)
 	}
-
+	mutedLookup.RateLimit = rl
 	return mutedLookup, nil
 }
 
@@ -1549,6 +1678,8 @@ func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*U
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1556,9 +1687,11 @@ func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*U
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1566,6 +1699,7 @@ func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*U
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user mutes decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1595,6 +1729,8 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1602,9 +1738,11 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1612,6 +1750,7 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user delete mutes decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1646,6 +1785,8 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1653,9 +1794,11 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1669,8 +1812,9 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 	}
 
 	return &TweetLikesLookupResponse{
-		Raw:  respBody.UserRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -1705,6 +1849,8 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1712,9 +1858,11 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1727,8 +1875,9 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 		return nil, fmt.Errorf("tweet user likes lookup dictionary: %w", err)
 	}
 	return &UserLikesLookupResponse{
-		Raw:  respBody.TweetRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.TweetRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -1767,6 +1916,8 @@ func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLi
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1774,9 +1925,11 @@ func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLi
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1784,6 +1937,7 @@ func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLi
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user likes decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1813,6 +1967,8 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1820,9 +1976,11 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1830,6 +1988,7 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 	if err := decoder.Decode(raw); err != nil {
 		return nil, fmt.Errorf("user likes retweet decode response %w", err)
 	}
+	raw.RateLimit = rl
 	return raw, nil
 }
 
@@ -1855,6 +2014,8 @@ func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOp
 		return nil, fmt.Errorf("tweet sample stream response: %w", err)
 	}
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		defer resp.Body.Close()
 		e := &ErrorResponse{}
@@ -1863,13 +2024,17 @@ func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOp
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
-	return StartTweetStream(resp.Body), nil
+	stream := StartTweetStream(resp.Body)
+	stream.RateLimit = rl
+	return stream, nil
 }
 
 // ListLookup returns the details of a specified list
@@ -1898,6 +2063,8 @@ func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupO
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1905,9 +2072,11 @@ func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupO
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1920,7 +2089,8 @@ func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupO
 	}
 
 	return &ListLookupResponse{
-		Raw: respBody.ListRaw,
+		Raw:       respBody.ListRaw,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -1953,6 +2123,8 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -1960,9 +2132,11 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -1976,8 +2150,9 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 	}
 
 	return &UserListLookupResponse{
-		Raw:  respBody.UserListRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserListRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -2010,6 +2185,8 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2017,9 +2194,11 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2033,8 +2212,9 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 	}
 
 	return &ListTweetLookupResponse{
-		Raw:  respBody.TweetRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.TweetRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -2068,6 +2248,8 @@ func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreate
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusCreated {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2075,9 +2257,11 @@ func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreate
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2086,7 +2270,7 @@ func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreate
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("create list tweet lookup dictionary: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2120,6 +2304,8 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaD
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2127,9 +2313,11 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaD
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2138,7 +2326,7 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaD
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("update list tweet lookup dictionary: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2167,6 +2355,8 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2174,9 +2364,11 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2185,7 +2377,7 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("delete list tweet lookup dictionary: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2227,6 +2419,8 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2234,9 +2428,11 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2245,7 +2441,7 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("create list tweet lookup dictionary: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2275,6 +2471,8 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2282,9 +2480,11 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2293,7 +2493,7 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("remove list tweet lookup dictionary: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2326,6 +2526,8 @@ func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUs
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2333,9 +2535,11 @@ func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUs
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2349,8 +2553,9 @@ func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUs
 	}
 
 	return &ListUserMembersResponse{
-		Raw:  respBody.UserRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -2383,6 +2588,8 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2390,9 +2597,11 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2406,8 +2615,9 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 	}
 
 	return &UserListMembershipsResponse{
-		Raw:  respBody.UserListMembershipsRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserListMembershipsRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -2449,6 +2659,8 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2456,9 +2668,11 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2467,7 +2681,7 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("user pin list decode: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2497,6 +2711,8 @@ func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*Use
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2504,9 +2720,11 @@ func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*Use
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2515,7 +2733,7 @@ func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*Use
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("user unpin list decode: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2545,6 +2763,8 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2552,9 +2772,11 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2568,8 +2790,9 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 	}
 
 	return &UserPinnedListsResponse{
-		Raw:  respBody.UserPinnedListsRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserPinnedListsRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -2611,6 +2834,8 @@ func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*Us
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2618,9 +2843,11 @@ func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*Us
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2629,7 +2856,7 @@ func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*Us
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("user follow list decode: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2659,6 +2886,8 @@ func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2666,9 +2895,11 @@ func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2677,7 +2908,7 @@ func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, fmt.Errorf("user unfollow list decode: %w", err)
 	}
-
+	respBody.RateLimit = rl
 	return respBody, nil
 }
 
@@ -2710,6 +2941,8 @@ func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts User
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2717,9 +2950,11 @@ func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts User
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2733,8 +2968,9 @@ func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts User
 	}
 
 	return &UserFollowedListsResponse{
-		Raw:  respBody.UserFollowedListsRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserFollowedListsRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }
 
@@ -2767,6 +3003,8 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 
 	decoder := json.NewDecoder(resp.Body)
 
+	rl := rateFromHeader(resp.Header)
+
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
@@ -2774,9 +3012,11 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
 			}
 		}
 		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
 		return nil, e
 	}
 
@@ -2790,7 +3030,8 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 	}
 
 	return &ListUserFollowersResponse{
-		Raw:  respBody.UserRaw,
-		Meta: respBody.Meta,
+		Raw:       respBody.UserRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
 	}, nil
 }

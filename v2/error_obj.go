@@ -7,6 +7,7 @@ type HTTPError struct {
 	Status     string
 	StatusCode int
 	URL        string
+	RateLimit  *RateLimit
 }
 
 func (h *HTTPError) Error() string {
@@ -32,10 +33,11 @@ type Error struct {
 // ErrorResponse is returned by a non-success callout
 type ErrorResponse struct {
 	StatusCode int
-	Errors     []Error `json:"errors"`
-	Title      string  `json:"title"`
-	Detail     string  `json:"detail"`
-	Type       string  `json:"type"`
+	Errors     []Error    `json:"errors"`
+	Title      string     `json:"title"`
+	Detail     string     `json:"detail"`
+	Type       string     `json:"type"`
+	RateLimit  *RateLimit `json:"-"`
 }
 
 func (e *ErrorResponse) Error() string {

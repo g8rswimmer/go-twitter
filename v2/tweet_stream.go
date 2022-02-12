@@ -156,12 +156,13 @@ type SystemMessage struct {
 
 // TweetStream is the stream handler
 type TweetStream struct {
-	tweets chan *TweetMessage
-	system chan map[SystemMessageType]SystemMessage
-	close  chan bool
-	err    chan error
-	alive  bool
-	mutex  sync.RWMutex
+	tweets    chan *TweetMessage
+	system    chan map[SystemMessageType]SystemMessage
+	close     chan bool
+	err       chan error
+	alive     bool
+	mutex     sync.RWMutex
+	RateLimit *RateLimit
 }
 
 // StartTweetStream will start the tweet streaming

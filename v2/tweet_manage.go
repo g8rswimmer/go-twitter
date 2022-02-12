@@ -90,7 +90,8 @@ type CreateTweetData struct {
 
 // CreateTweetResponse is the response returned by the create tweet
 type CreateTweetResponse struct {
-	Tweet *CreateTweetData `json:"data"`
+	Tweet     *CreateTweetData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // DeleteTweetData is the indication of the deletion of tweet
@@ -100,5 +101,6 @@ type DeleteTweetData struct {
 
 // DeleteTweetResponse is the response returned by the delete tweet
 type DeleteTweetResponse struct {
-	Tweet *DeleteTweetData `json:"data"`
+	Tweet     *DeleteTweetData `json:"data"`
+	RateLimit *RateLimit
 }
