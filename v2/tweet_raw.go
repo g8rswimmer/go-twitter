@@ -1,5 +1,14 @@
 package twitter
 
+type TweetHideReplyData struct {
+	Hidden bool `json:"hidden"`
+}
+
+type TweetHideReplyResponse struct {
+	Reply     *TweetHideReplyData `json:"data"`
+	RateLimit *RateLimit
+}
+
 // TweetLookupResponse contains all of the information from a tweet lookup callout
 type TweetLookupResponse struct {
 	Raw       *TweetRaw

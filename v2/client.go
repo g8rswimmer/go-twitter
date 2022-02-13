@@ -1234,9 +1234,9 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 }
 
 // TweetHideReplies will hide the replies for a given tweet
-func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) error {
+func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) (*TweetHideReplyResponse, error) {
 	if len(id) == 0 {
-		return fmt.Errorf("tweet hide replies: id must be present %w", ErrParameter)
+		return nil, fmt.Errorf("tweet hide replies: id must be present %w", ErrParameter)
 	}
 	type body struct {
 		Hidden bool `json:"hidden"`
@@ -1246,31 +1246,29 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) erro
 	}
 	enc, err := json.Marshal(rb)
 	if err != nil {
-		return fmt.Errorf("tweet hide replies: request body marshal %w", err)
+		return nil, fmt.Errorf("tweet hide replies: request body marshal %w", err)
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, tweetHideRepliesEndpoint.urlID(c.Host, id), bytes.NewReader(enc))
 	if err != nil {
-		return fmt.Errorf("tweet hide replies request: %w", err)
+		return nil, fmt.Errorf("tweet hide replies request: %w", err)
 	}
 	req.Header.Add("Accept", "application/json")
 	c.Authorizer.Add(req)
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
-		return fmt.Errorf("tweet hide replies response: %w", err)
+		return nil, fmt.Errorf("tweet hide replies response: %w", err)
 	}
 	defer resp.Body.Close()
 
 	rl := rateFromHeader(resp.Header)
 
-	respBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("tweet hide replies response read: %w", err)
-	}
+	decoder := json.NewDecoder(resp.Body)
+
 	if resp.StatusCode != http.StatusOK {
 		errResp := &ErrorResponse{}
-		if err := json.Unmarshal(respBytes, errResp); err != nil {
-			return &HTTPError{
+		if err := decoder.Decode(errResp); err != nil {
+			return nil, &HTTPError{
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
@@ -1279,20 +1277,15 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) erro
 		}
 		errResp.StatusCode = resp.StatusCode
 		errResp.RateLimit = rl
-		return errResp
+		return nil, errResp
 	}
 
-	type responseData struct {
-		Data body `json:"data"`
+	rd := &TweetHideReplyResponse{}
+	if err := decoder.Decode(rd); err != nil {
+		return nil, fmt.Errorf("tweet hide replies response error decode: %w", err)
 	}
-	rd := &responseData{}
-	if err := json.Unmarshal(respBytes, rd); err != nil {
-		return fmt.Errorf("tweet hide replies response error decode: %w", err)
-	}
-	if rd.Data.Hidden != hide {
-		return fmt.Errorf("tweet hide replies response unable to hide %v", hide)
-	}
-	return nil
+	rd.RateLimit = rl
+	return rd, nil
 }
 
 // UserRetweet will retweet a tweet for a user
