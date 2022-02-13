@@ -3,13 +3,13 @@ package twitter
 import "fmt"
 
 type ResponseDecodeError struct {
-	Msg       string
+	Name      string
 	Err       error
 	RateLimit *RateLimit
 }
 
 func (r *ResponseDecodeError) Error() string {
-	return fmt.Sprintf("%s: %v", r.Msg, r.Err)
+	return fmt.Sprintf("%s decode error: %v", r.Name, r.Err)
 }
 
 func (r *ResponseDecodeError) Unwrap() error {

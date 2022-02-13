@@ -84,7 +84,7 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 	raw := &CreateTweetResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "create tweet decode response",
+			Name:      "create tweet",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -135,7 +135,7 @@ func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetRespon
 	raw := &DeleteTweetResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "delete tweet decode response",
+			Name:      "delete tweet",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -201,7 +201,7 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 		single := &tweetraw{}
 		if err := decoder.Decode(single); err != nil {
 			return nil, &ResponseDecodeError{
-				Msg:       "tweet lookup single dictionary",
+				Name:      "tweet lookup",
 				Err:       err,
 				RateLimit: rl,
 			}
@@ -213,7 +213,7 @@ func (c *Client) TweetLookup(ctx context.Context, ids []string, opts TweetLookup
 	default:
 		if err := decoder.Decode(raw); err != nil {
 			return nil, &ResponseDecodeError{
-				Msg:       "tweet lookup dictionary",
+				Name:      "tweet lookup ",
 				Err:       err,
 				RateLimit: rl,
 			}
@@ -282,7 +282,7 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 		single := &userraw{}
 		if err := decoder.Decode(single); err != nil {
 			return nil, &ResponseDecodeError{
-				Msg:       "user lookup dictionary",
+				Name:      "user lookup",
 				Err:       err,
 				RateLimit: rl,
 			}
@@ -294,7 +294,7 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 	default:
 		if err := decoder.Decode(raw); err != nil {
 			return nil, &ResponseDecodeError{
-				Msg:       "user lookup dictionary",
+				Name:      "user lookup",
 				Err:       err,
 				RateLimit: rl,
 			}
@@ -355,7 +355,7 @@ func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts Use
 	}{}
 	if err := decoder.Decode(&raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user retweet lookup dictionary",
+			Name:      "user retweet lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -424,7 +424,7 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 		single := &userraw{}
 		if err := decoder.Decode(single); err != nil {
 			return nil, &ResponseDecodeError{
-				Msg:       "username lookup single dictionary",
+				Name:      "username lookup",
 				Err:       err,
 				RateLimit: rl,
 			}
@@ -436,7 +436,7 @@ func (c *Client) UserNameLookup(ctx context.Context, usernames []string, opts Us
 	default:
 		if err := decoder.Decode(raw); err != nil {
 			return nil, &ResponseDecodeError{
-				Msg:       "username lookup dictionary",
+				Name:      "username lookup",
 				Err:       err,
 				RateLimit: rl,
 			}
@@ -488,7 +488,7 @@ func (c *Client) AuthUserLookup(ctx context.Context, opts UserLookupOpts) (*User
 	single := &userraw{}
 	if err := decoder.Decode(single); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user lookup single dictionary",
+			Name:      "auth user lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -562,7 +562,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 
 	if err := json.Unmarshal(respBytes, recentSearch.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet recent search raw response error decode",
+			Name:      "tweet recent search",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -570,7 +570,7 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 
 	if err := json.Unmarshal(respBytes, recentSearch); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet recent search meta response error decode",
+			Name:      "tweet recent search",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -637,7 +637,7 @@ func (c *Client) TweetSearchStreamAddRule(ctx context.Context, rules []TweetSear
 	ruleResponse := &TweetSearchStreamAddRuleResponse{}
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet search stream add rule json response",
+			Name:      "tweet search stream add rule",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -711,7 +711,7 @@ func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []
 	ruleResponse := &TweetSearchStreamDeleteRuleResponse{}
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet search stream delete rule json response",
+			Name:      "tweet search stream delete rule ny id",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -781,7 +781,7 @@ func (c *Client) TweetSearchStreamDeleteRuleByValue(ctx context.Context, ruleVal
 	ruleResponse := &TweetSearchStreamDeleteRuleResponse{}
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet search stream delete rule json response",
+			Name:      "tweet search stream delete rule by value",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -836,7 +836,7 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 	ruleResponse := &TweetSearchStreamRulesResponse{}
 	if err := decoder.Decode(ruleResponse); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet search stream rules json response",
+			Name:      "tweet search stream rules",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -945,7 +945,7 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 
 	if err := json.Unmarshal(respBytes, recentCounts); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet recent counts response error decode",
+			Name:      "tweet recent counts",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1004,7 +1004,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 
 	if err := json.Unmarshal(respBytes, followingLookup.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user following lookup raw response error decode",
+			Name:      "user following lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1012,7 +1012,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 
 	if err := json.Unmarshal(respBytes, followingLookup); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user following lookup meta response error decode",
+			Name:      "user following lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1076,7 +1076,7 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 	raw := &UserFollowsResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user follows decode response",
+			Name:      "user follows",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1131,7 +1131,7 @@ func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID str
 	raw := &UserDeleteFollowsResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user delete follows decode response",
+			Name:      "delete user follows",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1190,7 +1190,7 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 
 	if err := json.Unmarshal(respBytes, followersLookup.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user followers lookup raw response error decode",
+			Name:      "user followers lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1198,7 +1198,7 @@ func (c *Client) UserFollowersLookup(ctx context.Context, id string, opts UserFo
 
 	if err := json.Unmarshal(respBytes, followersLookup); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user followers lookup meta response error decode",
+			Name:      "user followers lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1257,7 +1257,7 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 
 	if err := json.Unmarshal(respBytes, timeline.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user tweet timeline raw response error decode",
+			Name:      "user tweet timeline",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1265,7 +1265,7 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 
 	if err := json.Unmarshal(respBytes, timeline); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user tweet timeline meta response error decode",
+			Name:      "user tweet timeline",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1324,7 +1324,7 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 
 	if err := json.Unmarshal(respBytes, timeline.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user mention timeline raw response error decodee",
+			Name:      "user mention timeline",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1332,7 +1332,7 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 
 	if err := json.Unmarshal(respBytes, timeline); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user mention timeline meta response error decode",
+			Name:      "user mention timeline",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1391,7 +1391,7 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) (*Tw
 	rd := &TweetHideReplyResponse{}
 	if err := decoder.Decode(rd); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet hide replies response error decode",
+			Name:      "tweet hide replies",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1455,7 +1455,7 @@ func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*User
 	raw := &UserRetweetResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user retweet decode response",
+			Name:      "user retweet",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1510,7 +1510,7 @@ func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) 
 	raw := &DeleteUserRetweetResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user delete retweet decode response",
+			Name:      "delete user retweet",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1573,7 +1573,7 @@ func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserB
 
 	if err := json.Unmarshal(respBytes, blockedLookup.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user blocked lookup raw response error decode",
+			Name:      "user blocked lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1581,7 +1581,7 @@ func (c *Client) UserBlocksLookup(ctx context.Context, userID string, opts UserB
 
 	if err := json.Unmarshal(respBytes, blockedLookup); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user blocked lookup meta response error decode",
+			Name:      "user blocked lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1645,7 +1645,7 @@ func (c *Client) UserBlocks(ctx context.Context, userID, targetUserID string) (*
 	raw := &UserBlocksResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user blocks decode response",
+			Name:      "user blocks",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1700,7 +1700,7 @@ func (c *Client) DeleteUserBlocks(ctx context.Context, userID, targetUserID stri
 	raw := &UserDeleteBlocksResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user delete blocks decode response",
+			Name:      "delete user blocks",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1763,7 +1763,7 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 
 	if err := json.Unmarshal(respBytes, mutedLookup.Raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user muted lookup raw response error decode",
+			Name:      "user muted lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1771,7 +1771,7 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 
 	if err := json.Unmarshal(respBytes, mutedLookup); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user muted lookup meta response error decode",
+			Name:      "user muted lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1835,7 +1835,7 @@ func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*U
 	raw := &UserMutesResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user mutes decode response",
+			Name:      "user mutes",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1890,7 +1890,7 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	raw := &UserDeleteMutesResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user delete mutes decode response",
+			Name:      "user delete mutes",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -1954,7 +1954,7 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet user likes lookup dictionary",
+			Name:      "tweet likes lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2022,7 +2022,7 @@ func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLi
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "tweet user likes lookup dictionary",
+			Name:      "user likes lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2089,7 +2089,7 @@ func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLi
 	raw := &UserLikesResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user likes decode response",
+			Name:      "user likes",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2144,7 +2144,7 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 	raw := &DeteleUserLikesResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user likes retweet decode response",
+			Name:      "delete user likes",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2247,7 +2247,7 @@ func (c *Client) ListLookup(ctx context.Context, listID string, opts ListLookupO
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "list lookup dictionary",
+			Name:      "list lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2312,7 +2312,7 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user list lookup dictionary",
+			Name:      "user list lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2378,7 +2378,7 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "list tweet lookup dictionary",
+			Name:      "list tweet lookup",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2442,7 +2442,7 @@ func (c *Client) CreateList(ctx context.Context, list ListMetaData) (*ListCreate
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "create list tweet lookup dictionary",
+			Name:      "create list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2502,7 +2502,7 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaD
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "update list tweet lookup dictionary",
+			Name:      "update list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2557,7 +2557,7 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "delete list tweet lookup dictionary",
+			Name:      "delete list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2625,7 +2625,7 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "create list tweet lookup dictionary",
+			Name:      "add list memeber",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2681,7 +2681,7 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "remove list tweet lookup dictionary",
+			Name:      "remove list memeber",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2743,7 +2743,7 @@ func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUs
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "list user members dictionary",
+			Name:      "list user members",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2809,7 +2809,7 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user list membership dictionar",
+			Name:      "user list memberships",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2881,7 +2881,7 @@ func (c *Client) UserPinList(ctx context.Context, userID, listID string) (*UserP
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user pin list decode",
+			Name:      "user pin list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2937,7 +2937,7 @@ func (c *Client) UserUnpinList(ctx context.Context, userID, listID string) (*Use
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user unpin list decode",
+			Name:      "user unpin list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2996,7 +2996,7 @@ func (c *Client) UserPinnedLists(ctx context.Context, userID string, opts UserPi
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user pinned list dictionary",
+			Name:      "user pinned list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -3068,7 +3068,7 @@ func (c *Client) UserFollowList(ctx context.Context, userID, listID string) (*Us
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "ser follow list decode",
+			Name:      "user follow list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -3124,7 +3124,7 @@ func (c *Client) UserUnfollowList(ctx context.Context, userID, listID string) (*
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user unfollow list decode",
+			Name:      "user unfollow list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -3186,7 +3186,7 @@ func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts User
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "user followed list dictionary",
+			Name:      "user followed list",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -3252,7 +3252,7 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 
 	if err := decoder.Decode(&respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Msg:       "ist user followers dictionary",
+			Name:      "list user followers",
 			Err:       err,
 			RateLimit: rl,
 		}
