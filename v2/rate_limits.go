@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -42,4 +43,20 @@ func rateFromHeader(header http.Header) *RateLimit {
 		Remaining: remaining,
 		Reset:     Epoch(reset),
 	}
+}
+
+func RateLimitFromError(err error) (*RateLimit, bool) {
+	var er *ErrorResponse
+	var hr *HTTPError
+	var rde *ResponseDecodeError
+	switch {
+	case errors.As(err, &er) && er.RateLimit != nil:
+		return er.RateLimit, true
+	case errors.As(err, &hr) && hr.RateLimit != nil:
+		return hr.RateLimit, true
+	case errors.As(err, &rde) && rde.RateLimit != nil:
+		return rde.RateLimit, true
+	default:
+	}
+	return nil, false
 }

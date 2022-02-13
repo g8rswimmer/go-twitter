@@ -2,6 +2,20 @@ package twitter
 
 import "fmt"
 
+type ResponseDecodeError struct {
+	Msg       string
+	Err       error
+	RateLimit *RateLimit
+}
+
+func (r *ResponseDecodeError) Error() string {
+	return fmt.Sprintf("%s: %v", r.Msg, r.Err)
+}
+
+func (r *ResponseDecodeError) Unwrap() error {
+	return r.Err
+}
+
 // HTTPError is a response error where the body is not JSON, but XML.  This commonly seen in 404 errors.
 type HTTPError struct {
 	Status     string
@@ -10,7 +24,7 @@ type HTTPError struct {
 	RateLimit  *RateLimit
 }
 
-func (h *HTTPError) Error() string {
+func (h HTTPError) Error() string {
 	return fmt.Sprintf("twitter [%s] status: %s code: %d", h.URL, h.Status, h.StatusCode)
 }
 
@@ -40,6 +54,6 @@ type ErrorResponse struct {
 	RateLimit  *RateLimit `json:"-"`
 }
 
-func (e *ErrorResponse) Error() string {
+func (e ErrorResponse) Error() string {
 	return fmt.Sprintf("twitter callout status %d %s:%s", e.StatusCode, e.Title, e.Detail)
 }
