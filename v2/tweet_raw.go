@@ -1,9 +1,11 @@
 package twitter
 
+// TweetHideReplyData is the hide reply data
 type TweetHideReplyData struct {
 	Hidden bool `json:"hidden"`
 }
 
+// TweetHideReplyResponse is the response from the hide replies
 type TweetHideReplyResponse struct {
 	Reply     *TweetHideReplyData `json:"data"`
 	RateLimit *RateLimit

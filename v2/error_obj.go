@@ -2,6 +2,7 @@ package twitter
 
 import "fmt"
 
+// ResponseDecodeError is an error when a response has a decoding error, JSON.
 type ResponseDecodeError struct {
 	Name      string
 	Err       error
@@ -12,6 +13,7 @@ func (r *ResponseDecodeError) Error() string {
 	return fmt.Sprintf("%s decode error: %v", r.Name, r.Err)
 }
 
+// Unwrap will return the wrapped error
 func (r *ResponseDecodeError) Unwrap() error {
 	return r.Err
 }
