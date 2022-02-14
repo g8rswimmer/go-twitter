@@ -91,6 +91,8 @@ Here are the current twitter `v2` API features supported:
 ## Rate Limiting
 With each response, the rate limits from the response header is returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.
 
+There is an example of rate limiting from a response [here](./examples/rate-limit).
+
 This is an example of a twitter callout and if the limits have been reached, then it will backoff and try again.
 ```go
 func TweetLikes(ctx context.Context, id string, client *twitter.Client) (*twitter.TweetLikesLookupResponse, error) {
