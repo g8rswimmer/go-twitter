@@ -47,6 +47,13 @@ func TestClient_AddUserPinList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -57,6 +64,11 @@ func TestClient_AddUserPinList(t *testing.T) {
 			want: &UserPinListResponse{
 				List: &UserPinListData{
 					Pinned: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -118,6 +130,13 @@ func TestClient_RemoveUserPinList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -128,6 +147,11 @@ func TestClient_RemoveUserPinList(t *testing.T) {
 			want: &UserUnpinListResponse{
 				List: &UserPinListData{
 					Pinned: false,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -195,6 +219,13 @@ func TestClient_UserPinnedLists(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -212,6 +243,11 @@ func TestClient_UserPinnedLists(t *testing.T) {
 				},
 				Meta: &UserPinnedListsMeta{
 					ResultCount: 1,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 		},

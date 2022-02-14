@@ -47,6 +47,13 @@ func TestClient_AddListMember(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -57,6 +64,11 @@ func TestClient_AddListMember(t *testing.T) {
 			want: &ListAddMemberResponse{
 				List: &ListMemberData{
 					Member: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 		},
@@ -117,6 +129,13 @@ func TestClient_RemoveListMember(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -127,6 +146,11 @@ func TestClient_RemoveListMember(t *testing.T) {
 			want: &ListRemoveMemberResponse{
 				List: &ListMemberData{
 					Member: false,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 		},
@@ -195,6 +219,13 @@ func TestClient_ListUserMembers(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -214,6 +245,11 @@ func TestClient_ListUserMembers(t *testing.T) {
 				Meta: &ListUserMembersMeta{
 					ResultCount: 1,
 					NextToken:   "5676935732641845249",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -355,6 +391,13 @@ func TestClient_UserListMemberships(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -372,6 +415,11 @@ func TestClient_UserListMemberships(t *testing.T) {
 				},
 				Meta: &UserListMembershipsMeta{
 					ResultCount: 1,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,

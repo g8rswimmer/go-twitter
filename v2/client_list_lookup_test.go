@@ -48,6 +48,13 @@ func TestClient_ListLookup(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -60,6 +67,11 @@ func TestClient_ListLookup(t *testing.T) {
 						ID:   "84839422",
 						Name: "Official Twitter Accounts",
 					},
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -191,6 +203,13 @@ func TestClient_UserListLookup(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -208,6 +227,11 @@ func TestClient_UserListLookup(t *testing.T) {
 				},
 				Meta: &UserListLookupMeta{
 					ResultCount: 1,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -351,6 +375,13 @@ func TestClient_ListTweetLookup(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -368,6 +399,11 @@ func TestClient_ListTweetLookup(t *testing.T) {
 				},
 				Meta: &ListTweetLookupMeta{
 					ResultCount: 1,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,

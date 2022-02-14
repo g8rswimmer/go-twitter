@@ -47,6 +47,13 @@ func TestClient_UserFollowList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -57,6 +64,11 @@ func TestClient_UserFollowList(t *testing.T) {
 			want: &UserFollowListResponse{
 				List: &UserFollowListData{
 					Following: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -118,6 +130,13 @@ func TestClient_UserUnfollowList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -128,6 +147,11 @@ func TestClient_UserUnfollowList(t *testing.T) {
 			want: &UserUnfollowListResponse{
 				List: &UserFollowListData{
 					Following: false,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -195,6 +219,13 @@ func TestClient_UserFollowedLists(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -212,6 +243,11 @@ func TestClient_UserFollowedLists(t *testing.T) {
 				},
 				Meta: &UserFollowedListsMeta{
 					ResultCount: 1,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -358,6 +394,13 @@ func TestClient_ListUserFollowers(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -377,6 +420,11 @@ func TestClient_ListUserFollowers(t *testing.T) {
 				Meta: &ListUserFollowersMeta{
 					ResultCount: 1,
 					NextToken:   "1714209892546977900",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,

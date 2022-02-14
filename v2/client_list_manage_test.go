@@ -47,6 +47,13 @@ func TestClient_CreateList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusCreated,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -62,6 +69,11 @@ func TestClient_CreateList(t *testing.T) {
 				List: &ListCreateData{
 					ID:   "1441162269824405510",
 					Name: "test v2 create list",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 		},
@@ -122,6 +134,13 @@ func TestClient_UpdateList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -137,6 +156,11 @@ func TestClient_UpdateList(t *testing.T) {
 			want: &ListUpdateResponse{
 				List: &ListUpdateData{
 					Updated: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 		},
@@ -196,6 +220,13 @@ func TestClient_DeleteList(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -205,6 +236,11 @@ func TestClient_DeleteList(t *testing.T) {
 			want: &ListDeleteResponse{
 				List: &ListDeleteData{
 					Deleted: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 		},
