@@ -88,6 +88,27 @@ Here are the current twitter `v2` API features supported:
 	* [user followed lists](./examples/user-followed-lists)
 	* [list followers](./examples/list-followers)
 
+## Rate Limiting
+With each response, the rate limits from the response header is returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.
+
+This is an example of a twitter callout and if the limits have been reached, then it will backoff and try again.
+```go
+func TweetLikes(ctx context.Context, id string, client *twitter.Client) (*twitter.TweetLikesLookupResponse, error) {
+	var er *ErrorResponse
+
+	opts := twitter.ListUserMembersOpts{
+		MaxResults: 1,
+	}
+	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+
+	if rateLimit, has := twitter.RateLimitFromError(err); has && rateLimit.Remaining == 0 {
+		time.Sleep(time.Until(rateLimit.Reset.Time()))
+		return client.TweetLikesLookup(ctx, id, opts)
+	}
+	return tweetResponse, err
+}
+```
+
 ## Examples
 Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
 
