@@ -22,6 +22,27 @@ The following are changes between `v1` and `v2` of the library.
 *  One structure for all endpoint callouts.  In `v1` there were two structures, `Tweet` and `User`, to preform callouts.  This required management of two structures and knowledge which structure contained the desired method callouts.  At the time, the grouping looked logical.  However with the addtion of the timeline endpoints, it makes more sense to have a single struture `Client` to handle all of the callouts.  If the user would like to separate the functionality, interfaces can be used to achieve this.
 *  Endpoint methods will return the entire response.  One of the major drawbacks of `v1` was the object returned was not the entire response sent by the callout.  For example, the `errors` object in the response is included in `v1` response which does not allow the caller to properly handle partial errors.  In `v2`, the first focus is to return the response from twitter to allow the caller to use it as they see fit.  However, it does not mean that methods can not be added to the response object to provide groupings, etc.
 
+### Breaking Changes
+These are some breaking changes and what release they are from.  These type of changes will try to be avoided but if necessary for a better library, it will be done.
+
+#### v2.0.0-beta11
+* The client callout for tweet hide reply, `TweetHideReplies`, has been changed to return the response instead of just an error.  This allow for the data and the rate limits of the callout to be returned. 
+##### Migration
+```go
+	// old way
+	err := client.TweetHideReplies(context.Background(), id, true)
+	if err != nil {
+		// handle error
+	}
+```
+```go
+	// new way
+	hideResponse, err := client.TweetHideReplies(context.Background(), id, true)
+	if err != nil {
+		// handle error
+	}
+```
+
 ## Features 
 Here are the current twitter `v2` API features supported:
 *  [Tweet Lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
