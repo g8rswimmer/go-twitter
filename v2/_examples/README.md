@@ -307,3 +307,10 @@ This [example](./list-followers) demonstrates list followers API.
 ```
 go run *.go -token=YOUR_API_TOKEN -list_id='LIST_ID'
 ```
+
+## Rate Limit
+This [example](./rate-limit) demonstrates rate limiting API.
+
+```
+go run *.go -token=YOUR_API_TOKEN
+```

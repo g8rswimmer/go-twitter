@@ -43,7 +43,8 @@ type ListRawIncludes struct {
 
 // ListLookupResponse is the response from the list lookup
 type ListLookupResponse struct {
-	Raw *ListRaw
+	Raw       *ListRaw
+	RateLimit *RateLimit
 }
 
 //UserListLookupOpts are the response field options
@@ -86,8 +87,9 @@ type UserListRaw struct {
 
 // UserListLookupResponse is the raw ressponse with meta
 type UserListLookupResponse struct {
-	Raw  *UserListRaw
-	Meta *UserListLookupMeta `json:"meta"`
+	Raw       *UserListRaw
+	Meta      *UserListLookupMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserListLookupMeta is the meta data for the lists
@@ -130,8 +132,9 @@ func (l ListTweetLookupOpts) addQuery(req *http.Request) {
 
 // ListTweetLookupResponse is the response to the list tweet lookup
 type ListTweetLookupResponse struct {
-	Raw  *TweetRaw
-	Meta *ListTweetLookupMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *ListTweetLookupMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // ListTweetLookupMeta is the meta data associated with the list tweet lookup
@@ -188,8 +191,9 @@ type UserListMembershipsMeta struct {
 
 // UserListMembershipsResponse the user list membership response
 type UserListMembershipsResponse struct {
-	Raw  *UserListMembershipsRaw
-	Meta *UserListMembershipsMeta `json:"meta"`
+	Raw       *UserListMembershipsRaw
+	Meta      *UserListMembershipsMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // ListUserMembersOpts is the list user member options
@@ -232,8 +236,9 @@ type ListUserMembersMeta struct {
 
 // ListUserMembersResponse is the response to the list user members
 type ListUserMembersResponse struct {
-	Raw  *UserRaw
-	Meta *ListUserMembersMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *ListUserMembersMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserPinnedListsOpts pinned list options
@@ -261,8 +266,9 @@ func (l UserPinnedListsOpts) addQuery(req *http.Request) {
 
 // UserPinnedListsResponse pinned list response
 type UserPinnedListsResponse struct {
-	Raw  *UserPinnedListsRaw
-	Meta *UserPinnedListsMeta `json:"meta"`
+	Raw       *UserPinnedListsRaw
+	Meta      *UserPinnedListsMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserPinnedListsRaw the raw data for pinned lists
@@ -310,8 +316,9 @@ func (l UserFollowedListsOpts) addQuery(req *http.Request) {
 
 // UserFollowedListsResponse is the user followed response
 type UserFollowedListsResponse struct {
-	Raw  *UserFollowedListsRaw
-	Meta *UserFollowedListsMeta `json:"meta"`
+	Raw       *UserFollowedListsRaw
+	Meta      *UserFollowedListsMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserFollowedListsRaw is the raw response for the user followed
@@ -368,6 +375,7 @@ type ListUserFollowersMeta struct {
 
 // ListUserFollowersResponse is the response for the list followers
 type ListUserFollowersResponse struct {
-	Raw  *UserRaw
-	Meta *ListUserFollowersMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *ListUserFollowersMeta `json:"meta"`
+	RateLimit *RateLimit
 }

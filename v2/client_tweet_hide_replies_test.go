@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -23,6 +24,7 @@ func TestClient_TweetHideReplies(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
+		want    *TweetHideReplyResponse
 		wantErr bool
 	}{
 		{
@@ -41,12 +43,29 @@ func TestClient_TweetHideReplies(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
 			args: args{
 				id:   "63046977",
 				hide: true,
+			},
+			want: &TweetHideReplyResponse{
+				Reply: &TweetHideReplyData{
+					Hidden: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
+				},
 			},
 			wantErr: false,
 		},
@@ -58,8 +77,13 @@ func TestClient_TweetHideReplies(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			if err := c.TweetHideReplies(context.Background(), tt.args.id, tt.args.hide); (err != nil) != tt.wantErr {
+			got, err := c.TweetHideReplies(context.Background(), tt.args.id, tt.args.hide)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.TweetHideReplies() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.TweetHideReplies() = %v, want %v", got, tt.want)
 			}
 		})
 	}

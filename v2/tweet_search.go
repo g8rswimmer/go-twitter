@@ -69,8 +69,9 @@ func (t TweetRecentSearchOpts) addQuery(req *http.Request) {
 
 // TweetRecentSearchResponse contains all of the information from a tweet recent search
 type TweetRecentSearchResponse struct {
-	Raw  *TweetRaw
-	Meta *TweetRecentSearchMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *TweetRecentSearchMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // TweetRecentSearchMeta contains the recent search information
@@ -142,22 +143,25 @@ type TweetSearchStreamRuleEntity struct {
 
 // TweetSearchStreamRulesResponse is the response to getting the search rules
 type TweetSearchStreamRulesResponse struct {
-	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
-	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
-	Errors []*ErrorObj                    `json:"errors,omitempty"`
+	Rules     []*TweetSearchStreamRuleEntity `json:"data"`
+	Meta      *TweetSearchStreamRuleMeta     `json:"meta"`
+	Errors    []*ErrorObj                    `json:"errors,omitempty"`
+	RateLimit *RateLimit
 }
 
 // TweetSearchStreamAddRuleResponse is the response from adding rules
 type TweetSearchStreamAddRuleResponse struct {
-	Rules  []*TweetSearchStreamRuleEntity `json:"data"`
-	Meta   *TweetSearchStreamRuleMeta     `json:"meta"`
-	Errors []*ErrorObj                    `json:"errors,omitempty"`
+	Rules     []*TweetSearchStreamRuleEntity `json:"data"`
+	Meta      *TweetSearchStreamRuleMeta     `json:"meta"`
+	Errors    []*ErrorObj                    `json:"errors,omitempty"`
+	RateLimit *RateLimit
 }
 
 // TweetSearchStreamDeleteRuleResponse is the respnse from deleting rules
 type TweetSearchStreamDeleteRuleResponse struct {
-	Meta   *TweetSearchStreamRuleMeta `json:"meta"`
-	Errors []*ErrorObj                `json:"errors,omitempty"`
+	Meta      *TweetSearchStreamRuleMeta `json:"meta"`
+	Errors    []*ErrorObj                `json:"errors,omitempty"`
+	RateLimit *RateLimit
 }
 
 // TweetSearchStreamRuleMeta is the meta data object from the request

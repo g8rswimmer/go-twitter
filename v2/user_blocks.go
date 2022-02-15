@@ -39,8 +39,9 @@ func (u UserBlocksLookupOpts) addQuery(req *http.Request) {
 
 // UserBlocksLookupResponse is the list of users that are blocked
 type UserBlocksLookupResponse struct {
-	Raw  *UserRaw
-	Meta *UserBlocksLookupMeta `json:"meta"`
+	Raw       *UserRaw
+	Meta      *UserBlocksLookupMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserBlocksLookupMeta is the meta associated with the blocked users lookup
@@ -57,10 +58,12 @@ type UserBlocksData struct {
 
 // UserBlocksResponse is when a user blocks another
 type UserBlocksResponse struct {
-	Data *UserBlocksData `json:"data"`
+	Data      *UserBlocksData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // UserDeleteBlocksResponse is when a user unblocks another
 type UserDeleteBlocksResponse struct {
-	Data *UserBlocksData `json:"data"`
+	Data      *UserBlocksData `json:"data"`
+	RateLimit *RateLimit
 }

@@ -60,6 +60,13 @@ func TestClient_UserMentionTimeline(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -84,6 +91,11 @@ func TestClient_UserMentionTimeline(t *testing.T) {
 					OldestID:    "1336004278725513223",
 					NewestID:    "1338980844036349953",
 					NextToken:   "7140dibdnow9c7btw3w29kzu0unnfqs1lzcdi6s0vvj8z",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,

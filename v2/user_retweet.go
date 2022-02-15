@@ -12,18 +12,21 @@ type RetweetData struct {
 
 // UserRetweetResponse is the response with a user retweet
 type UserRetweetResponse struct {
-	Data *RetweetData `json:"data"`
+	Data      *RetweetData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // DeleteUserRetweetResponse is the response with a user retweet
 type DeleteUserRetweetResponse struct {
-	Data *RetweetData `json:"data"`
+	Data      *RetweetData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // UserRetweetLookupResponse os the response that contains the users
 type UserRetweetLookupResponse struct {
-	Raw  *UserRetweetRaw
-	Meta *UserRetweetMeta `json:"meta"`
+	Raw       *UserRetweetRaw
+	Meta      *UserRetweetMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserRetweetMeta is the meta data returned by the retweet user lookup

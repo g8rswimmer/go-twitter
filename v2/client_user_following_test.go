@@ -60,6 +60,13 @@ func TestClient_UserFollowingLookup(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -84,6 +91,11 @@ func TestClient_UserFollowingLookup(t *testing.T) {
 				Meta: &UserFollowinghMeta{
 					ResultCount: 2,
 					NextToken:   "DFEDBNRFT3MHCZZZ",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -265,6 +277,13 @@ func TestClient_UserFollows(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -276,6 +295,11 @@ func TestClient_UserFollows(t *testing.T) {
 				Data: &UserFollowsData{
 					Following:     true,
 					PendingFollow: true,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -337,6 +361,13 @@ func TestClient_DeleteUserFollows(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -347,6 +378,11 @@ func TestClient_DeleteUserFollows(t *testing.T) {
 			want: &UserDeleteFollowsResponse{
 				Data: &UserDeleteFollowsData{
 					Following: false,
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,

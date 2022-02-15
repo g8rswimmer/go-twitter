@@ -8,12 +8,14 @@ import (
 
 // UserLikesResponse the response for the user likes
 type UserLikesResponse struct {
-	Data *UserLikesData `json:"data"`
+	Data      *UserLikesData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // DeteleUserLikesResponse the response for the user unlike
 type DeteleUserLikesResponse struct {
-	Data *UserLikesData `json:"data"`
+	Data      *UserLikesData `json:"data"`
+	RateLimit *RateLimit
 }
 
 // UserLikesData is the data from the user like management
@@ -23,8 +25,9 @@ type UserLikesData struct {
 
 // UserLikesLookupResponse is the tweets from the user likes
 type UserLikesLookupResponse struct {
-	Raw  *TweetRaw
-	Meta *UserLikesMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *UserLikesMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserLikesMeta is the meta data from the response

@@ -1,20 +1,34 @@
 package twitter
 
+// TweetHideReplyData is the hide reply data
+type TweetHideReplyData struct {
+	Hidden bool `json:"hidden"`
+}
+
+// TweetHideReplyResponse is the response from the hide replies
+type TweetHideReplyResponse struct {
+	Reply     *TweetHideReplyData `json:"data"`
+	RateLimit *RateLimit
+}
+
 // TweetLookupResponse contains all of the information from a tweet lookup callout
 type TweetLookupResponse struct {
-	Raw *TweetRaw
+	Raw       *TweetRaw
+	RateLimit *RateLimit
 }
 
 // UserMentionTimelineResponse contains the information from the user mention timelint callout
 type UserMentionTimelineResponse struct {
-	Raw  *TweetRaw
-	Meta *UserTimelineMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *UserTimelineMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserTweetTimelineResponse contains the information from the user tweet timeline callout
 type UserTweetTimelineResponse struct {
-	Raw  *TweetRaw
-	Meta *UserTimelineMeta `json:"meta"`
+	Raw       *TweetRaw
+	Meta      *UserTimelineMeta `json:"meta"`
+	RateLimit *RateLimit
 }
 
 // UserTimelineMeta contains the meta data from the timeline callout

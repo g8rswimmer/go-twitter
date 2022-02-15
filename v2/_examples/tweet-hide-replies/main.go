@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -43,9 +44,15 @@ func main() {
 
 	fmt.Println("Callout to tweet hide replies")
 
-	if err := client.TweetHideReplies(context.Background(), *id, hideBool); err != nil {
+	hideResponse, err := client.TweetHideReplies(context.Background(), *id, hideBool)
+	if err != nil {
 		log.Panicf("tweet hide replies error: %v", err)
 	}
 
-	fmt.Printf("tweet %s hide replies %v", *ids, hideBool)
+	enc, err := json.MarshalIndent(hideResponse, "", "    ")
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println(string(enc))
+
 }

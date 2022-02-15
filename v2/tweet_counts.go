@@ -4,6 +4,7 @@ package twitter
 type TweetRecentCountsResponse struct {
 	TweetCounts []*TweetCount          `json:"data"`
 	Meta        *TweetRecentCountsMeta `json:"meta"`
+	RateLimit   *RateLimit
 }
 
 // TweetRecentCountsMeta contains the meta data from the recent counts information

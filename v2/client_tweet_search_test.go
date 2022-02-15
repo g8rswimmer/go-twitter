@@ -93,6 +93,13 @@ func TestClient_TweetRecentSearch(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -149,6 +156,11 @@ func TestClient_TweetRecentSearch(t *testing.T) {
 					OldestID:    "1279990063888076800",
 					ResultCount: 10,
 					NextToken:   "b26v89c19zqg8o3fo7gghep0wmpt92c0wn0jiqwtc7tdp",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -454,6 +466,13 @@ func TestClient_TweetSearchStreamAddRule(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusCreated,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -495,6 +514,11 @@ func TestClient_TweetSearchStreamAddRule(t *testing.T) {
 					Summary: TweetSearchStreamRuleSummary{
 						Created: 2,
 					},
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -560,6 +584,13 @@ func TestClient_TweetSearchStreamDeleteRule(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -579,6 +610,11 @@ func TestClient_TweetSearchStreamDeleteRule(t *testing.T) {
 					Summary: TweetSearchStreamRuleSummary{
 						Deleted: 2,
 					},
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -651,6 +687,13 @@ func TestClient_TweetSearchStreamRules(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -682,6 +725,11 @@ func TestClient_TweetSearchStreamRules(t *testing.T) {
 						t, _ := time.Parse(time.RFC3339, "2019-08-29T02:07:42.205Z")
 						return t
 					}(),
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -747,6 +795,13 @@ func TestClient_TweetSearchStreamDeleteRuleByValue(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
@@ -766,6 +821,11 @@ func TestClient_TweetSearchStreamDeleteRuleByValue(t *testing.T) {
 					Summary: TweetSearchStreamRuleSummary{
 						Deleted: 2,
 					},
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
 				},
 			},
 			wantErr: false,
@@ -837,6 +897,13 @@ func TestClient_TweetSearchStream(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusOK,
 						Body:       io.NopCloser(strings.NewReader(stream)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
 					}
 				}),
 			},
