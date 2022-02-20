@@ -3349,10 +3349,10 @@ func (c *Client) SpacesLookup(ctx context.Context, ids []string, opts SpacesLook
 
 func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, opts SpacesByCreatorLookupOpts) (*SpacesByCreatorLookupResponse, error) {
 	switch {
-	case len(ids) == 0:
+	case len(userIDs) == 0:
 		return nil, fmt.Errorf("space by creator lookup: an id is required: %w", ErrParameter)
-	case len(ids) > spaceByCreatorMaxIDs:
-		return nil, fmt.Errorf("space by creator lookup: ids %d is greater than max %d: %w", len(ids), spaceByCreatorMaxIDs, ErrParameter)
+	case len(userIDs) > spaceByCreatorMaxIDs:
+		return nil, fmt.Errorf("space by creator lookup: ids %d is greater than max %d: %w", len(userIDs), spaceByCreatorMaxIDs, ErrParameter)
 	default:
 	}
 
@@ -3364,7 +3364,7 @@ func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, op
 	c.Authorizer.Add(req)
 	opts.addQuery(req)
 	q := req.URL.Query()
-	q.Add("user_ids", strings.Join(ids, ","))
+	q.Add("user_ids", strings.Join(userIDs, ","))
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.Client.Do(req)
