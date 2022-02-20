@@ -3405,7 +3405,7 @@ func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, op
 		}
 	}
 	return &SpacesByCreatorLookupResponse{
-		Raw:       raw.SpaceRaw,
+		Raw:       raw.SpacesRaw,
 		Meta:      raw.Meta,
 		RateLimit: rl,
 	}, nil

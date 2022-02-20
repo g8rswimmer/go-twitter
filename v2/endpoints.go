@@ -44,8 +44,8 @@ const (
 	listUserFollowersEndpoint      endpoint = "2/lists/{id}/followers"
 	spaceLookupEndpoint            endpoint = "2/spaces"
 	spaceByCreatorLookupEndpont    endpoint = "2/spaces/by/creator_ids"
-	spaceBuyersLookupEndpoint      endpont  = "2/spaces/{id}/buyers"
-	spaceTweetsLookupEndpoint      endpont  = "2/spaces/{id}/tweets"
+	spaceBuyersLookupEndpoint      endpoint = "2/spaces/{id}/buyers"
+	spaceTweetsLookupEndpoint      endpoint = "2/spaces/{id}/tweets"
 
 	idTag = "{id}"
 )
