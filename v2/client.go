@@ -13,6 +13,8 @@ import (
 const (
 	tweetMaxIDs                  = 100
 	userMaxIDs                   = 100
+	spaceMaxIDs                  = 100
+	spaceByCreatorMaxIDs         = 100
 	userMaxNames                 = 100
 	tweetRecentSearchQueryLength = 512
 	tweetRecentCountsQueryLength = 512
@@ -3261,6 +3263,264 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 	return &ListUserFollowersResponse{
 		Raw:       respBody.UserRaw,
 		Meta:      respBody.Meta,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) SpacesLookup(ctx context.Context, ids []string, opts SpacesLookupOpts) (*SpacesLookupResponse, error) {
+	ep := spaceLookupEndpoint.url(c.Host)
+	switch {
+	case len(ids) == 0:
+		return nil, fmt.Errorf("space lookup: an id is required: %w", ErrParameter)
+	case len(ids) > spaceMaxIDs:
+		return nil, fmt.Errorf("space lookup: ids %d is greater than max %d: %w", len(ids), spaceMaxIDs, ErrParameter)
+	case len(ids) == 1:
+		ep += fmt.Sprintf("/%s", ids[0])
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("space lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	if len(ids) > 1 {
+		q := req.URL.Query()
+		q.Add("ids", strings.Join(ids, ","))
+		req.URL.RawQuery = q.Encode()
+	}
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("space lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := &SpacesRaw{}
+	switch {
+	case len(ids) == 1:
+		single := &spaceRaw{}
+		if err := decoder.Decode(single); err != nil {
+			return nil, &ResponseDecodeError{
+				Name:      "space lookup",
+				Err:       err,
+				RateLimit: rl,
+			}
+		}
+		raw.Spaces = make([]*SpaceObj, 1)
+		raw.Spaces[0] = single.Space
+		raw.Includes = single.Includes
+		raw.Errors = single.Errors
+	default:
+		if err := decoder.Decode(raw); err != nil {
+			return nil, &ResponseDecodeError{
+				Name:      "space lookup ",
+				Err:       err,
+				RateLimit: rl,
+			}
+		}
+	}
+	return &SpacesLookupResponse{
+		Raw:       raw,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, opts SpacesByCreatorLookupOpts) (*SpacesByCreatorLookupResponse, error) {
+	switch {
+	case len(ids) == 0:
+		return nil, fmt.Errorf("space by creator lookup: an id is required: %w", ErrParameter)
+	case len(ids) > spaceByCreatorMaxIDs:
+		return nil, fmt.Errorf("space by creator lookup: ids %d is greater than max %d: %w", len(ids), spaceByCreatorMaxIDs, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, spaceByCreatorLookupEndpont.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("space by creator lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("user_ids", strings.Join(ids, ","))
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("space by creator lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := struct {
+		*SpacesRaw
+		Meta *SpacesByCreatorMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "space by creator lookup ",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+	return &SpacesByCreatorLookupResponse{
+		Raw:       raw.SpaceRaw,
+		Meta:      raw.Meta,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) SpaceBuyersLookup(ctx context.Context, spaceID string, opts SpaceBuyersLookupOpts) (*SpaceBuyersLookupResponse, error) {
+	switch {
+	case len(spaceID) == 0:
+		return nil, fmt.Errorf("space buyers lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, spaceBuyersLookupEndpoint.urlID(c.Host, spaceID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("space buyers lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("space buyers lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := &UserRaw{}
+
+	if err := decoder.Decode(raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "space buyers lookup ",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+	return &SpaceBuyersLookupResponse{
+		Raw:       raw,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) SpaceTweetsLookup(ctx context.Context, spaceID string, opts SpaceTweetsLookupOpts) (*SpaceTweetsLookupResponse, error) {
+	switch {
+	case len(spaceID) == 0:
+		return nil, fmt.Errorf("space tweets lookup: an id is required: %w", ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, spaceTweetsLookupEndpoint.urlID(c.Host, spaceID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("space tweets lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("space tweets lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := struct {
+		*TweetRaw
+		Meta *SpaceTweetsLookupMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "space tweets lookup ",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+	return &SpaceTweetsLookupResponse{
+		Raw:       raw.TweetRaw,
+		Meta:      raw.Meta,
 		RateLimit: rl,
 	}, nil
 }

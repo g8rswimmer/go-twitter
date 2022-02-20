@@ -42,7 +42,12 @@ const (
 	userPinnedListEndpoint         endpoint = "2/users/{id}/pinned_lists"
 	userFollowedListEndpoint       endpoint = "2/users/{id}/followed_lists"
 	listUserFollowersEndpoint      endpoint = "2/lists/{id}/followers"
-	idTag                                   = "{id}"
+	spaceLookupEndpoint            endpoint = "2/spaces"
+	spaceByCreatorLookupEndpont    endpoint = "2/spaces/by/creator_ids"
+	spaceBuyersLookupEndpoint      endpont  = "2/spaces/{id}/buyers"
+	spaceTweetsLookupEndpoint      endpont  = "2/spaces/{id}/tweets"
+
+	idTag = "{id}"
 )
 
 func (e endpoint) url(host string) string {

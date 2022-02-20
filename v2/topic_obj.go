@@ -8,7 +8,7 @@ const (
 	TopicFieldDescription TopicField = "description"
 )
 
-func topocFieldStringArray(arr []TopicField) []string {
+func topicFieldStringArray(arr []TopicField) []string {
 	strs := make([]string, len(arr))
 	for i, field := range arr {
 		strs[i] = string(field)
