@@ -1,10 +1,14 @@
 package twitter
 
+// TopicField are the topic field options
 type TopicField string
 
 const (
-	TopicFieldID          TopicField = "id"
-	TopicFieldName        TopicField = "name"
+	// TopicFieldID is the topic id field
+	TopicFieldID TopicField = "id"
+	// TopicFieldName is the topic name field
+	TopicFieldName TopicField = "name"
+	// TopicFieldDescription is the topic description field
 	TopicFieldDescription TopicField = "description"
 )
 
@@ -16,6 +20,7 @@ func topicFieldStringArray(arr []TopicField) []string {
 	return strs
 }
 
+// TopicObj is the topic object
 type TopicObj struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`

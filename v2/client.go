@@ -3267,6 +3267,7 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 	}, nil
 }
 
+// SpacesLookup returns information about a space from the requested ids
 func (c *Client) SpacesLookup(ctx context.Context, ids []string, opts SpacesLookupOpts) (*SpacesLookupResponse, error) {
 	ep := spaceLookupEndpoint.url(c.Host)
 	switch {
@@ -3347,6 +3348,7 @@ func (c *Client) SpacesLookup(ctx context.Context, ids []string, opts SpacesLook
 	}, nil
 }
 
+// SpacesByCreatorLookup returns live or scheduled spaces created by a specific user ids
 func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, opts SpacesByCreatorLookupOpts) (*SpacesByCreatorLookupResponse, error) {
 	switch {
 	case len(userIDs) == 0:
@@ -3411,6 +3413,7 @@ func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, op
 	}, nil
 }
 
+// SpaceBuyersLookup returns a list of users who purchased a ticket to the requested space
 func (c *Client) SpaceBuyersLookup(ctx context.Context, spaceID string, opts SpaceBuyersLookupOpts) (*SpaceBuyersLookupResponse, error) {
 	switch {
 	case len(spaceID) == 0:
@@ -3466,6 +3469,7 @@ func (c *Client) SpaceBuyersLookup(ctx context.Context, spaceID string, opts Spa
 	}, nil
 }
 
+// SpaceTweetsLookup returns tweets shared in the request space
 func (c *Client) SpaceTweetsLookup(ctx context.Context, spaceID string, opts SpaceTweetsLookupOpts) (*SpaceTweetsLookupResponse, error) {
 	switch {
 	case len(spaceID) == 0:

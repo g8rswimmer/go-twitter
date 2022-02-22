@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// SpacesLookupOpts are the options for the space lookup
 type SpacesLookupOpts struct {
 	Expansions  []Expansion
 	SpaceFields []SpaceField
@@ -31,6 +32,7 @@ func (s SpacesLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// SpacesLookupResponse is the response for the space lookup
 type SpacesLookupResponse struct {
 	Raw       *SpacesRaw
 	RateLimit *RateLimit
@@ -42,17 +44,20 @@ type spaceRaw struct {
 	Errors   []*ErrorObj        `json:"errors,omitempty"`
 }
 
+// SpacesRaw the raw space objects
 type SpacesRaw struct {
 	Spaces   []*SpaceObj        `json:"data"`
 	Includes *SpacesRawIncludes `json:"includes,omitempty"`
 	Errors   []*ErrorObj        `json:"errors,omitempty"`
 }
 
+// SpacesRawIncludes are the includes for a space
 type SpacesRawIncludes struct {
 	Users  []*UserObj  `json:"users,omitempty"`
 	Topics []*TopicObj `json:"topics,omitempty"`
 }
 
+// SpacesByCreatorLookupOpts are the options for the space by creator
 type SpacesByCreatorLookupOpts struct {
 	Expansions  []Expansion
 	SpaceFields []SpaceField
@@ -79,16 +84,19 @@ func (s SpacesByCreatorLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// SpacesByCreatorLookupResponse is the response to the space by creator
 type SpacesByCreatorLookupResponse struct {
 	Raw       *SpacesRaw
 	Meta      *SpacesByCreatorMeta `json:"meta"`
 	RateLimit *RateLimit
 }
 
+// SpacesByCreatorMeta the meta for the space by creator
 type SpacesByCreatorMeta struct {
 	ResultCount int `json:"result_count"`
 }
 
+// SpaceBuyersLookupOpts are the options for the space buyer lookup
 type SpaceBuyersLookupOpts struct {
 	Expansions  []Expansion
 	TweetFields []TweetField
@@ -123,11 +131,13 @@ func (s SpaceBuyersLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// SpaceBuyersLookupResponse is the space buyers lookup response
 type SpaceBuyersLookupResponse struct {
 	Raw       *UserRaw
 	RateLimit *RateLimit
 }
 
+// SpaceTweetsLookupOpts are the options for the space tweets lookup
 type SpaceTweetsLookupOpts struct {
 	Expansions  []Expansion
 	MediaFields []MediaField
@@ -162,12 +172,14 @@ func (s SpaceTweetsLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// SpaceTweetsLookupResponse is the response for the space tweets lookup
 type SpaceTweetsLookupResponse struct {
 	Raw       *TweetRaw
 	Meta      *SpaceTweetsLookupMeta `json:"meta"`
 	RateLimit *RateLimit
 }
 
+// SpaceTweetsLookupMeta is the space tweets lookup meta
 type SpaceTweetsLookupMeta struct {
 	ResultCount int `json:"result_count"`
 }
