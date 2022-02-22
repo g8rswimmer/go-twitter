@@ -24,7 +24,6 @@ const (
 	ExpansionPinnedTweetID Expansion = "pinned_tweet_id"
 	// ExpansionOwnerID returns an owner in the includes
 	ExpansionOwnerID Expansion = "owner_id"
-	ExpansionTopics  Expansion = "topics"
 )
 
 func expansionStringArray(arr []Expansion) []string {
