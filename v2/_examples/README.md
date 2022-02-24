@@ -314,3 +314,31 @@ This [example](./rate-limit) demonstrates rate limiting API.
 ```
 go run *.go -token=YOUR_API_TOKEN
 ```
+
+## Space Lookup
+This [example](./spaces-lookup) demonstrates space lookup API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -ids=SPACE_ID
+```
+
+## Space By Craetor
+This [example](./spaces-by-creator) demonstrates space by creator API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -ids=USER_ID
+```
+
+## Space Buyer
+This [example](./spaces-buyer) demonstrates space buyer API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=SPACE_ID
+```
+
+## Space Tweets
+This [example](./spaces-tweets) demonstrates space tweets API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -id=SPACE_ID
+```
