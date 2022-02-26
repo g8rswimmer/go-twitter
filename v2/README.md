@@ -42,6 +42,11 @@ These are some breaking changes and what release they are from.  These type of c
 		// handle error
 	}
 ```
+#### v2.0.0-beta13
+* There was a typo in the user retweet lookup options and it was corrected.
+```
+UserRetweetLookuoOpts -> UserRetweetLookupOpts
+```
 
 ## Features 
 Here are the current twitter `v2` API features supported:
