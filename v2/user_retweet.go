@@ -46,8 +46,8 @@ type UserRetweetRawIncludes struct {
 	Tweets []*TweetObj `json:"tweets,omitempty"`
 }
 
-// UserRetweetLookuoOpts are the options for the user retweet loopup
-type UserRetweetLookuoOpts struct {
+// UserRetweetLookupOpts are the options for the user retweet loopup
+type UserRetweetLookupOpts struct {
 	Expansions  []Expansion
 	TweetFields []TweetField
 	UserFields  []UserField
@@ -56,7 +56,7 @@ type UserRetweetLookuoOpts struct {
 	PollFields  []PollField
 }
 
-func (u UserRetweetLookuoOpts) addQuery(req *http.Request) {
+func (u UserRetweetLookupOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(u.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(u.Expansions), ","))

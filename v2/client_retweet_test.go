@@ -220,7 +220,7 @@ func TestClient_UserRetweetLookup(t *testing.T) {
 	}
 	type args struct {
 		tweetID string
-		opts    UserRetweetLookuoOpts
+		opts    UserRetweetLookupOpts
 	}
 	tests := []struct {
 		name    string
@@ -391,7 +391,7 @@ func TestClient_UserRetweetLookup(t *testing.T) {
 			},
 			args: args{
 				tweetID: "tweet-1234",
-				opts: UserRetweetLookuoOpts{
+				opts: UserRetweetLookupOpts{
 					Expansions:  []Expansion{ExpansionPinnedTweetID},
 					UserFields:  []UserField{UserFieldCreatedAt, UserFieldDescription},
 					TweetFields: []TweetField{TweetFieldCreatedAt},
