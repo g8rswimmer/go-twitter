@@ -943,8 +943,8 @@ func TestClient_TweetSearchStream(t *testing.T) {
 				},
 			},
 			wantSystem: []map[SystemMessageType]SystemMessage{
-				map[SystemMessageType]SystemMessage{
-					ErrorMessageType: SystemMessage{
+				{
+					ErrorMessageType: {
 						Message: "Forced Disconnect: Too many connections. (Allowed Connections = 2)",
 						Sent: func() time.Time {
 							t, _ := time.Parse(time.RFC3339, "2017-01-11T18:12:52+00:00")
@@ -952,8 +952,8 @@ func TestClient_TweetSearchStream(t *testing.T) {
 						}(),
 					},
 				},
-				map[SystemMessageType]SystemMessage{
-					ErrorMessageType: SystemMessage{
+				{
+					ErrorMessageType: {
 						Message: "Invalid date format for query parameter 'fromDate'. Expected format is 'yyyyMMddHHmm'. For example, '201701012315' for January 1st, 11:15 pm 2017 UTC.\n\n",
 						Sent: func() time.Time {
 							t, _ := time.Parse(time.RFC3339, "2017-01-11T17:04:13+00:00")
@@ -961,8 +961,8 @@ func TestClient_TweetSearchStream(t *testing.T) {
 						}(),
 					},
 				},
-				map[SystemMessageType]SystemMessage{
-					ErrorMessageType: SystemMessage{
+				{
+					ErrorMessageType: {
 						Message: "Force closing connection to because it reached the maximum allowed backup (buffer size is ).",
 						Sent: func() time.Time {
 							t, _ := time.Parse(time.RFC3339, "2017-01-11T17:04:13+00:00")
