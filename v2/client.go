@@ -3592,3 +3592,188 @@ func (c *Client) SpacesSearch(ctx context.Context, query string, opts SpacesSear
 		RateLimit: rl,
 	}, nil
 }
+
+func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType ComplianceBatchJobType, name string, resumable bool) (*CreateComplianceBatchJobResponse, error) {
+	switch {
+	case len(jobType) == 0:
+		return nil, fmt.Errorf("create compliance batch job: a type is required: %w", ErrParameter)
+	default:
+	}
+
+	request := struct {
+		Type      ComplianceBatchJobType `json:"type"`
+		Name      string                 `json:"name,omitempty"`
+		Resumable bool                   `json:"resumable,omitempty"`
+	}{
+		Type:      jobType,
+		Name:      name,
+		Resumable: resumable,
+	}
+
+	enc, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("create compliance batch job request encode: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, complainceJobsEndpont.url(c.Host), bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("create compliance batch job request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("create compliance batch job response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := &ComplianceBatchJobRaw{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "create compliance batch job",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &CreateComplianceBatchJobResponse{
+		Raw:       raw,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*ComplianceBatchJobResponse, error) {
+	switch {
+	case len(id) == 0:
+		return nil, fmt.Errorf("compliance batch job: a type is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := complainceJobsEndpont.url(c.Host) + "/" + id
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("compliance batch job request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("compliance batch job response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := &ComplianceBatchJobRaw{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "compliance batch job",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &ComplianceBatchJobResponse{
+		Raw:       raw,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType ComplianceBatchJobType, opts ComplianceBatchJobLookupOpts) (*ComplianceBatchJobResponse, error) {
+	switch {
+	case len(jobType) == 0:
+		return nil, fmt.Errorf("compliance batch job lookup: a type is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := complainceJobsEndpont.url(c.Host)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("compliance batch job lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("type", jobType)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("compliance batch job lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := &ComplianceBatchJobsRaw{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "compliance batch job lookup",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &ComplianceBatchJobLookupResponse{
+		Raw:       raw,
+		RateLimit: rl,
+	}, nil
+}
