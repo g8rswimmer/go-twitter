@@ -113,6 +113,8 @@ Here are the current twitter `v2` API features supported:
 	* [spaces by creator](./_examples/spaces=by-creator)
 	* [spaces buyers](./_examples/spaces-buyers)
 	* [spaces tweets](./_examples/spaces-tweets)
+* [Spaces Search](https://developer.twitter.com/en/docs/twitter-api/spaces/search/introduction)
+	* [space search](./_examples/spaces-search)
 
 ## Rate Limiting
 With each response, the rate limits from the response header is returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.

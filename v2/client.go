@@ -3528,3 +3528,67 @@ func (c *Client) SpaceTweetsLookup(ctx context.Context, spaceID string, opts Spa
 		RateLimit: rl,
 	}, nil
 }
+
+// SpacesSearch returns live or scheduled spaces matching the specified search terms.
+func (c *Client) SpacesSearch(ctx context.Context, query string, opts SpacesSearchOpts) (*SpacesSearchResponse, error) {
+	switch {
+	case len(query) == 0:
+		return nil, fmt.Errorf("space search: a query is required: %w", ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, spaceSearchEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("space search request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("space search response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	raw := struct {
+		*SpacesRaw
+		Meta *SpacesSearchMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&raw); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "space search",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &SpacesSearchResponse{
+		Raw:       raw.SpacesRaw,
+		Meta:      raw.Meta,
+		RateLimit: rl,
+	}, nil
+}

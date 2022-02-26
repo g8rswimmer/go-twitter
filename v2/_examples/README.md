@@ -342,3 +342,10 @@ This [example](./spaces-tweets) demonstrates space tweets API.
 ```
 go run *.go -token=YOUR_API_TOKEN -id=SPACE_ID
 ```
+
+## Space Search
+This [example](./spaces-search) demonstrates space search API.
+
+```
+go run *.go -token=YOUR_API_TOKEN -query=YOUR_QUERY
+```

@@ -48,6 +48,18 @@ func spaceFieldStringArray(arr []SpaceField) []string {
 	return strs
 }
 
+// SpaceState is the enumeration of the space states
+type SpaceState string
+
+const (
+	// SpaceStateAll is for all of the possible states
+	SpaceStateAll SpaceState = "all"
+	// SpaceStateLive is for only live states
+	SpaceStateLive SpaceState = "live"
+	// SpaceStateScheduled is for only scheduled states
+	SpaceStateScheduled SpaceState = "scheduled"
+)
+
 // SpaceObj is the spaces object
 type SpaceObj struct {
 	ID               string   `json:"id"`
