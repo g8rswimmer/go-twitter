@@ -47,7 +47,7 @@ const (
 	spaceBuyersLookupEndpoint      endpoint = "2/spaces/{id}/buyers"
 	spaceTweetsLookupEndpoint      endpoint = "2/spaces/{id}/tweets"
 	spaceSearchEndpoint            endpoint = "2/spaces/search"
-	complainceJobsEndpont          endpont  = "2/compliance/jobs"
+	complainceJobsEndpont          endpoint = "2/compliance/jobs"
 
 	idTag = "{id}"
 )

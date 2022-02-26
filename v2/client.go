@@ -3718,7 +3718,7 @@ func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*Compliance
 	}, nil
 }
 
-func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType ComplianceBatchJobType, opts ComplianceBatchJobLookupOpts) (*ComplianceBatchJobResponse, error) {
+func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType ComplianceBatchJobType, opts ComplianceBatchJobLookupOpts) (*ComplianceBatchJobLookupResponse, error) {
 	switch {
 	case len(jobType) == 0:
 		return nil, fmt.Errorf("compliance batch job lookup: a type is required: %w", ErrParameter)
@@ -3734,7 +3734,7 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 
 	opts.addQuery(req)
 	q := req.URL.Query()
-	q.Add("type", jobType)
+	q.Add("type", string(jobType))
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := c.Client.Do(req)

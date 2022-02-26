@@ -23,7 +23,7 @@ type ComplianceBatchJobLookupOpts struct {
 func (c ComplianceBatchJobLookupOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(c.Status) > 0 {
-		q.Add("status", c.Status)
+		q.Add("status", string(c.Status))
 	}
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
