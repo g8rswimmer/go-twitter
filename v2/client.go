@@ -309,7 +309,7 @@ func (c *Client) UserLookup(ctx context.Context, ids []string, opts UserLookupOp
 }
 
 // UserRetweetLookup allows you to get information about users that have retweeted a tweet
-func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts UserRetweetLookuoOpts) (*UserRetweetLookupResponse, error) {
+func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts UserRetweetLookupOpts) (*UserRetweetLookupResponse, error) {
 	switch {
 	case len(tweetID) == 0:
 		return nil, fmt.Errorf("user retweet lookup: an id is required: %w", ErrParameter)

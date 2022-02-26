@@ -34,7 +34,7 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.UserRetweetLookuoOpts{
+	opts := twitter.UserRetweetLookupOpts{
 		Expansions: []twitter.Expansion{twitter.ExpansionPinnedTweetID},
 	}
 
