@@ -3656,6 +3656,7 @@ func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType Complianc
 			RateLimit: rl,
 		}
 	}
+	raw.Job.client = c.Client
 
 	return &CreateComplianceBatchJobResponse{
 		Raw:       raw,
@@ -3711,6 +3712,7 @@ func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*Compliance
 			RateLimit: rl,
 		}
 	}
+	raw.Job.client = c.Client
 
 	return &ComplianceBatchJobResponse{
 		Raw:       raw,
@@ -3770,6 +3772,10 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 			Err:       err,
 			RateLimit: rl,
 		}
+	}
+
+	for i := range raw.Jobs {
+		raw.Jobs[i].client = c.Client
 	}
 
 	return &ComplianceBatchJobLookupResponse{

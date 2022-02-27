@@ -82,6 +82,7 @@ func TestClient_CreateComplianceBatchJob(t *testing.T) {
 						ID:                "1423095206576984067",
 						Type:              ComplianceBatchJobTypeTweets,
 						Status:            ComplianceBatchJobStatusCreated,
+						client:            http.DefaultClient,
 					},
 				},
 				RateLimit: &RateLimit{
@@ -105,6 +106,7 @@ func TestClient_CreateComplianceBatchJob(t *testing.T) {
 				t.Errorf("Client.CreateComplianceBatchJob() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+			got.Raw.Job.client = http.DefaultClient
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Client.CreateComplianceBatchJob() = %v, want %v", got, tt.want)
 			}
@@ -181,6 +183,7 @@ func TestClient_ComplianceBatchJob(t *testing.T) {
 						ID:                "1423095206576984067",
 						Type:              ComplianceBatchJobTypeTweets,
 						Status:            ComplianceBatchJobStatusExpired,
+						client:            http.DefaultClient,
 					},
 				},
 				RateLimit: &RateLimit{
@@ -204,6 +207,8 @@ func TestClient_ComplianceBatchJob(t *testing.T) {
 				t.Errorf("Client.ComplianceBatchJob() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+			got.Raw.Job.client = http.DefaultClient
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Client.ComplianceBatchJob() = %v, want %v", got, tt.want)
 			}
@@ -295,6 +300,7 @@ func TestClient_ComplianceBatchJobLookup(t *testing.T) {
 							ID:                "1421185651106480129",
 							Type:              ComplianceBatchJobTypeTweets,
 							Status:            ComplianceBatchJobStatusComplete,
+							client:            http.DefaultClient,
 						},
 						{
 							Resumable:         false,
@@ -306,6 +312,7 @@ func TestClient_ComplianceBatchJobLookup(t *testing.T) {
 							ID:                "1423095206576984067",
 							Type:              ComplianceBatchJobTypeTweets,
 							Status:            ComplianceBatchJobStatusExpired,
+							client:            http.DefaultClient,
 						},
 					},
 				},
@@ -329,6 +336,10 @@ func TestClient_ComplianceBatchJobLookup(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.ComplianceBatchJobLookup() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+
+			for i := range got.Raw.Jobs {
+				got.Raw.Jobs[i].client = http.DefaultClient
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Client.ComplianceBatchJobLookup() = %v, want %v", got, tt.want)
