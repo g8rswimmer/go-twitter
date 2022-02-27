@@ -35,7 +35,7 @@ type ComplianceBatchJobResult struct {
 	Reason     string `json:"reason"`
 }
 
-type ComplainceBatchJobDownloadResponse struct {
+type ComplianceBatchJobDownloadResponse struct {
 	Results   []*ComplianceBatchJobResult
 	RateLimit *RateLimit
 }
@@ -75,7 +75,7 @@ func (c ComplianceBatchJobObj) Upload(ctx context.Context, ids io.Reader) error 
 	if resp.StatusCode != http.StatusOK {
 		e := &ErrorResponse{}
 		if err := decoder.Decode(e); err != nil {
-			return nil, &HTTPError{
+			return &HTTPError{
 				Status:     resp.Status,
 				StatusCode: resp.StatusCode,
 				URL:        resp.Request.URL.String(),
@@ -89,7 +89,7 @@ func (c ComplianceBatchJobObj) Upload(ctx context.Context, ids io.Reader) error 
 	return nil
 }
 
-func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplainceBatchJobDownloadResponse, error) {
+func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplianceBatchJobDownloadResponse, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.DownloadURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("compliance batch job download request: %w", err)
@@ -97,7 +97,7 @@ func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplainceBatchJo
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("compliance batch job download response: %w", err)
+		return nil, fmt.Errorf("compliance batch job download response: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -115,7 +115,7 @@ func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplainceBatchJo
 		}
 		e.StatusCode = resp.StatusCode
 		e.RateLimit = rl
-		return e
+		return nil, e
 	}
 
 	results := []*ComplianceBatchJobResult{}
@@ -134,7 +134,7 @@ func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplainceBatchJo
 		results = append(results, result)
 	}
 
-	return &ComplainceBatchJobDownloadResponse{
+	return &ComplianceBatchJobDownloadResponse{
 		Results:   results,
 		RateLimit: rl,
 	}, nil
