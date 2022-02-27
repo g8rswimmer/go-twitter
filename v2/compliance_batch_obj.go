@@ -121,7 +121,7 @@ func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplainceBatchJo
 	results := []*ComplianceBatchJobResult{}
 
 	scanner := bufio.NewScanner(resp.Body)
-	scanner.Split(streamSeparator)
+	scanner.Split(batchResultsSeparator)
 	for scanner.Scan() {
 		result := &ComplianceBatchJobResult{}
 		if err := json.Unmarshal(scanner.Bytes(), result); err != nil {
