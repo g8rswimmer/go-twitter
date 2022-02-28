@@ -349,3 +349,10 @@ This [example](./spaces-search) demonstrates space search API.
 ```
 go run *.go -token=YOUR_API_TOKEN -query=YOUR_QUERY
 ```
+
+## Compliance Batch
+This [example](./compliance-batch) demonstrates how to send a compliance batch.
+
+```
+go run *.go -token=YOUR_API_TOKEN -type=[tweets,users] -upload=FILE_OF_IDS
+```
