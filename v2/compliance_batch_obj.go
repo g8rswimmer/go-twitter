@@ -10,23 +10,33 @@ import (
 	"net/http"
 )
 
+// ComplianceBatchJobStatus is the compliance batch job status
 type ComplianceBatchJobStatus string
 
 const (
-	ComplianceBatchJobStatusCreated    ComplianceBatchJobStatus = "created"
-	ComplianceBatchJobStatusComplete   ComplianceBatchJobStatus = "complete"
+	// ComplianceBatchJobStatusCreated is the created status
+	ComplianceBatchJobStatusCreated ComplianceBatchJobStatus = "created"
+	// ComplianceBatchJobStatusComplete is the complete status
+	ComplianceBatchJobStatusComplete ComplianceBatchJobStatus = "complete"
+	// ComplianceBatchJobStatusInProgress is the in_progress status
 	ComplianceBatchJobStatusInProgress ComplianceBatchJobStatus = "in_progress"
-	ComplianceBatchJobStatusFailed     ComplianceBatchJobStatus = "failed"
-	ComplianceBatchJobStatusExpired    ComplianceBatchJobStatus = "expired"
+	// ComplianceBatchJobStatusFailed is the failed status
+	ComplianceBatchJobStatusFailed ComplianceBatchJobStatus = "failed"
+	// ComplianceBatchJobStatusExpired is the expired status
+	ComplianceBatchJobStatusExpired ComplianceBatchJobStatus = "expired"
 )
 
+// ComplianceBatchJobType is the compliance batch job type
 type ComplianceBatchJobType string
 
 const (
+	// ComplianceBatchJobTypeTweets is the tweets job
 	ComplianceBatchJobTypeTweets ComplianceBatchJobType = "tweets"
-	ComplianceBatchJobTypeUsers  ComplianceBatchJobType = "users"
+	// ComplianceBatchJobTypeUsers is the users job
+	ComplianceBatchJobTypeUsers ComplianceBatchJobType = "users"
 )
 
+// ComplianceBatchJobResult is the downloaded result
 type ComplianceBatchJobResult struct {
 	ID         string `json:"id"`
 	Action     string `json:"action"`
@@ -35,11 +45,13 @@ type ComplianceBatchJobResult struct {
 	Reason     string `json:"reason"`
 }
 
+// ComplianceBatchJobDownloadResponse is the response from dowload results
 type ComplianceBatchJobDownloadResponse struct {
 	Results   []*ComplianceBatchJobResult
 	RateLimit *RateLimit
 }
 
+// ComplianceBatchJobObj is the compliance batch job
 type ComplianceBatchJobObj struct {
 	Resumable         bool                     `json:"resumable"`
 	Type              ComplianceBatchJobType   `json:"type"`
@@ -55,6 +67,7 @@ type ComplianceBatchJobObj struct {
 	client            *http.Client
 }
 
+// Upload will upload ids from a reader
 func (c ComplianceBatchJobObj) Upload(ctx context.Context, ids io.Reader) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, c.UploadURL, ids)
 	if err != nil {
@@ -89,6 +102,7 @@ func (c ComplianceBatchJobObj) Upload(ctx context.Context, ids io.Reader) error 
 	return nil
 }
 
+// Download will download the results of the job
 func (c ComplianceBatchJobObj) Download(ctx context.Context) (*ComplianceBatchJobDownloadResponse, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.DownloadURL, nil)
 	if err != nil {

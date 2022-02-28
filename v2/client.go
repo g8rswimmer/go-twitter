@@ -3593,6 +3593,7 @@ func (c *Client) SpacesSearch(ctx context.Context, query string, opts SpacesSear
 	}, nil
 }
 
+// CreateComplianceBatchJob creates a new compliance job for tweet or user IDs.
 func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType ComplianceBatchJobType, opts CreateComplianceBatchJobOpts) (*CreateComplianceBatchJobResponse, error) {
 	switch {
 	case len(jobType) == 0:
@@ -3664,6 +3665,7 @@ func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType Complianc
 	}, nil
 }
 
+// ComplianceBatchJob returns a single compliance job
 func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*ComplianceBatchJobResponse, error) {
 	switch {
 	case len(id) == 0:
@@ -3720,6 +3722,7 @@ func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*Compliance
 	}, nil
 }
 
+// ComplianceBatchJobLookup returns a list of compliance jobs
 func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType ComplianceBatchJobType, opts ComplianceBatchJobLookupOpts) (*ComplianceBatchJobLookupResponse, error) {
 	switch {
 	case len(jobType) == 0:
