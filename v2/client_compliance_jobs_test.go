@@ -17,9 +17,8 @@ func TestClient_CreateComplianceBatchJob(t *testing.T) {
 		Host       string
 	}
 	type args struct {
-		jobType   ComplianceBatchJobType
-		name      string
-		resumable bool
+		jobType ComplianceBatchJobType
+		opts    CreateComplianceBatchJobOpts
 	}
 	tests := []struct {
 		name    string
@@ -68,7 +67,9 @@ func TestClient_CreateComplianceBatchJob(t *testing.T) {
 			},
 			args: args{
 				jobType: ComplianceBatchJobTypeTweets,
-				name:    "test name",
+				opts: CreateComplianceBatchJobOpts{
+					Name: "test name",
+				},
 			},
 			want: &CreateComplianceBatchJobResponse{
 				Raw: &ComplianceBatchJobRaw{
@@ -101,7 +102,7 @@ func TestClient_CreateComplianceBatchJob(t *testing.T) {
 				Client:     tt.fields.Client,
 				Host:       tt.fields.Host,
 			}
-			got, err := c.CreateComplianceBatchJob(context.Background(), tt.args.jobType, tt.args.name, tt.args.resumable)
+			got, err := c.CreateComplianceBatchJob(context.Background(), tt.args.jobType, tt.args.opts)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.CreateComplianceBatchJob() error = %v, wantErr %v", err, tt.wantErr)
 				return

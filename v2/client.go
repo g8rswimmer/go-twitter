@@ -3593,7 +3593,7 @@ func (c *Client) SpacesSearch(ctx context.Context, query string, opts SpacesSear
 	}, nil
 }
 
-func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType ComplianceBatchJobType, name string, resumable bool) (*CreateComplianceBatchJobResponse, error) {
+func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType ComplianceBatchJobType, opts CreateComplianceBatchJobOpts) (*CreateComplianceBatchJobResponse, error) {
 	switch {
 	case len(jobType) == 0:
 		return nil, fmt.Errorf("create compliance batch job: a type is required: %w", ErrParameter)
@@ -3606,8 +3606,8 @@ func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType Complianc
 		Resumable bool                   `json:"resumable,omitempty"`
 	}{
 		Type:      jobType,
-		Name:      name,
-		Resumable: resumable,
+		Name:      opts.Name,
+		Resumable: opts.Resumable,
 	}
 
 	enc, err := json.Marshal(request)

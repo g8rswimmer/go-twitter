@@ -6,6 +6,11 @@ type ComplianceBatchJobRaw struct {
 	Job *ComplianceBatchJobObj `json:"data"`
 }
 
+type CreateComplianceBatchJobOpts struct {
+	Name      string
+	Resumable bool
+}
+
 type CreateComplianceBatchJobResponse struct {
 	Raw       *ComplianceBatchJobRaw
 	RateLimit *RateLimit
