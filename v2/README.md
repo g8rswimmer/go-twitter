@@ -49,24 +49,28 @@ UserRetweetLookuoOpts -> UserRetweetLookupOpts
 ```
 
 ## Features 
-Here are the current twitter `v2` API features supported:
-*  [Tweet Lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
-    * [example](./_examples/tweet-lookup)
-* [Tweet Dictionary](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet) - the tweet and all of its references related to it
+Here are the current twitter `v2` API features supported.
+
+### Tweets
+The following APIs are supported, with the examples [here](./_examples/tweets)
+
+* [Lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
+* [Counts](https://developer.twitter.com/en/docs/twitter-api/tweets/counts/introduction)
+* [Manage Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/introduction)
+* [Retweets](https://developer.twitter.com/en/docs/twitter-api/tweets/retweets/introduction)
+* [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
+* [Volume Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/volume-streams/introduction)
+* [Filtered Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/introduction)
+* [Timelines](https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/introduction)
+* [Hide Replies](https://developer.twitter.com/en/docs/twitter-api/tweets/hide-replies/introduction)
+* [Search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
+
+### Other 
 *  [User Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
     * [example](./_examples/user-lookup)
     * [example: by usernames](./_examples/username-lookup)
     * [example: authorized](./_examples/auth-user-lookup)
 * [User Dictionary](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user) - the user and all of its references related to it
-* [Tweet Counts](https://developer.twitter.com/en/docs/twitter-api/tweets/counts/introduction)
-    * [example](./_examples/tweet-recent-counts)
-* [Manage Tweet](https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/introduction)
-    * [create example](./_examples/tweet-create)
-    * [delete example](./_examples/tweet-delete)
-* [Manage Retweet](https://developer.twitter.com/en/docs/twitter-api/tweets/retweets/introduction)
-    * [retweet example](./_examples/user-retweet)
-    * [delete retweet example](./_examples/user-delete-retweet)
-    * [retweet lookup example](./_examples/user-retweet-lookup)
 * [User Blocks](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction)
 	* [blocks lookup example](./_examples/user-blocks-lookup)
 	* [blocks example](./_examples/user-blocks)
@@ -80,16 +84,6 @@ Here are the current twitter `v2` API features supported:
 	* [user followers](./_examples/user-followers-lookup)
 	* [follows example](./_examples/user-follows)
 	* [delete follows example](./_examples/user-delete-follows)
-* [Tweet Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
-	* [user likes lookup](./_examples/user-likes-lookup)
-	* [tweets likes lookup](./_examples/tweet-likes-lookup)
-* [Tweet Sample Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/volume-streams/introduction)
-	* [tweet sample stream](./_examples/tweet-sample-stream)
-* [Tweet Search Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/introduction)
-	* [tweet search stream add rules](./_examples/tweet-search-stream-add-rule)
-	* [tweet search stream delete rules](./_examples/tweet-search-stream-delete-rule)
-	* [tweet search stream rules](./_examples/tweet-search-stream-rules)
-	* [tweet search stream](./_examples/tweet-search-stream)
 * [List Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/introduction)
 	* [list lookup](./_examples/list-lookup)
 	* [user list lookup](./_examples/user-list-lookup)
