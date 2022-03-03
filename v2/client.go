@@ -582,6 +582,9 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	return recentSearch, nil
 }
 
+// TweetSearch is a full-archive search endpoint returns the complete history of public Tweets matching a search query.
+//
+// This endpoint is only available to those users who have been approved for Academic Research access.
 func (c *Client) TweetSearch(ctx context.Context, query string, opts TweetSearchOpts) (*TweetSearchResponse, error) {
 	switch {
 	case len(query) == 0:

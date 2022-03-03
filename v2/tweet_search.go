@@ -8,10 +8,13 @@ import (
 	"time"
 )
 
+// TweetSearchSortOrder specifies the order the tweets are returned
 type TweetSearchSortOrder string
 
 const (
-	TweetSearchSortOrderRecency   TweetSearchSortOrder = "recency"
+	// TweetSearchSortOrderRecency will return the tweets in order of recency
+	TweetSearchSortOrderRecency TweetSearchSortOrder = "recency"
+	// TweetSearchSortOrderRelevancy will return the tweets in order of relevancy
 	TweetSearchSortOrderRelevancy TweetSearchSortOrder = "relevancy"
 )
 
@@ -93,6 +96,7 @@ type TweetRecentSearchMeta struct {
 	NextToken   string `json:"next_token"`
 }
 
+// TweetSearchOpts are the tweet search options
 type TweetSearchOpts struct {
 	Expansions  []Expansion
 	MediaFields []MediaField
@@ -155,12 +159,14 @@ func (t TweetSearchOpts) addQuery(req *http.Request) {
 	}
 }
 
+// TweetSearchResponse is the tweet search response
 type TweetSearchResponse struct {
 	Raw       *TweetRaw
 	Meta      *TweetSearchMeta `json:"meta"`
 	RateLimit *RateLimit
 }
 
+// TweetSearchMeta is the tweet search metas
 type TweetSearchMeta struct {
 	NewestID    string `json:"newest_id"`
 	OldestID    string `json:"oldest_id"`
