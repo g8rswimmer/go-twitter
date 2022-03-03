@@ -21,6 +21,8 @@ The examples can be run my providing some options, including the authorization t
 ### [Search Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 
 * [Search for Tweets published in the last 7 days](./search/tweet-recent-search)
+* [Full-archive search endpoint returns the complete history of public Tweets](./search/tweet-search-all)
+    * This endpoint is only available to those users who have been approved for Academic Research access
 
 ### [Tweet Counts](https://developer.twitter.com/en/docs/twitter-api/tweets/counts/introduction)
 
