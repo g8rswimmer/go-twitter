@@ -47,6 +47,8 @@ The examples can be run my providing some options, including the authorization t
 
 * [Users who have liked a Tweet](./likes/user-likes-lookup)
 * [Tweets liked by an user](./likes/tweet-likes-lookup)
+* [Allows a user ID to like a Tweet](./likes/user-like-tweet)
+* [Allows a user ID to unlike a Tweet](./likes/user-unlike-tweet)
 
 ### [Hide Replies](https://developer.twitter.com/en/docs/twitter-api/tweets/hide-replies/introduction)
 
