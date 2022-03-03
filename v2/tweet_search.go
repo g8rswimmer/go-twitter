@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+type TweetSearchSortOrder string
+
+const (
+	TweetSearchSortOrderRecency   TweetSearchSortOrder = "recency"
+	TweetSearchSortOrderRelevancy TweetSearchSortOrder = "relevancy"
+)
+
 // TweetRecentSearchOpts are the optional parameters for the recent seach API
 type TweetRecentSearchOpts struct {
 	Expansions  []Expansion
@@ -18,6 +25,7 @@ type TweetRecentSearchOpts struct {
 	UserFields  []UserField
 	StartTime   time.Time
 	EndTime     time.Time
+	SortOrder   TweetSearchSortOrder
 	MaxResults  int
 	NextToken   string
 	SinceID     string
@@ -61,6 +69,9 @@ func (t TweetRecentSearchOpts) addQuery(req *http.Request) {
 	}
 	if len(t.UntilID) > 0 {
 		q.Add("until_id", t.UntilID)
+	}
+	if len(t.SortOrder) > 0 {
+		q.Add("sort_order", string(t.SortOrder))
 	}
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
