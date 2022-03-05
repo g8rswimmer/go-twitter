@@ -48,6 +48,7 @@ func (t TweetRecentCountsOpts) addQuery(req *http.Request) {
 	}
 }
 
+// TweetAllCountsOpts are the optional paramters that can be passed to the tweet all counts callout
 type TweetAllCountsOpts struct {
 	StartTime   time.Time
 	EndTime     time.Time

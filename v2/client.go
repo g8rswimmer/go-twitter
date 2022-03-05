@@ -1026,6 +1026,7 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 	return recentCounts, nil
 }
 
+// TweetAllCounts receive a count of Tweets that match a query
 func (c *Client) TweetAllCounts(ctx context.Context, query string, opts TweetAllCountsOpts) (*TweetAllCountsResponse, error) {
 	switch {
 	case len(query) == 0:
