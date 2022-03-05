@@ -17,6 +17,7 @@ const (
 	spaceByCreatorMaxIDs         = 100
 	userMaxNames                 = 100
 	tweetRecentSearchQueryLength = 512
+	tweetSearchQueryLength       = 1024
 	tweetRecentCountsQueryLength = 512
 	userBlocksMaxResults         = 1000
 	userMutesMaxResults          = 1000
@@ -579,6 +580,74 @@ func (c *Client) TweetRecentSearch(ctx context.Context, query string, opts Tweet
 	}
 
 	return recentSearch, nil
+}
+
+// TweetSearch is a full-archive search endpoint returns the complete history of public Tweets matching a search query.
+//
+// This endpoint is only available to those users who have been approved for Academic Research access.
+func (c *Client) TweetSearch(ctx context.Context, query string, opts TweetSearchOpts) (*TweetSearchResponse, error) {
+	switch {
+	case len(query) == 0:
+		return nil, fmt.Errorf("tweet search: a query is required: %w", ErrParameter)
+	case len(query) > tweetSearchQueryLength:
+		return nil, fmt.Errorf("tweet search: the query over the length (%d): %w", tweetSearchQueryLength, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetSearchEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet search response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *TweetSearchMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "tweet search",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &TweetSearchResponse{
+		Raw:       respBody.TweetRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
+	}, nil
 }
 
 // TweetSearchStreamAddRule will create on or more rules for search sampling.  Set dry run to true to validate the rules before commit
