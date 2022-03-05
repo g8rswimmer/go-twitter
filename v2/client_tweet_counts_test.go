@@ -11,6 +11,177 @@ import (
 	"time"
 )
 
+func TestClient_TweetAllCounts(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		query string
+		opts  TweetAllCountsOpts
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *TweetAllCountsResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), string(tweetAllCountsEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetAllCountsEndpoint)
+					}
+					body := `{
+					  "data": [
+						{
+						  "end": "2021-05-27t00:00:00.000z",
+						  "start": "2021-05-26t23:00:00.000z",
+						  "tweet_count": 2
+						},
+						{
+						  "end": "2021-05-27t01:00:00.000z",
+						  "start": "2021-05-27t00:00:00.000z",
+						  "tweet_count": 2
+						}
+					  ],
+					  "meta": {
+						"total_tweet_count": 4,
+						"next_token": "1234abc"
+					  }
+					}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
+					}
+				}),
+			},
+			args: args{
+				query: "python",
+			},
+			want: &TweetAllCountsResponse{
+				TweetCounts: []*TweetCount{
+					{
+						End:        "2021-05-27t00:00:00.000z",
+						Start:      "2021-05-26t23:00:00.000z",
+						TweetCount: 2,
+					},
+					{
+						End:        "2021-05-27t01:00:00.000z",
+						Start:      "2021-05-27t00:00:00.000z",
+						TweetCount: 2,
+					},
+				},
+				Meta: &TweetAllCountsMeta{
+					TotalTweetCount: 4,
+					NextToken:       "1234abc",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "success-optional",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), string(tweetAllCountsEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), tweetAllCountsEndpoint)
+					}
+					body := `{
+					  "data": [
+						{
+						   "start": "2021-10-08T15:29:42.000Z",
+						   "end": "2021-10-09T00:00:00.000Z",
+						   "tweet_count": 2
+						},
+					    {
+						   "start": "2021-10-09T00:00:00.000Z",
+						   "end": "2021-10-09T15:29:33.000Z",
+						   "tweet_count": 2
+					    }
+					  ],
+					  "meta": {
+						"total_tweet_count": 4,
+						"next_token": "9876xyz"
+					  }
+					}`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+					}
+				}),
+			},
+			args: args{
+				query: "python",
+				opts: TweetAllCountsOpts{
+					StartTime:   time.Now().Add(-24 * time.Hour),
+					Granularity: Granularity("day"),
+				},
+			},
+			want: &TweetAllCountsResponse{
+				TweetCounts: []*TweetCount{
+					{
+						End:        "2021-10-09T00:00:00.000Z",
+						Start:      "2021-10-08T15:29:42.000Z",
+						TweetCount: 2,
+					},
+					{
+						End:        "2021-10-09T15:29:33.000Z",
+						Start:      "2021-10-09T00:00:00.000Z",
+						TweetCount: 2,
+					},
+				},
+				Meta: &TweetAllCountsMeta{
+					TotalTweetCount: 4,
+					NextToken:       "9876xyz",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.TweetAllCounts(context.Background(), tt.args.query, tt.args.opts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.TweetAllCounts() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.TweetAllCounts() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestClient_TweetRecentCounts(t *testing.T) {
 	type fields struct {
 		Authorizer Authorizer

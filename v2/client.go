@@ -1073,7 +1073,7 @@ func (c *Client) TweetAllCounts(ctx context.Context, query string, opts TweetAll
 
 	allCnts := &TweetAllCountsResponse{
 		TweetCounts: []*TweetCount{},
-		Meta:        &TweetRecentCountsMeta{},
+		Meta:        &TweetAllCountsMeta{},
 	}
 
 	if err := decoder.Decode(allCnts); err != nil {
