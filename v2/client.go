@@ -19,6 +19,7 @@ const (
 	tweetRecentSearchQueryLength = 512
 	tweetSearchQueryLength       = 1024
 	tweetRecentCountsQueryLength = 512
+	tweetAllCountsQueryLength    = 1024
 	userBlocksMaxResults         = 1000
 	userMutesMaxResults          = 1000
 	likesMaxResults              = 100
@@ -1023,6 +1024,67 @@ func (c *Client) TweetRecentCounts(ctx context.Context, query string, opts Tweet
 	}
 	recentCounts.RateLimit = rl
 	return recentCounts, nil
+}
+
+func (c *Client) TweetAllCounts(ctx context.Context, query string, opts TweetAllCountsOpts) (*TweetAllCountsResponse, error) {
+	switch {
+	case len(query) == 0:
+		return nil, fmt.Errorf("tweet all counts: a query is required: %w", ErrParameter)
+	case len(query) > tweetAllCountsQueryLength:
+		return nil, fmt.Errorf("tweet all counts: the query over the length (%d): %w", tweetAllCountsQueryLength, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, tweetAllCountsEndpoint.url(c.Host), nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet all counts request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet all counts response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	rl := rateFromHeader(resp.Header)
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	allCnts := &TweetAllCountsResponse{
+		TweetCounts: []*TweetCount{},
+		Meta:        &TweetRecentCountsMeta{},
+	}
+
+	if err := decoder.Decode(allCnts); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "tweet all counts",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+	allCnts.RateLimit = rl
+	return allCnts, nil
 }
 
 // UserFollowingLookup will return a user's following users

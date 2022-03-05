@@ -18,3 +18,14 @@ type TweetCount struct {
 	End        string `json:"end"`
 	TweetCount int    `json:"tweet_count"`
 }
+
+type TweetAllCountsResponse struct {
+	TweetCounts []*TweetCount       `json:"data"`
+	Meta        *TweetAllCountsMeta `json:"meta"`
+	RateLimit   *RateLimit
+}
+
+type TweetAllCountsMeta struct {
+	TotalTweetCount int    `json:"total_tweet_count"`
+	NextToken       string `json:"next_token"`
+}
