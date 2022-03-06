@@ -6,52 +6,54 @@ The examples can be run my providing some options, including the authorization t
 
 ### [Tweets Lookup](https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/introduction)
 
-* [Returns a variety of information about the tweet specified by the list of ids](./lookup/tweet-lookup)
+* [Returns a variety of information about the tweet specified by the list of ids](./lookup/tweet-lookup/main.go)
 
 ### [Manage Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/introduction)
 
-* [Creates a tweet on behalf of the user](./manage/tweet-create)
-* [Allows a user to delete a tweet](./manage/tweet-delete)
+* [Creates a tweet on behalf of the user](./manage/tweet-create/main.go)
+* [Allows a user to delete a tweet](./manage/tweet-delete/main.go)
 
 ### [Timelines](https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/introduction)
 
-* [Returns most recent tweets composed by a user](./timeline/user-tweet-timeline)
-* [Returns most recent tweet mentioning a user](./timeline/user-mention-timeline)
+* [Returns most recent tweets composed by a user](./timeline/user-tweet-timeline/main.go)
+* [Returns most recent tweet mentioning a user](./timeline/user-mention-timeline/main.go)
 
 ### [Search Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 
-* [Search for Tweets published in the last 7 days](./search/tweet-recent-search)
-* [Full-archive search endpoint returns the complete history of public Tweets](./search/tweet-search-all)
+* [Search for Tweets published in the last 7 days](./search/tweet-recent-search/main.go)
+* [Full-archive search endpoint returns the complete history of public Tweets](./search/tweet-search-all/main.go)
     * This endpoint is only available to those users who have been approved for Academic Research access
 
 ### [Tweet Counts](https://developer.twitter.com/en/docs/twitter-api/tweets/counts/introduction)
 
-* [Receive a count of Tweets that match a query in the last 7 days](./counts/tweet-recent-counts)
+* [Receive a count of Tweets that match a query in the last 7 days](./counts/tweet-recent-counts/main.go)
+* [Full-archive Tweet counts endpoint returns the count of Tweets that match your query from the complete history of public Tweets](./counts/tweet-all-counts/main.go)
+    * This endpoint is only available to those users who have been approved for Academic Research access
 
 ### [Filtered Stream](https://developer.twitter.com/en/docs/twitter-api/tweets/filtered-stream/introduction)
 
-* [Add rules from your stream](./filtered-stream/tweet-search-stream-add-rule)
-* [Delete rules from your stream](./filtered-stream/tweet-search-stream-delete-rules)
-* [Retrieve your stream's rules](./filtered-stream/tweet-search-stream-rules)
-* [Connect to the stream](./filtered-stream/tweet-search-stream)
+* [Add rules from your stream](./filtered-stream/tweet-search-stream-add-rule/main.go)
+* [Delete rules from your stream](./filtered-stream/tweet-search-stream-delete-rules/main.go)
+* [Retrieve your stream's rules](./filtered-stream/tweet-search-stream-rules/main.go)
+* [Connect to the stream](./filtered-stream/tweet-search-stream/main.go)
 
 ### [Volume Streams](https://developer.twitter.com/en/docs/twitter-api/tweets/volume-streams/introduction)
 
-* [Streams about 1% of all Tweets in real-time](./volume-stream/tweet-sample-stream)
+* [Streams about 1% of all Tweets in real-time](./volume-stream/tweet-sample-stream/main.go)
 
 ### [Retweets](https://developer.twitter.com/en/docs/twitter-api/tweets/retweets/introduction)
 
-* [Users who have Retweeted a Tweet](./retweets/user-retweet-lookup)
-* [Allows a user ID to Retweet a Tweet](./retweets/user-retweet)
-* [Allows a user ID to undo a Retweet](./retweets/user-delete-retweet)
+* [Users who have Retweeted a Tweet](./retweets/user-retweet-lookup/main.go)
+* [Allows a user ID to Retweet a Tweet](./retweets/user-retweet/main.go)
+* [Allows a user ID to undo a Retweet](./retweets/user-delete-retweet/main.go)
 
 ### [Likes](https://developer.twitter.com/en/docs/twitter-api/tweets/likes/introduction)
 
-* [Users who have liked a Tweet](./likes/user-likes-lookup)
-* [Tweets liked by an user](./likes/tweet-likes-lookup)
-* [Allows a user ID to like a Tweet](./likes/user-like-tweet)
-* [Allows a user ID to unlike a Tweet](./likes/user-unlike-tweet)
+* [Users who have liked a Tweet](./likes/user-likes-lookup/main.go)
+* [Tweets liked by an user](./likes/tweet-likes-lookup/main.go)
+* [Allows a user ID to like a Tweet](./likes/user-like-tweet/main.go)
+* [Allows a user ID to unlike a Tweet](./likes/user-unlike-tweet/main.go)
 
 ### [Hide Replies](https://developer.twitter.com/en/docs/twitter-api/tweets/hide-replies/introduction)
 
-* [Hides or unhides a reply to a Tweet](./hide-replies/tweet-hide-replies)
+* [Hides or unhides a reply to a Tweet](./hide-replies/tweet-hide-replies/main.go)

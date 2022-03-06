@@ -21,6 +21,7 @@ const (
 	tweetRecentSearchEndpoint      endpoint = "2/tweets/search/recent"
 	tweetSearchEndpoint            endpoint = "2/tweets/search/all"
 	tweetRecentCountsEndpoint      endpoint = "2/tweets/counts/recent"
+	tweetAllCountsEndpoint         endpoint = "2/tweets/counts/all"
 	userFollowingEndpoint          endpoint = "2/users/{id}/following"
 	userFollowersEndpoint          endpoint = "2/users/{id}/followers"
 	userTweetTimelineEndpoint      endpoint = "2/users/{id}/tweets"
