@@ -10,3 +10,7 @@ The examples can be run my providing some options, including the authorization t
 * [Get users who purchased a ticket to a Space](./lookup/spaces-buyers/main.go)
 * [Discover Spaces created by user ID](./lookup/spaces-by-creator/main.go)
 * [Discover Spaces shared by tweet ID](./lookup/spaces-tweets/main.go)
+
+### [Search Spaces](https://developer.twitter.com/en/docs/twitter-api/spaces/search/introduction)
+
+* [Return live or scheduled Spaces matching your specified search terms](./search/spaces-search/main.go)
