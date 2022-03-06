@@ -79,30 +79,17 @@ The following APIs are supported, with the examples [here](./_examples/spaces)
 * [Spaces Lookup](https://developer.twitter.com/en/docs/twitter-api/spaces/lookup/introduction)
 * [Spaces Search](https://developer.twitter.com/en/docs/twitter-api/spaces/search/introduction)
 
-### Other 
+### Lists
+The following APIs are supported, with the examples [here](./_examples/lists)
+
 * [List Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/introduction)
-	* [list lookup](./_examples/list-lookup)
-	* [user list lookup](./_examples/user-list-lookup)
 * [List Tweets Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-tweets/introduction)
-	* [list tweet lookup](./_examples/list-tweet-lookup)
 * [Manage Lists](https://developer.twitter.com/en/docs/twitter-api/lists/manage-lists/introduction)
-	* [create list](./_examples/list-create)
-	* [update list](./_examples/list-update)
-	* [delete list](./_examples/list-delete)
 * [List Members](https://developer.twitter.com/en/docs/twitter-api/lists/list-members/introduction)
-	* [list add members](./_examples/list-add-member)
-	* [list remove members](./_examples/list-remove-member)
-	* [list members](./_examples/list-members)
-	* [list membersships](./_examples/list-memberships)
 * [Pinned Lists](https://developer.twitter.com/en/docs/twitter-api/lists/pinned-lists/introduction)
-	* [user pin list](./_examples/user-pin-list)
-	* [user unpin list](./_examples/user-unpin-list)
-	* [user pinned lists](./_examples/user-pinned-lists)
 * [List Follows](https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/introduction)
-	* [user follow list](./_examples/user-follow-list)
-	* [user unfollow list](./_examples/user-unfollow-list)
-	* [user followed lists](./_examples/user-followed-lists)
-	* [list followers](./_examples/list-followers)
+
+### Other 
 * [Compliance Batch](https://developer.twitter.com/en/docs/twitter-api/compliance/batch-compliance/introduction)
 	* [compliance batch](./_examples/compliance-batch)
 
