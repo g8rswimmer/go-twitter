@@ -97,7 +97,7 @@ The following APIs are supported, with the examples [here](./_examples/complianc
 ## Rate Limiting
 With each response, the rate limits from the response header is returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.
 
-There is an example of rate limiting from a response [here](./examples/rate-limit).
+There is an example of rate limiting from a response [here](./_examples/misc/rate-limit/main.go).
 
 This is an example of a twitter callout and if the limits have been reached, then it will backoff and try again.
 ```go
@@ -118,7 +118,7 @@ func TweetLikes(ctx context.Context, id string, client *twitter.Client) (*twitte
 ```
 
 ## Examples
-Much like `v1`, there is an `_example` directory to demostrate library usage.  Refer to the [readme](./_examples) for more information.
+Much like `v1`, there is an `_example` directory to demostrate library usage.
 
 ## Simple Usage
 ```go
