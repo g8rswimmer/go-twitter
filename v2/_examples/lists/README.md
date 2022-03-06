@@ -25,3 +25,10 @@ The examples can be run my providing some options, including the authorization t
 * [Returns all Lists a specified user is a member of](./members/list-memberships/main.go)
 * [Add a member to a List that the authenticated user owns](./members/list-add-member/main.go)
 * [Removes a member from a List the authenticated user owns](./members/list-remove-member/main.go)
+
+### [List Follows](https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/introduction)
+
+* [Returns all followers of a specified List](./follows/list-followers/main.go)
+* [Returns all Lists a specified user follows](./follows/user-followed-lists/main.go)
+* [Follows a List on behalf of an authenticated user](./follows/user-follow-list/main.go)
+* [Unfollows a List on behalf of an authenticated user](./follows/user-unfollow-list/main.go)
