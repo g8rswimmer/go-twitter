@@ -32,3 +32,9 @@ The examples can be run my providing some options, including the authorization t
 * [Returns all Lists a specified user follows](./follows/user-followed-lists/main.go)
 * [Follows a List on behalf of an authenticated user](./follows/user-follow-list/main.go)
 * [Unfollows a List on behalf of an authenticated user](./follows/user-unfollow-list/main.go)
+
+### [Pinned Lists](https://developer.twitter.com/en/docs/twitter-api/lists/pinned-lists/introduction)
+
+* [Returns the pinned Lists of the authenticated user](./pinned/user-pinned-lists/main.go)
+* [Pins a List on behalf of an authenticated user](./pinned/user-pin-list/main.go)
+* [Unpins a List on behalf of an authenticated user](./pinned/user-unpin-list/main.go)
