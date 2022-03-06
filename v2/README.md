@@ -65,25 +65,16 @@ The following APIs are supported, with the examples [here](./_examples/tweets)
 * [Hide Replies](https://developer.twitter.com/en/docs/twitter-api/tweets/hide-replies/introduction)
 * [Search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 
-### Other 
-*  [User Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
-    * [example](./_examples/user-lookup)
-    * [example: by usernames](./_examples/username-lookup)
-    * [example: authorized](./_examples/auth-user-lookup)
-* [User Dictionary](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user) - the user and all of its references related to it
+### Users
+The following APIs are supported, with the examples [here](./_examples/users)
+
+* [User Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
 * [User Blocks](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction)
-	* [blocks lookup example](./_examples/user-blocks-lookup)
-	* [blocks example](./_examples/user-blocks)
-	* [delete blocks example](./_examples/user-delete-blocks)
 * [User Mutes](https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction)
-	* [mutes lookup example](./_examples/user-mutes-lookup)
-	* [mutes example](./_examples/user-mutes)
-	* [delete mutes example](./_examples/user-delete-mutes)
 * [User Follows](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction)
-	* [user following](./_examples/user-following-lookup)
-	* [user followers](./_examples/user-followers-lookup)
-	* [follows example](./_examples/user-follows)
-	* [delete follows example](./_examples/user-delete-follows)
+
+
+### Other 
 * [List Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/introduction)
 	* [list lookup](./_examples/list-lookup)
 	* [user list lookup](./_examples/user-list-lookup)
