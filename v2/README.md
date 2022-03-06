@@ -89,9 +89,10 @@ The following APIs are supported, with the examples [here](./_examples/lists)
 * [Pinned Lists](https://developer.twitter.com/en/docs/twitter-api/lists/pinned-lists/introduction)
 * [List Follows](https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/introduction)
 
-### Other 
+### Compliance
+The following APIs are supported, with the examples [here](./_examples/compliance)
+
 * [Compliance Batch](https://developer.twitter.com/en/docs/twitter-api/compliance/batch-compliance/introduction)
-	* [compliance batch](./_examples/compliance-batch)
 
 ## Rate Limiting
 With each response, the rate limits from the response header is returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.
