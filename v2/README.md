@@ -68,10 +68,10 @@ The following APIs are supported, with the examples [here](./_examples/tweets)
 ### Users
 The following APIs are supported, with the examples [here](./_examples/users)
 
-* [User Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
-* [User Blocks](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction)
-* [User Mutes](https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction)
-* [User Follows](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction)
+* [Lookup](https://developer.twitter.com/en/docs/twitter-api/users/lookup/introduction)
+* [Blocks](https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction)
+* [Mutes](https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction)
+* [Follows](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction)
 
 
 ### Other 
