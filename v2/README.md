@@ -73,6 +73,11 @@ The following APIs are supported, with the examples [here](./_examples/users)
 * [Mutes](https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction)
 * [Follows](https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction)
 
+### Spaces
+The following APIs are supported, with the examples [here](./_examples/spaces)
+
+* [Spaces Lookup](https://developer.twitter.com/en/docs/twitter-api/spaces/lookup/introduction)
+* [Spaces Search](https://developer.twitter.com/en/docs/twitter-api/spaces/search/introduction)
 
 ### Other 
 * [List Lookup](https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/introduction)
@@ -98,13 +103,6 @@ The following APIs are supported, with the examples [here](./_examples/users)
 	* [user unfollow list](./_examples/user-unfollow-list)
 	* [user followed lists](./_examples/user-followed-lists)
 	* [list followers](./_examples/list-followers)
-* [Spaces Lookup](https://developer.twitter.com/en/docs/twitter-api/spaces/lookup/introduction)
-	* [space lookup](./_examples/spaces-lookup)
-	* [spaces by creator](./_examples/spaces=by-creator)
-	* [spaces buyers](./_examples/spaces-buyers)
-	* [spaces tweets](./_examples/spaces-tweets)
-* [Spaces Search](https://developer.twitter.com/en/docs/twitter-api/spaces/search/introduction)
-	* [space search](./_examples/spaces-search)
 * [Compliance Batch](https://developer.twitter.com/en/docs/twitter-api/compliance/batch-compliance/introduction)
 	* [compliance batch](./_examples/compliance-batch)
 
