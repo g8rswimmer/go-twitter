@@ -32,12 +32,12 @@ type UserDeleteFollowsData struct {
 // UserFollowingLookupResponse is the response for the user following API
 type UserFollowingLookupResponse struct {
 	Raw       *UserRaw
-	Meta      *UserFollowinghMeta `json:"meta"`
+	Meta      *UserFollowingMeta `json:"meta"`
 	RateLimit *RateLimit
 }
 
-// UserFollowinghMeta is the meta data returned by the user following API
-type UserFollowinghMeta struct {
+// UserFollowingMeta is the meta data returned by the user following API
+type UserFollowingMeta struct {
 	ResultCount   int    `json:"result_count"`
 	NextToken     string `json:"next_token"`
 	PreviousToken string `json:"previous_token"`

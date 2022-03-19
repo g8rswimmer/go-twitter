@@ -88,7 +88,7 @@ func TestClient_UserFollowingLookup(t *testing.T) {
 						},
 					},
 				},
-				Meta: &UserFollowinghMeta{
+				Meta: &UserFollowingMeta{
 					ResultCount: 2,
 					NextToken:   "DFEDBNRFT3MHCZZZ",
 				},
@@ -212,7 +212,7 @@ func TestClient_UserFollowingLookup(t *testing.T) {
 						},
 					},
 				},
-				Meta: &UserFollowinghMeta{
+				Meta: &UserFollowingMeta{
 					ResultCount: 2,
 					NextToken:   "DFEDBNRFT3MHCZZZ",
 				},

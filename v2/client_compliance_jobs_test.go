@@ -36,8 +36,8 @@ func TestClient_CreateComplianceBatchJob(t *testing.T) {
 					if req.Method != http.MethodPost {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
 					}
-					if strings.Contains(req.URL.String(), string(complainceJobsEndpont)) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), complainceJobsEndpont)
+					if strings.Contains(req.URL.String(), string(complianceJobsEndpiont)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), complianceJobsEndpiont)
 					}
 					body := `{
 						"data": {
@@ -140,8 +140,8 @@ func TestClient_ComplianceBatchJob(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), string(complainceJobsEndpont)+"/job-id") == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), complainceJobsEndpont)
+					if strings.Contains(req.URL.String(), string(complianceJobsEndpiont)+"/job-id") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), complianceJobsEndpiont)
 					}
 					body := `{
 						"data": {
@@ -243,8 +243,8 @@ func TestClient_ComplianceBatchJobLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), string(complainceJobsEndpont)) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), complainceJobsEndpont)
+					if strings.Contains(req.URL.String(), string(complianceJobsEndpiont)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), complianceJobsEndpiont)
 					}
 					body := `{
 						"data": [

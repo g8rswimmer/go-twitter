@@ -16,7 +16,7 @@ const (
 	userAuthLookupEndpoint         endpoint = "2/users/me"
 	userManageRetweetEndpoint      endpoint = "2/users/{id}/retweets"
 	userBlocksEndpoint             endpoint = "2/users/{id}/blocking"
-	userMutesEndpont               endpoint = "2/users/{id}/muting"
+	userMutesEndpoint              endpoint = "2/users/{id}/muting"
 	userRetweetLookupEndpoint      endpoint = "2/tweets/{id}/retweeted_by"
 	tweetRecentSearchEndpoint      endpoint = "2/tweets/search/recent"
 	tweetSearchEndpoint            endpoint = "2/tweets/search/all"
@@ -45,11 +45,11 @@ const (
 	userFollowedListEndpoint       endpoint = "2/users/{id}/followed_lists"
 	listUserFollowersEndpoint      endpoint = "2/lists/{id}/followers"
 	spaceLookupEndpoint            endpoint = "2/spaces"
-	spaceByCreatorLookupEndpont    endpoint = "2/spaces/by/creator_ids"
+	spaceByCreatorLookupEndpoint   endpoint = "2/spaces/by/creator_ids"
 	spaceBuyersLookupEndpoint      endpoint = "2/spaces/{id}/buyers"
 	spaceTweetsLookupEndpoint      endpoint = "2/spaces/{id}/tweets"
 	spaceSearchEndpoint            endpoint = "2/spaces/search"
-	complainceJobsEndpont          endpoint = "2/compliance/jobs"
+	complianceJobsEndpiont         endpoint = "2/compliance/jobs"
 
 	idTag = "{id}"
 )
