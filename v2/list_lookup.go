@@ -85,7 +85,7 @@ type UserListRaw struct {
 	Errors   []*ErrorObj      `json:"errors,omitempty"`
 }
 
-// UserListLookupResponse is the raw ressponse with meta
+// UserListLookupResponse is the raw response with meta
 type UserListLookupResponse struct {
 	Raw       *UserListRaw
 	Meta      *UserListLookupMeta `json:"meta"`
@@ -278,7 +278,7 @@ type UserPinnedListsRaw struct {
 	Errors   []*ErrorObj      `json:"errors,omitempty"`
 }
 
-// UserPinnedListsMeta the meta for pinned lista
+// UserPinnedListsMeta the meta for pinned lists
 type UserPinnedListsMeta struct {
 	ResultCount int `json:"result_count"`
 }

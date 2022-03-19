@@ -31,7 +31,7 @@ type EntityURLObj struct {
 	DisplayURL  string `json:"display_url"`
 	Status      int    `json:"status"`
 	Title       string `json:"title"`
-	Desription  string `json:"description"`
+	Description string `json:"description"`
 	UnwoundURL  string `json:"unwound_url"`
 }
 

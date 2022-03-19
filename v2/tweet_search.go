@@ -18,7 +18,7 @@ const (
 	TweetSearchSortOrderRelevancy TweetSearchSortOrder = "relevancy"
 )
 
-// TweetRecentSearchOpts are the optional parameters for the recent seach API
+// TweetRecentSearchOpts are the optional parameters for the recent search API
 type TweetRecentSearchOpts struct {
 	Expansions  []Expansion
 	MediaFields []MediaField
@@ -166,7 +166,7 @@ type TweetSearchResponse struct {
 	RateLimit *RateLimit
 }
 
-// TweetSearchMeta is the tweet search metas
+// TweetSearchMeta is the tweet search meta data
 type TweetSearchMeta struct {
 	NewestID    string `json:"newest_id"`
 	OldestID    string `json:"oldest_id"`
@@ -249,7 +249,7 @@ type TweetSearchStreamAddRuleResponse struct {
 	RateLimit *RateLimit
 }
 
-// TweetSearchStreamDeleteRuleResponse is the respnse from deleting rules
+// TweetSearchStreamDeleteRuleResponse is the response from deleting rules
 type TweetSearchStreamDeleteRuleResponse struct {
 	Meta      *TweetSearchStreamRuleMeta `json:"meta"`
 	Errors    []*ErrorObj                `json:"errors,omitempty"`
