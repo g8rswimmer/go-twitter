@@ -56,6 +56,16 @@ UserFollowinghMeta -> UserFollowingMeta
 ```
 DeteleUserLikesResponse -> DeleteUserLikesResponse
 ```
+* There was a typo in the `EntityURLObj`
+```
+EntityURLObj.Desription -> EntityURLObj.Description
+```
+* There was a typo in the `TweetObj` and the JSON tag
+```
+TweetObj.PossibySensitive -> TweetObj.PossiblySensitive
+
+json: possiby_sensitive -> possibly_sensitive
+```
 
 ## Features 
 Here are the current twitter `v2` API features supported.
