@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// QuoteTweetsLookupOpts are the options for the quote tweets
 type QuoteTweetsLookupOpts struct {
 	MaxResults      int
 	PaginationToken string
@@ -48,13 +49,15 @@ func (qt QuoteTweetsLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
-type QuoteTweetLookupResponse struct {
+// QuoteTweetsLookupResponse is the response from the quote tweet
+type QuoteTweetsLookupResponse struct {
 	Raw       *TweetRaw
-	Meta      *QuoteTweetLookupMeta
+	Meta      *QuoteTweetsLookupMeta
 	RateLimit *RateLimit
 }
 
-type QuoteTweetLookupMeta struct {
+// QuoteTweetsLookupMeta is the meta data from the response
+type QuoteTweetsLookupMeta struct {
 	ResultCount int    `json:"result_count"`
 	NextToken   string `json:"next_token"`
 }

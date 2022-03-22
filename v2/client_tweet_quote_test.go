@@ -24,7 +24,7 @@ func TestClient_QuoteTweetsLookup(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *QuoteTweetLookupResponse
+		want    *QuoteTweetsLookupResponse
 		wantErr bool
 	}{
 		{
@@ -67,7 +67,7 @@ func TestClient_QuoteTweetsLookup(t *testing.T) {
 			args: args{
 				tweetID: "tweet-1234",
 			},
-			want: &QuoteTweetLookupResponse{
+			want: &QuoteTweetsLookupResponse{
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
@@ -76,7 +76,7 @@ func TestClient_QuoteTweetsLookup(t *testing.T) {
 						},
 					},
 				},
-				Meta: &QuoteTweetLookupMeta{
+				Meta: &QuoteTweetsLookupMeta{
 					ResultCount: 1,
 					NextToken:   "axdnchiqasch",
 				},

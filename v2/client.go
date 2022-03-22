@@ -3921,7 +3921,8 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 	}, nil
 }
 
-func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts QuoteTweetsLookupOpts) (*QuoteTweetLookupResponse, error) {
+// QuoteTweetsLookup returns quote tweets for a tweet specificed by the requested tweet id
+func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts QuoteTweetsLookupOpts) (*QuoteTweetsLookupResponse, error) {
 	switch {
 	case len(tweetID) == 0:
 		return nil, fmt.Errorf("quote tweets lookup: an id is required: %w", ErrParameter)
@@ -3970,7 +3971,7 @@ func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts Quo
 
 	respBody := struct {
 		*TweetRaw
-		Meta *QuoteTweetLookupMeta `json:"meta"`
+		Meta *QuoteTweetsLookupMeta `json:"meta"`
 	}{}
 
 	if err := decoder.Decode(&respBody); err != nil {
@@ -3981,7 +3982,7 @@ func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts Quo
 		}
 	}
 
-	return &QuoteTweetLookupResponse{
+	return &QuoteTweetsLookupResponse{
 		Raw:       respBody.TweetRaw,
 		Meta:      respBody.Meta,
 		RateLimit: rl,
