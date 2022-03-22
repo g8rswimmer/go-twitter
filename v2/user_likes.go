@@ -12,8 +12,8 @@ type UserLikesResponse struct {
 	RateLimit *RateLimit
 }
 
-// DeteleUserLikesResponse the response for the user unlike
-type DeteleUserLikesResponse struct {
+// DeleteUserLikesResponse the response for the user unlike
+type DeleteUserLikesResponse struct {
 	Data      *UserLikesData `json:"data"`
 	RateLimit *RateLimit
 }

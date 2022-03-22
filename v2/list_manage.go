@@ -69,7 +69,7 @@ type UserPinListResponse struct {
 	RateLimit *RateLimit
 }
 
-// UserUnpinListResponse upin list response
+// UserUnpinListResponse unpin list response
 type UserUnpinListResponse struct {
 	List      *UserPinListData `json:"data"`
 	RateLimit *RateLimit

@@ -7,7 +7,7 @@
 
 > It seems like every v1 is just a prototype.
 
-One of my co-workers said that when we were working on a project, released the first version and then realizing that there were many improvements that needed to be done.  That seems to ring true, and this library is not exception.  When looking at the improvements that needed to be done, unfortunately these improvements will introduce breaking changes.  This version will focus on giving the caller more information from the callouts to allow for better response handling.  Another factor is to think about improvements, but first delivering the information first then providing more funcitonality second.
+One of my co-workers said that when we were working on a project, released the first version and then realizing that there were many improvements that needed to be done.  That seems to ring true, and this library is not exception.  When looking at the improvements that needed to be done, unfortunately these improvements will introduce breaking changes.  This version will focus on giving the caller more information from the callouts to allow for better response handling.  Another factor is to think about improvements, but first delivering the information first then providing more functionality second.
 
 There will be `beta` releases throughout this process and if there are any new functionality requested, it will be discussed to try and get it into this version.  Version 1 will still be maintained as I believe that version 2 will need to be mature before the pervious version is even considered to be sunset.
 
@@ -19,7 +19,7 @@ go get -u github.com/g8rswimmer/go-twitter/v2
 
 ## Changes
 The following are changes between `v1` and `v2` of the library.
-*  One structure for all endpoint callouts.  In `v1` there were two structures, `Tweet` and `User`, to preform callouts.  This required management of two structures and knowledge which structure contained the desired method callouts.  At the time, the grouping looked logical.  However with the addtion of the timeline endpoints, it makes more sense to have a single struture `Client` to handle all of the callouts.  If the user would like to separate the functionality, interfaces can be used to achieve this.
+*  One structure for all endpoint callouts.  In `v1` there were two structures, `Tweet` and `User`, to preform callouts.  This required management of two structures and knowledge which structure contained the desired method callouts.  At the time, the grouping looked logical.  However with the addition of the timeline endpoints, it makes more sense to have a single structure `Client` to handle all of the callouts.  If the user would like to separate the functionality, interfaces can be used to achieve this.
 *  Endpoint methods will return the entire response.  One of the major drawbacks of `v1` was the object returned was not the entire response sent by the callout.  For example, the `errors` object in the response is included in `v1` response which does not allow the caller to properly handle partial errors.  In `v2`, the first focus is to return the response from twitter to allow the caller to use it as they see fit.  However, it does not mean that methods can not be added to the response object to provide groupings, etc.
 
 ### Breaking Changes
@@ -46,6 +46,25 @@ These are some breaking changes and what release they are from.  These type of c
 * There was a typo in the user retweet lookup options and it was corrected.
 ```
 UserRetweetLookuoOpts -> UserRetweetLookupOpts
+```
+#### v2.0.0-beta16
+* There was a typo in the user following metadata.
+```
+UserFollowinghMeta -> UserFollowingMeta
+```
+* There was a typo in the delete user likes response
+```
+DeteleUserLikesResponse -> DeleteUserLikesResponse
+```
+* There was a typo in the `EntityURLObj`
+```
+EntityURLObj.Desription -> EntityURLObj.Description
+```
+* There was a typo in the `TweetObj` and the JSON tag
+```
+TweetObj.PossibySensitive -> TweetObj.PossiblySensitive
+
+json: possiby_sensitive -> possibly_sensitive
 ```
 
 ## Features 
@@ -99,7 +118,7 @@ With each response, the rate limits from the response header is returned.  This 
 
 There is an example of rate limiting from a response [here](./_examples/misc/rate-limit/main.go).
 
-This is an example of a twitter callout and if the limits have been reached, then it will backoff and try again.
+This is an example of a twitter callout and if the limits have been reached, then it will back off and try again.
 ```go
 func TweetLikes(ctx context.Context, id string, client *twitter.Client) (*twitter.TweetLikesLookupResponse, error) {
 	var er *ErrorResponse
@@ -118,7 +137,7 @@ func TweetLikes(ctx context.Context, id string, client *twitter.Client) (*twitte
 ```
 
 ## Examples
-Much like `v1`, there is an `_example` directory to demostrate library usage.
+Much like `v1`, there is an `_example` directory to demonstrate library usage.
 
 ## Simple Usage
 ```go

@@ -648,7 +648,7 @@ func TestClient_DeleteUserLikes(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *DeteleUserLikesResponse
+		want    *DeleteUserLikesResponse
 		wantErr bool
 	}{
 		{
@@ -685,7 +685,7 @@ func TestClient_DeleteUserLikes(t *testing.T) {
 				userID:  "user-1234",
 				tweetID: "tweet-1234",
 			},
-			want: &DeteleUserLikesResponse{
+			want: &DeleteUserLikesResponse{
 				Data: &UserLikesData{
 					Liked: false,
 				},

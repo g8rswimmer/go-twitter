@@ -30,7 +30,7 @@ const (
 	tweetStart  = "data"
 	keepAliveTO = 11 * time.Second
 
-	// TweetErrorType represents the tweet stream errrors
+	// TweetErrorType represents the tweet stream errors
 	TweetErrorType StreamErrorType = "tweet"
 	// SystemErrorType represents the system stream errors
 	SystemErrorType StreamErrorType = "system"
@@ -241,7 +241,7 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 			if err := json.Unmarshal(msg, single); err != nil {
 				sErr := &StreamError{
 					Type: TweetErrorType,
-					Msg:  "umarshal tweet stream",
+					Msg:  "unmarshal tweet stream",
 					Err:  err,
 				}
 				select {
@@ -271,7 +271,7 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 		if err := json.Unmarshal(msg, &sysMsg); err != nil {
 			sErr := &StreamError{
 				Type: SystemErrorType,
-				Msg:  "umarshal system stream",
+				Msg:  "unmarshal system stream",
 				Err:  err,
 			}
 			select {

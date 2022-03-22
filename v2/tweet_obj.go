@@ -67,7 +67,7 @@ type TweetObj struct {
 	Language           string                       `json:"lang,omitempty"`
 	NonPublicMetrics   *TweetMetricsObj             `json:"non_public_metrics,omitempty"`
 	OrganicMetrics     *TweetMetricsObj             `json:"organic_metrics,omitempty"`
-	PossibySensitive   bool                         `json:"possiby_sensitive,omitempty"`
+	PossiblySensitive  bool                         `json:"possibly_sensitive,omitempty"`
 	PromotedMetrics    *TweetMetricsObj             `json:"promoted_metrics,omitempty"`
 	PublicMetrics      *TweetMetricsObj             `json:"public_metrics,omitempty"`
 	ReferencedTweets   []*TweetReferencedTweetObj   `json:"referenced_tweets,omitempty"`
@@ -87,7 +87,7 @@ type TweetContextAnnotationObj struct {
 	Entity TweetContextObj `json:"entity"`
 }
 
-// TweetContextObj contains the elements which identify detailed information regarding the domain classificaiton based on the Tweet text
+// TweetContextObj contains the elements which identify detailed information regarding the domain classification based on the Tweet text
 type TweetContextObj struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`

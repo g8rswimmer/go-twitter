@@ -1072,20 +1072,20 @@ func (c *Client) TweetAllCounts(ctx context.Context, query string, opts TweetAll
 		return nil, e
 	}
 
-	allCnts := &TweetAllCountsResponse{
+	allCounts := &TweetAllCountsResponse{
 		TweetCounts: []*TweetCount{},
 		Meta:        &TweetAllCountsMeta{},
 	}
 
-	if err := decoder.Decode(allCnts); err != nil {
+	if err := decoder.Decode(allCounts); err != nil {
 		return nil, &ResponseDecodeError{
 			Name:      "tweet all counts",
 			Err:       err,
 			RateLimit: rl,
 		}
 	}
-	allCnts.RateLimit = rl
-	return allCnts, nil
+	allCounts.RateLimit = rl
+	return allCounts, nil
 }
 
 // UserFollowingLookup will return a user's following users
@@ -1133,7 +1133,7 @@ func (c *Client) UserFollowingLookup(ctx context.Context, id string, opts UserFo
 
 	followingLookup := &UserFollowingLookupResponse{
 		Raw:  &UserRaw{},
-		Meta: &UserFollowinghMeta{},
+		Meta: &UserFollowingMeta{},
 	}
 
 	if err := json.Unmarshal(respBytes, followingLookup.Raw); err != nil {
@@ -1219,7 +1219,7 @@ func (c *Client) UserFollows(ctx context.Context, userID, targetUserID string) (
 	return raw, nil
 }
 
-// DeleteUserFollows llows a user ID to unfollow another user
+// DeleteUserFollows allows a user ID to unfollow another user
 func (c *Client) DeleteUserFollows(ctx context.Context, userID, targetUserID string) (*UserDeleteFollowsResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -1853,7 +1853,7 @@ func (c *Client) UserMutesLookup(ctx context.Context, userID string, opts UserMu
 	default:
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userMutesEndpont.urlID(c.Host, userID), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userMutesEndpoint.urlID(c.Host, userID), nil)
 	if err != nil {
 		return nil, fmt.Errorf("user muted lookup request: %w", err)
 	}
@@ -1933,7 +1933,7 @@ func (c *Client) UserMutes(ctx context.Context, userID, targetUserID string) (*U
 	if err != nil {
 		return nil, fmt.Errorf("user mutes: json marshal %w", err)
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userMutesEndpont.urlID(c.Host, userID), bytes.NewReader(enc))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, userMutesEndpoint.urlID(c.Host, userID), bytes.NewReader(enc))
 	if err != nil {
 		return nil, fmt.Errorf("user mutes request: %w", err)
 	}
@@ -1988,7 +1988,7 @@ func (c *Client) DeleteUserMutes(ctx context.Context, userID, targetUserID strin
 	default:
 	}
 
-	ep := userMutesEndpont.urlID(c.Host, userID) + "/" + targetUserID
+	ep := userMutesEndpoint.urlID(c.Host, userID) + "/" + targetUserID
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
 	if err != nil {
 		return nil, fmt.Errorf("user delete mutes request: %w", err)
@@ -2101,7 +2101,7 @@ func (c *Client) TweetLikesLookup(ctx context.Context, tweetID string, opts Twee
 	}, nil
 }
 
-// UserLikesLookup gets informaiton about a user's liked tweets.
+// UserLikesLookup gets information about a user's liked tweets.
 func (c *Client) UserLikesLookup(ctx context.Context, userID string, opts UserLikesLookupOpts) (*UserLikesLookupResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -2233,7 +2233,7 @@ func (c *Client) UserLikes(ctx context.Context, userID, tweetID string) (*UserLi
 }
 
 // DeleteUserLikes will unlike the targeted tweet
-func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*DeteleUserLikesResponse, error) {
+func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*DeleteUserLikesResponse, error) {
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user delete likes: user id is required %w", ErrParameter)
@@ -2275,7 +2275,7 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 		return nil, e
 	}
 
-	raw := &DeteleUserLikesResponse{}
+	raw := &DeleteUserLikesResponse{}
 	if err := decoder.Decode(raw); err != nil {
 		return nil, &ResponseDecodeError{
 			Name:      "delete user likes",
@@ -2645,7 +2645,7 @@ func (c *Client) UpdateList(ctx context.Context, listID string, update ListMetaD
 	return respBody, nil
 }
 
-// DeleteList anables the authenticated user to delete a list
+// DeleteList enables the authenticated user to delete a list
 func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResponse, error) {
 	switch {
 	case len(listID) == 0:
@@ -2759,7 +2759,7 @@ func (c *Client) AddListMember(ctx context.Context, listID, userID string) (*Lis
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Name:      "add list memeber",
+			Name:      "add list member",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -2815,7 +2815,7 @@ func (c *Client) RemoveListMember(ctx context.Context, listID, userID string) (*
 
 	if err := decoder.Decode(respBody); err != nil {
 		return nil, &ResponseDecodeError{
-			Name:      "remove list memeber",
+			Name:      "remove list member",
 			Err:       err,
 			RateLimit: rl,
 		}
@@ -3490,7 +3490,7 @@ func (c *Client) SpacesByCreatorLookup(ctx context.Context, userIDs []string, op
 	default:
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, spaceByCreatorLookupEndpont.url(c.Host), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, spaceByCreatorLookupEndpoint.url(c.Host), nil)
 	if err != nil {
 		return nil, fmt.Errorf("space by creator lookup request: %w", err)
 	}
@@ -3748,7 +3748,7 @@ func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType Complianc
 		return nil, fmt.Errorf("create compliance batch job request encode: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, complainceJobsEndpont.url(c.Host), bytes.NewReader(enc))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, complianceJobsEndpiont.url(c.Host), bytes.NewReader(enc))
 	if err != nil {
 		return nil, fmt.Errorf("create compliance batch job request: %w", err)
 	}
@@ -3805,7 +3805,7 @@ func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*Compliance
 	default:
 	}
 
-	ep := complainceJobsEndpont.url(c.Host) + "/" + id
+	ep := complianceJobsEndpiont.url(c.Host) + "/" + id
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
 		return nil, fmt.Errorf("compliance batch job request: %w", err)
@@ -3862,7 +3862,7 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 	default:
 	}
 
-	ep := complainceJobsEndpont.url(c.Host)
+	ep := complianceJobsEndpiont.url(c.Host)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
 		return nil, fmt.Errorf("compliance batch job lookup request: %w", err)

@@ -236,8 +236,8 @@ func TestClient_SpacesByCreatorLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), string(spaceByCreatorLookupEndpont)) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), spaceByCreatorLookupEndpont)
+					if strings.Contains(req.URL.String(), string(spaceByCreatorLookupEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), spaceByCreatorLookupEndpoint)
 					}
 					body := `{
 						"data": [
@@ -295,8 +295,8 @@ func TestClient_SpacesByCreatorLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), string(spaceByCreatorLookupEndpont)) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), spaceByCreatorLookupEndpont)
+					if strings.Contains(req.URL.String(), string(spaceByCreatorLookupEndpoint)) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), spaceByCreatorLookupEndpoint)
 					}
 					body := `{
 						"data": [

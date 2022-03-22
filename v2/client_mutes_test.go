@@ -36,8 +36,8 @@ func TestClient_UserMutesLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), userMutesEndpont.urlID("", "2244994945")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpont)
+					if strings.Contains(req.URL.String(), userMutesEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpoint)
 					}
 					body := `{
 						"data": [
@@ -117,8 +117,8 @@ func TestClient_UserMutesLookup(t *testing.T) {
 					if req.Method != http.MethodGet {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
-					if strings.Contains(req.URL.String(), userMutesEndpont.urlID("", "2244994945")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpont)
+					if strings.Contains(req.URL.String(), userMutesEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpoint)
 					}
 					body := `{
 						"data": [
@@ -305,8 +305,8 @@ func TestClient_UserMutes(t *testing.T) {
 					if req.Method != http.MethodPost {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
 					}
-					if strings.Contains(req.URL.String(), userMutesEndpont.urlID("", "6253282")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpont)
+					if strings.Contains(req.URL.String(), userMutesEndpoint.urlID("", "6253282")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpoint)
 					}
 					body := `{
 						"data": {
@@ -388,8 +388,8 @@ func TestClient_DeleteUserMutes(t *testing.T) {
 					if req.Method != http.MethodDelete {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodPost)
 					}
-					if strings.Contains(req.URL.String(), userMutesEndpont.urlID("", "6253282")+"/2244994945") == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpont)
+					if strings.Contains(req.URL.String(), userMutesEndpoint.urlID("", "6253282")+"/2244994945") == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userMutesEndpoint)
 					}
 					body := `{
 						"data": {
