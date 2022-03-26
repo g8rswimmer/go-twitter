@@ -31,6 +31,8 @@ const (
 	listUserMemberMaxResults     = 100
 	userListFollowedMaxResults   = 100
 	listuserFollowersMaxResults  = 100
+	quoteTweetMaxResults         = 100
+	quoteTweetMinResults         = 10
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -3915,6 +3917,74 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 
 	return &ComplianceBatchJobLookupResponse{
 		Raw:       raw,
+		RateLimit: rl,
+	}, nil
+}
+
+// QuoteTweetsLookup returns quote tweets for a tweet specificed by the requested tweet id
+func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts QuoteTweetsLookupOpts) (*QuoteTweetsLookupResponse, error) {
+	switch {
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("quote tweets lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < quoteTweetMinResults:
+		return nil, fmt.Errorf("quote tweets lookup: a min results [%d] is required [current: %d]: %w", quoteTweetMinResults, opts.MaxResults, ErrParameter)
+	case opts.MaxResults > quoteTweetMaxResults:
+		return nil, fmt.Errorf("quote tweets lookup: a max results [%d] is required [current: %d]: %w", quoteTweetMaxResults, opts.MaxResults, ErrParameter)
+	default:
+	}
+
+	ep := quoteTweetLookupEndpoint.urlID(c.Host, tweetID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("quote tweets lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("quote tweets lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *QuoteTweetsLookupMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "quote tweets lookup",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &QuoteTweetsLookupResponse{
+		Raw:       respBody.TweetRaw,
+		Meta:      respBody.Meta,
 		RateLimit: rl,
 	}, nil
 }

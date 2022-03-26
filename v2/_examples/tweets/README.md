@@ -57,3 +57,7 @@ The examples can be run my providing some options, including the authorization t
 ### [Hide Replies](https://developer.twitter.com/en/docs/twitter-api/tweets/hide-replies/introduction)
 
 * [Hides or unhides a reply to a Tweet](./hide-replies/tweet-hide-replies/main.go)
+
+### [Quote Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/quote-tweets/introduction)
+
+* [Returns Quote Tweets for a Tweet specified by the requested Tweet ID](./quote/quote-tweets/main.go)

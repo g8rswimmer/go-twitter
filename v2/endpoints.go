@@ -50,6 +50,7 @@ const (
 	spaceTweetsLookupEndpoint      endpoint = "2/spaces/{id}/tweets"
 	spaceSearchEndpoint            endpoint = "2/spaces/search"
 	complianceJobsEndpiont         endpoint = "2/compliance/jobs"
+	quoteTweetLookupEndpoint       endpoint = "2/tweets/{id}/quote_tweets"
 
 	idTag = "{id}"
 )
