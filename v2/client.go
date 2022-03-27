@@ -33,6 +33,7 @@ const (
 	listuserFollowersMaxResults  = 100
 	quoteTweetMaxResults         = 100
 	quoteTweetMinResults         = 10
+	tweetBookmarksMaxResults     = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -3983,6 +3984,71 @@ func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts Quo
 	}
 
 	return &QuoteTweetsLookupResponse{
+		Raw:       respBody.TweetRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
+	}, nil
+}
+
+func (c *Client) TweetBookmarksLookup(ctx context.Context, userID string, opts TweetBookmarksLookupOpts) (*TweetBookmarksLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("tweet bookmarks lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > tweetBookmarksMaxResults:
+		return nil, fmt.Errorf("tweet bookmarks lookup: a max results [%d] is required [current: %d]: %w", tweetBookmarksMaxResults, opts.MaxResults, ErrParameter)
+	default:
+	}
+
+	ep := tweetBookmarksEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *TweetBookmarksLookupMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "tweet bookmarks lookup",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &TweetBookmarksLookupResponse{
 		Raw:       respBody.TweetRaw,
 		Meta:      respBody.Meta,
 		RateLimit: rl,
