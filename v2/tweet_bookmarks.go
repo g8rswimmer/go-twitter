@@ -64,6 +64,11 @@ type AddTweetBookmarkResponse struct {
 	RateLimit *RateLimit
 }
 
+type RemoveTweetBookmarkResponse struct {
+	Tweet     *TweetBookmarkData `json:"data"`
+	RateLimit *RateLimit
+}
+
 type TweetBookmarkData struct {
 	Bookmarked bool `json:"bookmarked"`
 }
