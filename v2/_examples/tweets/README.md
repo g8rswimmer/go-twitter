@@ -61,3 +61,9 @@ The examples can be run my providing some options, including the authorization t
 ### [Quote Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/quote-tweets/introduction)
 
 * [Returns Quote Tweets for a Tweet specified by the requested Tweet ID](./quote/quote-tweets/main.go)
+
+### [Bookmarks](https://developer.twitter.com/en/docs/twitter-api/tweets/bookmarks/introduction)
+
+* [Allows you to get an authenticated user's 800 most recent bookmarked Tweets](./bookmarks/tweet-bookmarks-lookup/main.go)
+* [Causes the user ID identified in the path parameter to Bookmark the target Tweet provided in the request body](./bookmarks/tweet-add-bookmark/main.go)
+* [Allows a user or authenticated user ID to remove a Bookmark of a Tweet](./bookmarks/tweet-remove-bookmark/main.go)

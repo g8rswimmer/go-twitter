@@ -84,6 +84,7 @@ The following APIs are supported, with the examples [here](./_examples/tweets)
 * [Hide Replies](https://developer.twitter.com/en/docs/twitter-api/tweets/hide-replies/introduction)
 * [Search](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 * [Quote Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/quote-tweets/introduction)
+* [Bookmarks](https://developer.twitter.com/en/docs/twitter-api/tweets/bookmarks/introduction)
 
 ### Users
 The following APIs are supported, with the examples [here](./_examples/users)
