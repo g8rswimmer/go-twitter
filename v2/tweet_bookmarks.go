@@ -58,3 +58,12 @@ type TweetBookmarksLookupMeta struct {
 	ResultCount int    `json:"result_count"`
 	NextToken   string `json:"next_token"`
 }
+
+type AddTweetBookmarkResponse struct {
+	Tweet     *TweetBookmarkData `json:"data"`
+	RateLimit *RateLimit
+}
+
+type TweetBookmarkData struct {
+	Bookmarked bool `json:"bookmarked"`
+}
