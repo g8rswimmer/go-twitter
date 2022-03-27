@@ -37,7 +37,7 @@ func TestClient_QuoteTweetsLookup(t *testing.T) {
 						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
 					}
 					if strings.Contains(req.URL.String(), quoteTweetLookupEndpoint.urlID("", "tweet-1234")) == false {
-						log.Panicf("the url is not correct %s %s", req.URL.String(), listLookupEndpoint)
+						log.Panicf("the url is not correct %s %s", req.URL.String(), quoteTweetLookupEndpoint)
 					}
 					body := `{
 						"data": [
