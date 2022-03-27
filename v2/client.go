@@ -3990,6 +3990,7 @@ func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts Quo
 	}, nil
 }
 
+// TweetBookmarksLookup allows you to get an authenticated user's 800 most recent bookmarked Tweets
 func (c *Client) TweetBookmarksLookup(ctx context.Context, userID string, opts TweetBookmarksLookupOpts) (*TweetBookmarksLookupResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -4055,6 +4056,7 @@ func (c *Client) TweetBookmarksLookup(ctx context.Context, userID string, opts T
 	}, nil
 }
 
+// AddTweetBookmark causes the user ID identified in the path parameter to Bookmark the target Tweet provided in the request body
 func (c *Client) AddTweetBookmark(ctx context.Context, userID, tweetID string) (*AddTweetBookmarkResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -4124,6 +4126,7 @@ func (c *Client) AddTweetBookmark(ctx context.Context, userID, tweetID string) (
 	return respBody, nil
 }
 
+// RemoveTweetBookmark allows a user or authenticated user ID to remove a Bookmark of a Tweet
 func (c *Client) RemoveTweetBookmark(ctx context.Context, userID, tweetID string) (*RemoveTweetBookmarkResponse, error) {
 	switch {
 	case len(userID) == 0:

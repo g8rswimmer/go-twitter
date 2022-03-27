@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// TweetBookmarksLookupOpts are the tweet bookmark lookup options
 type TweetBookmarksLookupOpts struct {
 	MaxResults      int
 	PaginationToken string
@@ -48,27 +49,32 @@ func (t TweetBookmarksLookupOpts) addQuery(req *http.Request) {
 	}
 }
 
+// TweetBookmarksLookupResponse is the response to the bookmark lookup
 type TweetBookmarksLookupResponse struct {
 	Raw       *TweetRaw
 	Meta      *TweetBookmarksLookupMeta
 	RateLimit *RateLimit
 }
 
+// TweetBookmarksLookupMeta is the meta for the bookmark lookup
 type TweetBookmarksLookupMeta struct {
 	ResultCount int    `json:"result_count"`
 	NextToken   string `json:"next_token"`
 }
 
+// AddTweetBookmarkResponse is the response for adding a bookmark
 type AddTweetBookmarkResponse struct {
 	Tweet     *TweetBookmarkData `json:"data"`
 	RateLimit *RateLimit
 }
 
+// RemoveTweetBookmarkResponse is the response for removing a bookmark
 type RemoveTweetBookmarkResponse struct {
 	Tweet     *TweetBookmarkData `json:"data"`
 	RateLimit *RateLimit
 }
 
+// TweetBookmarkData is the data from adding or removing a bookmark
 type TweetBookmarkData struct {
 	Bookmarked bool `json:"bookmarked"`
 }
