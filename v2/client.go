@@ -33,6 +33,7 @@ const (
 	listuserFollowersMaxResults  = 100
 	quoteTweetMaxResults         = 100
 	quoteTweetMinResults         = 10
+	tweetBookmarksMaxResults     = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -3987,4 +3988,199 @@ func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts Quo
 		Meta:      respBody.Meta,
 		RateLimit: rl,
 	}, nil
+}
+
+// TweetBookmarksLookup allows you to get an authenticated user's 800 most recent bookmarked Tweets
+func (c *Client) TweetBookmarksLookup(ctx context.Context, userID string, opts TweetBookmarksLookupOpts) (*TweetBookmarksLookupResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("tweet bookmarks lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults > tweetBookmarksMaxResults:
+		return nil, fmt.Errorf("tweet bookmarks lookup: a max results [%d] is required [current: %d]: %w", tweetBookmarksMaxResults, opts.MaxResults, ErrParameter)
+	default:
+	}
+
+	ep := tweetBookmarksEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks lookup request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks lookup response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	respBody := struct {
+		*TweetRaw
+		Meta *TweetBookmarksLookupMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&respBody); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "tweet bookmarks lookup",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &TweetBookmarksLookupResponse{
+		Raw:       respBody.TweetRaw,
+		Meta:      respBody.Meta,
+		RateLimit: rl,
+	}, nil
+}
+
+// AddTweetBookmark causes the user ID identified in the path parameter to Bookmark the target Tweet provided in the request body
+func (c *Client) AddTweetBookmark(ctx context.Context, userID, tweetID string) (*AddTweetBookmarkResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("tweet bookmarks add: an user id is required: %w", ErrParameter)
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("tweet bookmarks add: a tweet id is required: %w", ErrParameter)
+	default:
+	}
+
+	rb := struct {
+		TweetID string `json:"tweet_id"`
+	}{
+		TweetID: tweetID,
+	}
+	enc, err := json.Marshal(rb)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks add body encoding: %w", err)
+	}
+
+	ep := tweetBookmarksEndpoint.urlID(c.Host, userID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, ep, bytes.NewReader(enc))
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks add request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Context-Type", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks add response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	respBody := &AddTweetBookmarkResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "tweet bookmarks add",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	respBody.RateLimit = rl
+
+	return respBody, nil
+}
+
+// RemoveTweetBookmark allows a user or authenticated user ID to remove a Bookmark of a Tweet
+func (c *Client) RemoveTweetBookmark(ctx context.Context, userID, tweetID string) (*RemoveTweetBookmarkResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("tweet bookmarks remove: an user id is required: %w", ErrParameter)
+	case len(tweetID) == 0:
+		return nil, fmt.Errorf("tweet bookmarks remove: a tweet id is required: %w", ErrParameter)
+	default:
+	}
+
+	ep := tweetBookmarksEndpoint.urlID(c.Host, userID) + "/" + tweetID
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, ep, nil)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks remove request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("tweet bookmarks remove response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+
+	rl := rateFromHeader(resp.Header)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	respBody := &RemoveTweetBookmarkResponse{}
+
+	if err := decoder.Decode(respBody); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "tweet bookmarks remove",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	respBody.RateLimit = rl
+
+	return respBody, nil
 }
