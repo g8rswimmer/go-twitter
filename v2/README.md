@@ -116,7 +116,7 @@ The following APIs are supported, with the examples [here](./_examples/complianc
 * [Compliance Batch](https://developer.twitter.com/en/docs/twitter-api/compliance/batch-compliance/introduction)
 
 ## Rate Limiting
-With each response, the rate limits from the response header is returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.
+With each response, the rate limits from the response header are returned.  This allows the caller to manage any limits that are imposed.  Along with the response, errors that are returned may have rate limits as well.  If the error occurs after the request is sent, then rate limits may apply and are returned.
 
 There is an example of rate limiting from a response [here](./_examples/misc/rate-limit/main.go).
 
