@@ -13,56 +13,15 @@ The library is based off of [version 2](https://developer.twitter.com/en/docs/tw
 
 ## Version 2
 
-Currently, version 2 is in development. Please refer to [here](./v2/README.md) for more information.  Please note, that version 1 is still going to be maintained for some time after version 2 is released.
+Version 2 has been released.  This is the current version that will be updated and maintained going forward.  Please refer to the readme [here](./v2)
 
 ```
 go get -u github.com/g8rswimmer/go-twitter/v2
 ```
 
-## Version 1
+## Version 1 [deprecated]
 
 ```
 go get -u github.com/g8rswimmer/go-twitter
 ```
 
-### Examples
-To run all examples, the user is required to provide their developer account credentials.  The library does not share any credentials.
-
-#### Tweet
-The following examples demostrate the tweet APIs.
-
-##### Lookup
-The tweet lookup API example is located [here](./_examples/tweet/lookup).  
-
-##### Recent Search 
-The tweet recent search API example is locate [here](./_examples/tweet/recent-search).  
-
-##### Filtered Search 
-The tweet filtered search API example is locate [here](./_examples/tweet/filtered-search).  
-
-##### Sampled Search 
-The tweet sampled search API example is locate [here](./_examples/tweet/sampled-search).  
-
-##### Hide Replies
-The tweet hide replies API example is locate [here](./_examples/tweet/hide).  
-
-#### User
-The following example demostrate the user APIs
-
-##### Lookup by ID
-The user lookup API example is located [here](./_examples/user/lookup-id)
-
-##### Lookup by User Name
-The user lookup API example is located [here](./_examples/user/lookup-name)
-
-##### Following by User Id
-The user following API example is located [here](./_examples/user/following)
-
-##### Followers by User Id
-The user followers API example is located [here](./_examples/user/followers)
-
-##### Tweet Timeline by User Id
-The user tweet timeline API example is located [here](./_examples/user/tweets)
-
-##### Mention Timeline by User Id
-The user tweet timeline API example is located [here](./_examples/user/mentions)
