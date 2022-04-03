@@ -2682,7 +2682,6 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 	if err != nil {
 		return nil, fmt.Errorf("delete list request: %w", err)
 	}
-	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 	c.Authorizer.Add(req)
 
