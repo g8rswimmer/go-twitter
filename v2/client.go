@@ -34,9 +34,17 @@ const (
 	quoteTweetMaxResults         = 100
 	quoteTweetMinResults         = 10
 	tweetBookmarksMaxResults     = 100
+	userTweetTimelineMinResults  = 5
+	userTweetTimelineMaxResults  = 100
 )
 
 // Client is used to make twitter v2 API callouts.
+//
+// Authorizer is used to add auth to the request
+//
+// Client is the HTTP client to use for all requests
+//
+// Host is the base URL to use like, https://api.twitter.com
 type Client struct {
 	Authorizer Authorizer
 	Client     *http.Client
@@ -103,7 +111,7 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 // DeleteTweet allow the user to delete a specific tweet
 func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetResponse, error) {
 	if len(id) == 0 {
-		return nil, fmt.Errorf("delete tweet id is required")
+		return nil, fmt.Errorf("delete tweet id is required %w", ErrParameter)
 	}
 	ep := tweetDeleteEndpoint.urlID(c.Host, id)
 
@@ -1349,6 +1357,11 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user tweet timeline: a query is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < userTweetTimelineMinResults:
+		return nil, fmt.Errorf("user tweet timeline: max results [%d] have a min[%d] %w", opts.MaxResults, userTweetTimelineMinResults, ErrParameter)
+	case opts.MaxResults > userTweetTimelineMaxResults:
+		return nil, fmt.Errorf("user tweet timeline: max results [%d] have a max[%d] %w", opts.MaxResults, userTweetTimelineMaxResults, ErrParameter)
 	default:
 	}
 
