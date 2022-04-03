@@ -2,7 +2,7 @@ package twitter
 
 // ListMetaData is a list meta data
 type ListMetaData struct {
-	Name        *string `json:"name"`
+	Name        *string `json:"name,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Private     *bool   `json:"private,omitempty"`
 }
