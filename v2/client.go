@@ -11,32 +11,42 @@ import (
 )
 
 const (
-	tweetMaxIDs                  = 100
-	userMaxIDs                   = 100
-	spaceMaxIDs                  = 100
-	spaceByCreatorMaxIDs         = 100
-	userMaxNames                 = 100
-	tweetRecentSearchQueryLength = 512
-	tweetSearchQueryLength       = 1024
-	tweetRecentCountsQueryLength = 512
-	tweetAllCountsQueryLength    = 1024
-	userBlocksMaxResults         = 1000
-	userMutesMaxResults          = 1000
-	likesMaxResults              = 100
-	likesMinResults              = 10
-	sampleStreamMaxBackoffMin    = 5
-	userListMaxResults           = 100
-	listTweetMaxResults          = 100
-	userListMembershipMaxResults = 100
-	listUserMemberMaxResults     = 100
-	userListFollowedMaxResults   = 100
-	listuserFollowersMaxResults  = 100
-	quoteTweetMaxResults         = 100
-	quoteTweetMinResults         = 10
-	tweetBookmarksMaxResults     = 100
+	tweetMaxIDs                   = 100
+	userMaxIDs                    = 100
+	spaceMaxIDs                   = 100
+	spaceByCreatorMaxIDs          = 100
+	userMaxNames                  = 100
+	tweetRecentSearchQueryLength  = 512
+	tweetSearchQueryLength        = 1024
+	tweetRecentCountsQueryLength  = 512
+	tweetAllCountsQueryLength     = 1024
+	userBlocksMaxResults          = 1000
+	userMutesMaxResults           = 1000
+	likesMaxResults               = 100
+	likesMinResults               = 10
+	sampleStreamMaxBackoffMin     = 5
+	userListMaxResults            = 100
+	listTweetMaxResults           = 100
+	userListMembershipMaxResults  = 100
+	listUserMemberMaxResults      = 100
+	userListFollowedMaxResults    = 100
+	listuserFollowersMaxResults   = 100
+	quoteTweetMaxResults          = 100
+	quoteTweetMinResults          = 10
+	tweetBookmarksMaxResults      = 100
+	userTweetTimelineMinResults   = 5
+	userTweetTimelineMaxResults   = 100
+	userMentionTimelineMinResults = 5
+	userMentionTimelineMaxResults = 100
 )
 
 // Client is used to make twitter v2 API callouts.
+//
+// Authorizer is used to add auth to the request
+//
+// Client is the HTTP client to use for all requests
+//
+// Host is the base URL to use like, https://api.twitter.com
 type Client struct {
 	Authorizer Authorizer
 	Client     *http.Client
@@ -103,7 +113,7 @@ func (c *Client) CreateTweet(ctx context.Context, tweet CreateTweetRequest) (*Cr
 // DeleteTweet allow the user to delete a specific tweet
 func (c *Client) DeleteTweet(ctx context.Context, id string) (*DeleteTweetResponse, error) {
 	if len(id) == 0 {
-		return nil, fmt.Errorf("delete tweet id is required")
+		return nil, fmt.Errorf("delete tweet id is required %w", ErrParameter)
 	}
 	ep := tweetDeleteEndpoint.urlID(c.Host, id)
 
@@ -1349,6 +1359,11 @@ func (c *Client) UserTweetTimeline(ctx context.Context, userID string, opts User
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user tweet timeline: a query is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < userTweetTimelineMinResults:
+		return nil, fmt.Errorf("user tweet timeline: max results [%d] have a min[%d] %w", opts.MaxResults, userTweetTimelineMinResults, ErrParameter)
+	case opts.MaxResults > userTweetTimelineMaxResults:
+		return nil, fmt.Errorf("user tweet timeline: max results [%d] have a max[%d] %w", opts.MaxResults, userTweetTimelineMaxResults, ErrParameter)
 	default:
 	}
 
@@ -1416,6 +1431,11 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user mention timeline: a query is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < userMentionTimelineMinResults:
+		return nil, fmt.Errorf("user mention timeline: max results [%d] have a min[%d] %w", opts.MaxResults, userMentionTimelineMinResults, ErrParameter)
+	case opts.MaxResults > userMentionTimelineMaxResults:
+		return nil, fmt.Errorf("user mention timeline: max results [%d] have a max[%d] %w", opts.MaxResults, userMentionTimelineMaxResults, ErrParameter)
 	default:
 	}
 
@@ -1498,6 +1518,7 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) (*Tw
 		return nil, fmt.Errorf("tweet hide replies request: %w", err)
 	}
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 	c.Authorizer.Add(req)
 
 	resp, err := c.Client.Do(req)
@@ -1601,7 +1622,7 @@ func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*User
 	return raw, nil
 }
 
-// DeleteUserRetweet will return a retweet from a user
+// DeleteUserRetweet will delete a retweet from a user
 func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) (*DeleteUserRetweetResponse, error) {
 	switch {
 	case len(userID) == 0:
@@ -2661,7 +2682,6 @@ func (c *Client) DeleteList(ctx context.Context, listID string) (*ListDeleteResp
 	if err != nil {
 		return nil, fmt.Errorf("delete list request: %w", err)
 	}
-	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 	c.Authorizer.Add(req)
 
