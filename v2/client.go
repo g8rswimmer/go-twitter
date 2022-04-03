@@ -1622,7 +1622,7 @@ func (c *Client) UserRetweet(ctx context.Context, userID, tweetID string) (*User
 	return raw, nil
 }
 
-// DeleteUserRetweet will return a retweet from a user
+// DeleteUserRetweet will delete a retweet from a user
 func (c *Client) DeleteUserRetweet(ctx context.Context, userID, tweetID string) (*DeleteUserRetweetResponse, error) {
 	switch {
 	case len(userID) == 0:
