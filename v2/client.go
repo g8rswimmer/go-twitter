@@ -11,31 +11,33 @@ import (
 )
 
 const (
-	tweetMaxIDs                  = 100
-	userMaxIDs                   = 100
-	spaceMaxIDs                  = 100
-	spaceByCreatorMaxIDs         = 100
-	userMaxNames                 = 100
-	tweetRecentSearchQueryLength = 512
-	tweetSearchQueryLength       = 1024
-	tweetRecentCountsQueryLength = 512
-	tweetAllCountsQueryLength    = 1024
-	userBlocksMaxResults         = 1000
-	userMutesMaxResults          = 1000
-	likesMaxResults              = 100
-	likesMinResults              = 10
-	sampleStreamMaxBackoffMin    = 5
-	userListMaxResults           = 100
-	listTweetMaxResults          = 100
-	userListMembershipMaxResults = 100
-	listUserMemberMaxResults     = 100
-	userListFollowedMaxResults   = 100
-	listuserFollowersMaxResults  = 100
-	quoteTweetMaxResults         = 100
-	quoteTweetMinResults         = 10
-	tweetBookmarksMaxResults     = 100
-	userTweetTimelineMinResults  = 5
-	userTweetTimelineMaxResults  = 100
+	tweetMaxIDs                   = 100
+	userMaxIDs                    = 100
+	spaceMaxIDs                   = 100
+	spaceByCreatorMaxIDs          = 100
+	userMaxNames                  = 100
+	tweetRecentSearchQueryLength  = 512
+	tweetSearchQueryLength        = 1024
+	tweetRecentCountsQueryLength  = 512
+	tweetAllCountsQueryLength     = 1024
+	userBlocksMaxResults          = 1000
+	userMutesMaxResults           = 1000
+	likesMaxResults               = 100
+	likesMinResults               = 10
+	sampleStreamMaxBackoffMin     = 5
+	userListMaxResults            = 100
+	listTweetMaxResults           = 100
+	userListMembershipMaxResults  = 100
+	listUserMemberMaxResults      = 100
+	userListFollowedMaxResults    = 100
+	listuserFollowersMaxResults   = 100
+	quoteTweetMaxResults          = 100
+	quoteTweetMinResults          = 10
+	tweetBookmarksMaxResults      = 100
+	userTweetTimelineMinResults   = 5
+	userTweetTimelineMaxResults   = 100
+	userMentionTimelineMinResults = 5
+	userMentionTimelineMaxResults = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -1429,6 +1431,11 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user mention timeline: a query is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < userMentionTimelineMinResults:
+		return nil, fmt.Errorf("user mention timeline: max results [%d] have a min[%d] %w", opts.MaxResults, userMentionTimelineMinResults, ErrParameter)
+	case opts.MaxResults > userMentionTimelineMaxResults:
+		return nil, fmt.Errorf("user mention timeline: max results [%d] have a max[%d] %w", opts.MaxResults, userMentionTimelineMaxResults, ErrParameter)
 	default:
 	}
 
