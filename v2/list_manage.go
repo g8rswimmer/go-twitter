@@ -3,8 +3,8 @@ package twitter
 // ListMetaData is a list meta data
 type ListMetaData struct {
 	Name        *string `json:"name"`
-	Description *string `json:"description"`
-	Private     *bool   `json:"private"`
+	Description *string `json:"description,omitempty"`
+	Private     *bool   `json:"private,omitempty"`
 }
 
 // ListCreateResponse is the response to creating a list
