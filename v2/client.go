@@ -1518,6 +1518,7 @@ func (c Client) TweetHideReplies(ctx context.Context, id string, hide bool) (*Tw
 		return nil, fmt.Errorf("tweet hide replies request: %w", err)
 	}
 	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 	c.Authorizer.Add(req)
 
 	resp, err := c.Client.Do(req)
