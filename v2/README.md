@@ -167,9 +167,10 @@ The library will return any errors from when creating and _doing_ the callout.  
 		MaxResults: 1,
 	}
 	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+	jErr := &json.UnsupportedValueError{}
 	switch {
-	case errors.Is(err, twitter.ErrParameter):
-		// handle a parameter error
+	case errors.As(err, &jErr):
+		// handle a json error
 	case err != nil:
 		// handle other errors
 	default:
