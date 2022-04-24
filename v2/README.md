@@ -18,11 +18,11 @@ go get -u github.com/g8rswimmer/go-twitter/v2
 ```
 
 ## Table Of Contents
-[Changes](#changes) Gives an outline of the changes between `v1` and `v2`
-[Features](#features) Outlines the twitter v2 APIs supported
-[Rate Limiting](#rate-limiting) Explains how API rate limits are supported
-[Error Handling](#error-handling) Explains how the different types of errors are handled by the library
-[Examples](#examples) Brief overview of where the examples are contained
+*  [Changes](#changes) Gives an outline of the changes between `v1` and `v2`
+*  [Features](#features) Outlines the twitter v2 APIs supported
+*  [Rate Limiting](#rate-limiting) Explains how API rate limits are supported
+*  [Error Handling](#error-handling) Explains how the different types of errors are handled by the library
+*  [Examples](#examples) Brief overview of where the examples are contained
 
 ## Changes
 The following are changes between `v1` and `v2` of the library.
