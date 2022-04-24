@@ -17,6 +17,24 @@ This [project](https://github.com/g8rswimmer/go-twitter/projects/1) will track t
 go get -u github.com/g8rswimmer/go-twitter/v2
 ```
 
+## Table Of Contents
+*  [Changes](#changes) Gives an outline of the changes between `v1` and `v2`
+    * [Breaking Changes](#breaking-changes)
+*  [Features](#features) Outlines the twitter v2 APIs supported
+    * [Tweets](#tweets)
+	* [Users](#users)
+	* [Spaces](#spaces)
+	* [Lists](#lists)
+	* [Compliance](#compliance)
+*  [Rate Limiting](#rate-limiting) Explains how API rate limits are supported
+*  [Error Handling](#error-handling) Explains how the different types of errors are handled by the library
+    * [Parameter Errors](#parameter-errors)
+	* [Callout Errors](#callout-errors)
+	* [Response Decode Errors](#response-decode-errors)
+	* [Twitter HTTP Response Errors](#twitter-http-response-errors)
+	* [Twitter Partial Errors](#twitter-partial-errors)
+*  [Examples](#examples) Brief overview of where the examples are contained
+
 ## Changes
 The following are changes between `v1` and `v2` of the library.
 *  One structure for all endpoint callouts.  In `v1` there were two structures, `Tweet` and `User`, to preform callouts.  This required management of two structures and knowledge which structure contained the desired method callouts.  At the time, the grouping looked logical.  However with the addition of the timeline endpoints, it makes more sense to have a single structure `Client` to handle all of the callouts.  If the user would like to separate the functionality, interfaces can be used to achieve this.
@@ -136,6 +154,103 @@ func TweetLikes(ctx context.Context, id string, client *twitter.Client) (*twitte
 	}
 	return tweetResponse, err
 }
+```
+
+## Error Handling
+There are different types of error handling within the library.  The library supports errors and partial errors defined by [twitter](https://developer.twitter.com/en/support/twitter-api/error-troubleshooting).
+
+### Parameter Errors
+The library does some error checking before a callout.  This checking is very basic, like making sure an id is not an empty string.  If there is an parameter error, it will be wrapped with `ErrParameter`.
+
+```go
+	opts := twitter.ListUserMembersOpts{
+		MaxResults: 1,
+	}
+	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+	switch {
+	case errors.Is(err, twitter.ErrParameter):
+		// handle a parameter error
+	case err != nil:
+		// handle other errors
+	default:
+		// happy path
+	}
+```
+
+### Callout Errors
+The library will return any errors from when creating and _doing_ the callout.  These errors might be, but not limited to, json encoding error or http request or client error.  These errors are also wrapped to allow for the caller to handle specific errors.
+
+```go
+	opts := twitter.ListUserMembersOpts{
+		MaxResults: 1,
+	}
+	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+	jErr := &json.UnsupportedValueError{}
+	switch {
+	case errors.As(err, &jErr):
+		// handle a json error
+	case err != nil:
+		// handle other errors
+	default:
+		// happy path
+	}
+```
+
+### Response Decode Errors
+The library will return a json decode error, `ResponseDecodeError`, when the response is malformed.  This is done to allow for the rate limits to be part of the error.
+
+```go
+	opts := twitter.ListUserMembersOpts{
+		MaxResults: 1,
+	}
+	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+	
+	rdErr := &twitter.ResponseDecodeError{}
+	switch {
+	case errors.As(err, &rdErr):
+		// handle response decode error
+	case err != nil:
+		// handle other errors
+	default:
+		// happy path
+	}
+```
+
+### Twitter HTTP Response Errors
+The library will return a HTTP error, `HTTPError`, when a HTTP status is not successful.  This allows for the twitter error response to be decoded and the rate limits to be part of the error.
+
+```go
+	opts := twitter.ListUserMembersOpts{
+		MaxResults: 1,
+	}
+	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+	
+	httpErr := &twitter.HTTPError{}
+	switch {
+	case errors.As(err, &httpErr):
+		// handle http response error
+	case err != nil:
+		// handle other errors
+	default:
+		// happy path
+	}
+```
+
+### Twitter Partial Errors
+The library will return what twitter defines as partial errors.  These errors are not return as an error in the callout, but in the response as the callout was returned as successful.
+
+```go
+	opts := twitter.ListUserMembersOpts{
+		MaxResults: 1,
+	}
+	tweetResponse, err := client.TweetLikesLookup(ctx, id, opts)
+	if err != nil {
+		/// handle error
+	}	
+	// handle response
+	if len(tweetResponse.Raw.Errors) > 0 {
+		// handle partial errors
+	}
 ```
 
 ## Examples
