@@ -260,7 +260,9 @@ func TestClient_UserRetweetLookup(t *testing.T) {
 						  }
 						],
 						"meta": {
-						  "result_count": 3
+						  "result_count": 3,
+						  "next_token": "7140dibdnow9c7btw4543tz0nst7j4oppx64lxp35od2q",
+						  "previous_token": "77qpymm88g5h9vqkluufkbmeb0lj9r4rend4k34047zg1"						  
 						}
 					  }`
 					return &http.Response{
@@ -300,7 +302,9 @@ func TestClient_UserRetweetLookup(t *testing.T) {
 					},
 				},
 				Meta: &UserRetweetMeta{
-					ResultCount: 3,
+					ResultCount:   3,
+					NextToken:     "7140dibdnow9c7btw4543tz0nst7j4oppx64lxp35od2q",
+					PreviousToken: "77qpymm88g5h9vqkluufkbmeb0lj9r4rend4k34047zg1",
 				},
 				RateLimit: &RateLimit{
 					Limit:     15,
