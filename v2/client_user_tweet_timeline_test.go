@@ -195,7 +195,7 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 					TweetFields: []TweetField{TweetFieldCreatedAt, TweetFieldAuthorID, TweetFieldConversationID, TweetFieldPublicMetrics, TweetFieldContextAnnotations},
 					UserFields:  []UserField{UserFieldUserName},
 					Expansions:  []Expansion{ExpansionAuthorID},
-					MaxResults:  2,
+					MaxResults:  10,
 				},
 			},
 			want: &UserTweetTimelineResponse{

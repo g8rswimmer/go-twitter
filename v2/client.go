@@ -38,6 +38,7 @@ const (
 	userTweetTimelineMaxResults   = 100
 	userMentionTimelineMinResults = 5
 	userMentionTimelineMaxResults = 100
+	userRetweetLookupMaxResults   = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -328,6 +329,8 @@ func (c *Client) UserRetweetLookup(ctx context.Context, tweetID string, opts Use
 	switch {
 	case len(tweetID) == 0:
 		return nil, fmt.Errorf("user retweet lookup: an id is required: %w", ErrParameter)
+	case opts.MaxResults > userRetweetLookupMaxResults:
+		return nil, fmt.Errorf("user retweet lookup: max results is limited to 100 [%d], %w", opts.MaxResults, ErrParameter)
 	default:
 	}
 

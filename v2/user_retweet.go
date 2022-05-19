@@ -2,6 +2,7 @@ package twitter
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -31,7 +32,9 @@ type UserRetweetLookupResponse struct {
 
 // UserRetweetMeta is the meta data returned by the retweet user lookup
 type UserRetweetMeta struct {
-	ResultCount int `json:"result_count"`
+	ResultCount   int    `json:"result_count"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
 }
 
 // UserRetweetRaw is the raw data and includes from the response
@@ -48,12 +51,14 @@ type UserRetweetRawIncludes struct {
 
 // UserRetweetLookupOpts are the options for the user retweet loopup
 type UserRetweetLookupOpts struct {
-	Expansions  []Expansion
-	TweetFields []TweetField
-	UserFields  []UserField
-	MediaFields []MediaField
-	PlaceFields []PlaceField
-	PollFields  []PollField
+	Expansions      []Expansion
+	TweetFields     []TweetField
+	UserFields      []UserField
+	MediaFields     []MediaField
+	PlaceFields     []PlaceField
+	PollFields      []PollField
+	MaxResults      int
+	PaginationToken string
 }
 
 func (u UserRetweetLookupOpts) addQuery(req *http.Request) {
@@ -75,6 +80,12 @@ func (u UserRetweetLookupOpts) addQuery(req *http.Request) {
 	}
 	if len(u.PollFields) > 0 {
 		q.Add("poll.fields", strings.Join(pollFieldStringArray(u.PollFields), ","))
+	}
+	if u.MaxResults > 0 {
+		q.Add("max_results", strconv.Itoa(u.MaxResults))
+	}
+	if len(u.PaginationToken) > 0 {
+		q.Add("pagination_token", u.PaginationToken)
 	}
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
