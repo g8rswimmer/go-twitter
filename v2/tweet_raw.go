@@ -24,6 +24,20 @@ type UserMentionTimelineResponse struct {
 	RateLimit *RateLimit
 }
 
+type UserTweetChronologicalReverseTimelineResponse struct {
+	Raw       *TweetRaw
+	Meta      *UserChronologicalReverseTimelineMeta `json:"meta"`
+	RateLimit *RateLimit
+}
+
+type UserChronologicalReverseTimelineMeta struct {
+	ResultCount   int    `json:"result_count"`
+	NewestID      string `json:"newest_id"`
+	OldestID      string `json:"oldest_id"`
+	NextToken     string `json:"next_token"`
+	PreviousToken string `json:"previous_token"`
+}
+
 // UserTweetTimelineResponse contains the information from the user tweet timeline callout
 type UserTweetTimelineResponse struct {
 	Raw       *TweetRaw
