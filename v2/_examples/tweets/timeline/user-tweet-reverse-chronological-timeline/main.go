@@ -34,7 +34,7 @@ func main() {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.UserTweetChronologicalReverseTimelineOpts{
+	opts := twitter.UserTweetReverseChronologicalTimelineOpts{
 		TweetFields: []twitter.TweetField{twitter.TweetFieldCreatedAt, twitter.TweetFieldAuthorID, twitter.TweetFieldConversationID, twitter.TweetFieldPublicMetrics, twitter.TweetFieldContextAnnotations},
 		UserFields:  []twitter.UserField{twitter.UserFieldUserName},
 		Expansions:  []twitter.Expansion{twitter.ExpansionAuthorID},

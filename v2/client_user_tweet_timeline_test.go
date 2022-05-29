@@ -301,13 +301,13 @@ func TestClient_UserTweetReverseChronologicalTimeline(t *testing.T) {
 	}
 	type args struct {
 		userID string
-		opts   UserTweetChronologicalReverseTimelineOpts
+		opts   UserTweetReverseChronologicalTimelineOpts
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *UserTweetChronologicalReverseTimelineResponse
+		want    *UserTweetReverseChronologicalTimelineResponse
 		wantErr bool
 	}{
 		{
@@ -356,7 +356,7 @@ func TestClient_UserTweetReverseChronologicalTimeline(t *testing.T) {
 			args: args{
 				userID: "2244994945",
 			},
-			want: &UserTweetChronologicalReverseTimelineResponse{
+			want: &UserTweetReverseChronologicalTimelineResponse{
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
@@ -369,7 +369,7 @@ func TestClient_UserTweetReverseChronologicalTimeline(t *testing.T) {
 						},
 					},
 				},
-				Meta: &UserChronologicalReverseTimelineMeta{
+				Meta: &UserReverseChronologicalTimelineMeta{
 					ResultCount: 5,
 					NewestID:    "1524796546306478083",
 					OldestID:    "1522642323535847424",
@@ -442,14 +442,14 @@ func TestClient_UserTweetReverseChronologicalTimeline(t *testing.T) {
 			},
 			args: args{
 				userID: "2244994945",
-				opts: UserTweetChronologicalReverseTimelineOpts{
+				opts: UserTweetReverseChronologicalTimelineOpts{
 					Expansions:  []Expansion{ExpansionAuthorID},
 					TweetFields: []TweetField{TweetFieldCreatedAt},
 					UserFields:  []UserField{UserFieldCreatedAt, UserFieldName},
 					MaxResults:  5,
 				},
 			},
-			want: &UserTweetChronologicalReverseTimelineResponse{
+			want: &UserTweetReverseChronologicalTimelineResponse{
 				Raw: &TweetRaw{
 					Tweets: []*TweetObj{
 						{
@@ -476,7 +476,7 @@ func TestClient_UserTweetReverseChronologicalTimeline(t *testing.T) {
 						},
 					},
 				},
-				Meta: &UserChronologicalReverseTimelineMeta{
+				Meta: &UserReverseChronologicalTimelineMeta{
 					ResultCount: 5,
 					NewestID:    "1524796546306478083",
 					OldestID:    "1522642323535847424",

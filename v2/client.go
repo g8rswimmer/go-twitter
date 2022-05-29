@@ -1503,7 +1503,9 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	return timeline, nil
 }
 
-func (c *Client) UserTweetReverseChronologicalTimeline(ctx context.Context, userID string, opts UserTweetChronologicalReverseTimelineOpts) (*UserTweetChronologicalReverseTimelineResponse, error) {
+// UserTweetReverseChronologicalTimeline allows you to retrieve a collection of the most recent Tweets and Retweets posted by you and users you follow.
+// This endpoint returns up to the last 3200 Tweets.
+func (c *Client) UserTweetReverseChronologicalTimeline(ctx context.Context, userID string, opts UserTweetReverseChronologicalTimelineOpts) (*UserTweetReverseChronologicalTimelineResponse, error) {
 	switch {
 	case len(userID) == 0:
 		return nil, fmt.Errorf("user tweet reverse chronological timeline: a query is required: %w", ErrParameter)
@@ -1550,7 +1552,7 @@ func (c *Client) UserTweetReverseChronologicalTimeline(ctx context.Context, user
 
 	timeline := struct {
 		TweetRaw
-		Meta UserChronologicalReverseTimelineMeta `json:"meta"`
+		Meta UserReverseChronologicalTimelineMeta `json:"meta"`
 	}{}
 
 	if err := decoder.Decode(&timeline); err != nil {
@@ -1561,7 +1563,7 @@ func (c *Client) UserTweetReverseChronologicalTimeline(ctx context.Context, user
 		}
 	}
 
-	return &UserTweetChronologicalReverseTimelineResponse{
+	return &UserTweetReverseChronologicalTimelineResponse{
 		Raw:       &timeline.TweetRaw,
 		Meta:      &timeline.Meta,
 		RateLimit: rl,

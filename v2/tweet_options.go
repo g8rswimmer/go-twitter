@@ -164,7 +164,8 @@ func (t UserMentionTimelineOpts) addQuery(req *http.Request) {
 	}
 }
 
-type UserTweetChronologicalReverseTimelineOpts struct {
+// UserTweetReverseChronologicalTimelineOpts are the options for the user tweet reverse chronological timeline
+type UserTweetReverseChronologicalTimelineOpts struct {
 	Expansions      []Expansion
 	MediaFields     []MediaField
 	PlaceFields     []PlaceField
@@ -180,7 +181,7 @@ type UserTweetChronologicalReverseTimelineOpts struct {
 	UntilID         string
 }
 
-func (t UserTweetChronologicalReverseTimelineOpts) addQuery(req *http.Request) {
+func (t UserTweetReverseChronologicalTimelineOpts) addQuery(req *http.Request) {
 	q := req.URL.Query()
 	if len(t.Expansions) > 0 {
 		q.Add("expansions", strings.Join(expansionStringArray(t.Expansions), ","))
