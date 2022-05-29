@@ -24,7 +24,7 @@ const (
 	userMutesMaxResults                             = 1000
 	likesMaxResults                                 = 100
 	likesMinResults                                 = 10
-	sampleStreamMaxBackoffMin                       = 5
+	sampleStreamMaxBackOffMin                       = 5
 	userListMaxResults                              = 100
 	listTweetMaxResults                             = 100
 	userListMembershipMaxResults                    = 100
@@ -939,8 +939,8 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
 	switch {
 	case opts.BackfillMinutes == 0:
-	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
-		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
+		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
 	default:
 	}
 
@@ -2385,8 +2385,8 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOpts) (*TweetStream, error) {
 	switch {
 	case opts.BackfillMinutes == 0:
-	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
-		return nil, fmt.Errorf("tweet sample stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
+		return nil, fmt.Errorf("tweet sample stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
 	default:
 	}
 
