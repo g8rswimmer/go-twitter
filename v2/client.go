@@ -4106,7 +4106,7 @@ func (c *Client) AddTweetBookmark(ctx context.Context, userID, tweetID string) (
 		return nil, fmt.Errorf("tweet bookmarks add request: %w", err)
 	}
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Context-Type", "application/json")
+	req.Header.Add("Content-Type", "application/json")
 	c.Authorizer.Add(req)
 
 	resp, err := c.Client.Do(req)
