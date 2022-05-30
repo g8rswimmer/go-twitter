@@ -208,9 +208,9 @@ func (t TweetSearchStreamRuleID) validate() error {
 	return nil
 }
 
-type tweetSeachStreamRuleIDs []TweetSearchStreamRuleID
+type tweetSearchStreamRuleIDs []TweetSearchStreamRuleID
 
-func (t tweetSeachStreamRuleIDs) validate() error {
+func (t tweetSearchStreamRuleIDs) validate() error {
 	for _, id := range t {
 		if err := id.validate(); err != nil {
 			return err
@@ -219,7 +219,7 @@ func (t tweetSeachStreamRuleIDs) validate() error {
 	return nil
 }
 
-func (t tweetSeachStreamRuleIDs) toStringArray() []string {
+func (t tweetSearchStreamRuleIDs) toStringArray() []string {
 	ids := make([]string, len(t))
 	for i, id := range t {
 		ids[i] = string(id)
