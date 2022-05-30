@@ -11,34 +11,36 @@ import (
 )
 
 const (
-	tweetMaxIDs                   = 100
-	userMaxIDs                    = 100
-	spaceMaxIDs                   = 100
-	spaceByCreatorMaxIDs          = 100
-	userMaxNames                  = 100
-	tweetRecentSearchQueryLength  = 512
-	tweetSearchQueryLength        = 1024
-	tweetRecentCountsQueryLength  = 512
-	tweetAllCountsQueryLength     = 1024
-	userBlocksMaxResults          = 1000
-	userMutesMaxResults           = 1000
-	likesMaxResults               = 100
-	likesMinResults               = 10
-	sampleStreamMaxBackoffMin     = 5
-	userListMaxResults            = 100
-	listTweetMaxResults           = 100
-	userListMembershipMaxResults  = 100
-	listUserMemberMaxResults      = 100
-	userListFollowedMaxResults    = 100
-	listuserFollowersMaxResults   = 100
-	quoteTweetMaxResults          = 100
-	quoteTweetMinResults          = 10
-	tweetBookmarksMaxResults      = 100
-	userTweetTimelineMinResults   = 5
-	userTweetTimelineMaxResults   = 100
-	userMentionTimelineMinResults = 5
-	userMentionTimelineMaxResults = 100
-	userRetweetLookupMaxResults   = 100
+	tweetMaxIDs                                     = 100
+	userMaxIDs                                      = 100
+	spaceMaxIDs                                     = 100
+	spaceByCreatorMaxIDs                            = 100
+	userMaxNames                                    = 100
+	tweetRecentSearchQueryLength                    = 512
+	tweetSearchQueryLength                          = 1024
+	tweetRecentCountsQueryLength                    = 512
+	tweetAllCountsQueryLength                       = 1024
+	userBlocksMaxResults                            = 1000
+	userMutesMaxResults                             = 1000
+	likesMaxResults                                 = 100
+	likesMinResults                                 = 10
+	sampleStreamMaxBackOffMin                       = 5
+	userListMaxResults                              = 100
+	listTweetMaxResults                             = 100
+	userListMembershipMaxResults                    = 100
+	listUserMemberMaxResults                        = 100
+	userListFollowedMaxResults                      = 100
+	listUserFollowersMaxResults                     = 100
+	quoteTweetMaxResults                            = 100
+	quoteTweetMinResults                            = 10
+	tweetBookmarksMaxResults                        = 100
+	userTweetTimelineMinResults                     = 5
+	userTweetTimelineMaxResults                     = 100
+	userMentionTimelineMinResults                   = 5
+	userMentionTimelineMaxResults                   = 100
+	userRetweetLookupMaxResults                     = 100
+	userTweetReverseChronologicalTimelineMinResults = 1
+	userTweetReverseChronologicalTimelineMaxResults = 100
 )
 
 // Client is used to make twitter v2 API callouts.
@@ -937,8 +939,8 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
 	switch {
 	case opts.BackfillMinutes == 0:
-	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
-		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
+		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
 	default:
 	}
 
@@ -1499,6 +1501,73 @@ func (c *Client) UserMentionTimeline(ctx context.Context, userID string, opts Us
 	}
 	timeline.RateLimit = rl
 	return timeline, nil
+}
+
+// UserTweetReverseChronologicalTimeline allows you to retrieve a collection of the most recent Tweets and Retweets posted by you and users you follow.
+// This endpoint returns up to the last 3200 Tweets.
+func (c *Client) UserTweetReverseChronologicalTimeline(ctx context.Context, userID string, opts UserTweetReverseChronologicalTimelineOpts) (*UserTweetReverseChronologicalTimelineResponse, error) {
+	switch {
+	case len(userID) == 0:
+		return nil, fmt.Errorf("user tweet reverse chronological timeline: a query is required: %w", ErrParameter)
+	case opts.MaxResults == 0:
+	case opts.MaxResults < userTweetReverseChronologicalTimelineMinResults:
+		return nil, fmt.Errorf("user tweet reverse chronological timeline: max results [%d] have a min[%d] %w", opts.MaxResults, userTweetReverseChronologicalTimelineMinResults, ErrParameter)
+	case opts.MaxResults > userTweetReverseChronologicalTimelineMaxResults:
+		return nil, fmt.Errorf("user tweet reverse chronological timeline: max results [%d] have a max[%d] %w", opts.MaxResults, userTweetReverseChronologicalTimelineMaxResults, ErrParameter)
+	default:
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, userTweetReverseChronologicalTimelineEndpoint.urlID(c.Host, userID), nil)
+	if err != nil {
+		return nil, fmt.Errorf("user tweet reverse chronological timeline request: %w", err)
+	}
+	req.Header.Add("Accept", "application/json")
+	c.Authorizer.Add(req)
+	opts.addQuery(req)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user tweet reverse chronological timeline response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	rl := rateFromHeader(resp.Header)
+
+	decoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		e := &ErrorResponse{}
+		if err := decoder.Decode(e); err != nil {
+			return nil, &HTTPError{
+				Status:     resp.Status,
+				StatusCode: resp.StatusCode,
+				URL:        resp.Request.URL.String(),
+				RateLimit:  rl,
+			}
+		}
+		e.StatusCode = resp.StatusCode
+		e.RateLimit = rl
+		return nil, e
+	}
+
+	timeline := struct {
+		TweetRaw
+		Meta UserReverseChronologicalTimelineMeta `json:"meta"`
+	}{}
+
+	if err := decoder.Decode(&timeline); err != nil {
+		return nil, &ResponseDecodeError{
+			Name:      "user tweet reverse chronological timeline",
+			Err:       err,
+			RateLimit: rl,
+		}
+	}
+
+	return &UserTweetReverseChronologicalTimelineResponse{
+		Raw:       &timeline.TweetRaw,
+		Meta:      &timeline.Meta,
+		RateLimit: rl,
+	}, nil
 }
 
 // TweetHideReplies will hide the replies for a given tweet
@@ -2318,8 +2387,8 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOpts) (*TweetStream, error) {
 	switch {
 	case opts.BackfillMinutes == 0:
-	case opts.BackfillMinutes > sampleStreamMaxBackoffMin:
-		return nil, fmt.Errorf("tweet sample stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackoffMin, opts.BackfillMinutes, ErrParameter)
+	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
+		return nil, fmt.Errorf("tweet sample stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
 	default:
 	}
 
@@ -3365,8 +3434,8 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 	case len(listID) == 0:
 		return nil, fmt.Errorf("list user followers: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
-	case opts.MaxResults > listuserFollowersMaxResults:
-		return nil, fmt.Errorf("list user followers: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listuserFollowersMaxResults, ErrParameter)
+	case opts.MaxResults > listUserFollowersMaxResults:
+		return nil, fmt.Errorf("list user followers: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listUserFollowersMaxResults, ErrParameter)
 	default:
 	}
 
@@ -3774,7 +3843,7 @@ func (c *Client) CreateComplianceBatchJob(ctx context.Context, jobType Complianc
 		return nil, fmt.Errorf("create compliance batch job request encode: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, complianceJobsEndpiont.url(c.Host), bytes.NewReader(enc))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, complianceJobsEndpoint.url(c.Host), bytes.NewReader(enc))
 	if err != nil {
 		return nil, fmt.Errorf("create compliance batch job request: %w", err)
 	}
@@ -3831,7 +3900,7 @@ func (c *Client) ComplianceBatchJob(ctx context.Context, id string) (*Compliance
 	default:
 	}
 
-	ep := complianceJobsEndpiont.url(c.Host) + "/" + id
+	ep := complianceJobsEndpoint.url(c.Host) + "/" + id
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
 		return nil, fmt.Errorf("compliance batch job request: %w", err)
@@ -3888,7 +3957,7 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 	default:
 	}
 
-	ep := complianceJobsEndpiont.url(c.Host)
+	ep := complianceJobsEndpoint.url(c.Host)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ep, nil)
 	if err != nil {
 		return nil, fmt.Errorf("compliance batch job lookup request: %w", err)

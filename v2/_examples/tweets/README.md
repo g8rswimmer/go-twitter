@@ -17,6 +17,7 @@ The examples can be run my providing some options, including the authorization t
 
 * [Returns most recent tweets composed by a user](./timeline/user-tweet-timeline/main.go)
 * [Returns most recent tweet mentioning a user](./timeline/user-mention-timeline/main.go)
+* [Allows you to retrieve a collection of the most recent Tweets and Retweets posted by you and users you follow.](./timeline/user-tweet-reverse-chronological-timeline/main.go)
 
 ### [Search Tweets](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction)
 

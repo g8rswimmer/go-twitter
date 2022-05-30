@@ -292,3 +292,220 @@ func TestClient_UserTweetTimeline(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_UserTweetReverseChronologicalTimeline(t *testing.T) {
+	type fields struct {
+		Authorizer Authorizer
+		Client     *http.Client
+		Host       string
+	}
+	type args struct {
+		userID string
+		opts   UserTweetReverseChronologicalTimelineOpts
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *UserTweetReverseChronologicalTimelineResponse
+		wantErr bool
+	}{
+		{
+			name: "success",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), userTweetReverseChronologicalTimelineEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetReverseChronologicalTimelineEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"id": "1524796546306478083",
+							"text": "Today marks the launch of Devs in the Details, a technical video series made for developers by developers building with the Twitter API.  🚀nnIn this premiere episode, @jessicagarson walks us through how she built @FactualCat #WelcomeToOurTechTalkn⬇️nnhttps://t.co/nGa8JTQVBJ"
+						  },
+						  {
+							"id": "1522642323535847424",
+							"text": "We’ve gone into more detail on each Insider in our forum post. nnJoin us in congratulating the new additions! 🥳nnhttps://t.co/0r5maYEjPJ"
+						  }
+						],
+						"meta": {
+						  "result_count": 5,
+						  "newest_id": "1524796546306478083",
+						  "oldest_id": "1522642323535847424",
+						  "next_token": "7140dibdnow9c7btw421dyz6jism75z99gyxd8egarsc4"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
+					}
+				}),
+			},
+			args: args{
+				userID: "2244994945",
+			},
+			want: &UserTweetReverseChronologicalTimelineResponse{
+				Raw: &TweetRaw{
+					Tweets: []*TweetObj{
+						{
+							ID:   "1524796546306478083",
+							Text: "Today marks the launch of Devs in the Details, a technical video series made for developers by developers building with the Twitter API.  🚀nnIn this premiere episode, @jessicagarson walks us through how she built @FactualCat #WelcomeToOurTechTalkn⬇️nnhttps://t.co/nGa8JTQVBJ",
+						},
+						{
+							ID:   "1522642323535847424",
+							Text: "We’ve gone into more detail on each Insider in our forum post. nnJoin us in congratulating the new additions! 🥳nnhttps://t.co/0r5maYEjPJ",
+						},
+					},
+				},
+				Meta: &UserReverseChronologicalTimelineMeta{
+					ResultCount: 5,
+					NewestID:    "1524796546306478083",
+					OldestID:    "1522642323535847424",
+					NextToken:   "7140dibdnow9c7btw421dyz6jism75z99gyxd8egarsc4",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "success with options",
+			fields: fields{
+				Authorizer: &mockAuth{},
+				Host:       "https://www.test.com",
+				Client: mockHTTPClient(func(req *http.Request) *http.Response {
+					if req.Method != http.MethodGet {
+						log.Panicf("the method is not correct %s %s", req.Method, http.MethodGet)
+					}
+					if strings.Contains(req.URL.String(), userTweetReverseChronologicalTimelineEndpoint.urlID("", "2244994945")) == false {
+						log.Panicf("the url is not correct %s %s", req.URL.String(), userTweetReverseChronologicalTimelineEndpoint)
+					}
+					body := `{
+						"data": [
+						  {
+							"created_at": "2022-05-12T17:00:00.000Z",
+							"text": "Today marks the launch of Devs in the Details, a technical video series made for developers by developers building with the Twitter API.  🚀nnIn this premiere episode, @jessicagarson walks us through how she built @FactualCat #WelcomeToOurTechTalkn⬇️nnhttps://t.co/nGa8JTQVBJ",
+							"author_id": "2244994945",
+							"id": "1524796546306478083"
+						  },
+						  {
+							"created_at": "2022-05-06T18:19:53.000Z",
+							"text": "We’ve gone into more detail on each Insider in our forum post. nnJoin us in congratulating the new additions! 🥳nnhttps://t.co/0r5maYEjPJ",
+							"author_id": "2244994945",
+							"id": "1522642323535847424"
+   						  }
+						],
+						"includes": {
+							"users": [
+							  {
+								"created_at": "2013-12-14T04:35:55.000Z",
+								"name": "Twitter Dev",
+								"username": "TwitterDev",
+								"id": "2244994945"
+							  }
+							]
+						},
+						"meta": {
+						  "result_count": 5,
+						  "newest_id": "1524796546306478083",
+						  "oldest_id": "1522642323535847424",
+						  "next_token": "7140dibdnow9c7btw421dyz6jism75z99gyxd8egarsc4"
+						}
+					  }`
+					return &http.Response{
+						StatusCode: http.StatusOK,
+						Body:       io.NopCloser(strings.NewReader(body)),
+						Header: func() http.Header {
+							h := http.Header{}
+							h.Add(rateLimit, "15")
+							h.Add(rateRemaining, "12")
+							h.Add(rateReset, "1644461060")
+							return h
+						}(),
+					}
+				}),
+			},
+			args: args{
+				userID: "2244994945",
+				opts: UserTweetReverseChronologicalTimelineOpts{
+					Expansions:  []Expansion{ExpansionAuthorID},
+					TweetFields: []TweetField{TweetFieldCreatedAt},
+					UserFields:  []UserField{UserFieldCreatedAt, UserFieldName},
+					MaxResults:  5,
+				},
+			},
+			want: &UserTweetReverseChronologicalTimelineResponse{
+				Raw: &TweetRaw{
+					Tweets: []*TweetObj{
+						{
+							CreatedAt: "2022-05-12T17:00:00.000Z",
+							AuthorID:  "2244994945",
+							ID:        "1524796546306478083",
+							Text:      "Today marks the launch of Devs in the Details, a technical video series made for developers by developers building with the Twitter API.  🚀nnIn this premiere episode, @jessicagarson walks us through how she built @FactualCat #WelcomeToOurTechTalkn⬇️nnhttps://t.co/nGa8JTQVBJ",
+						},
+						{
+							CreatedAt: "2022-05-06T18:19:53.000Z",
+							AuthorID:  "2244994945",
+							ID:        "1522642323535847424",
+							Text:      "We’ve gone into more detail on each Insider in our forum post. nnJoin us in congratulating the new additions! 🥳nnhttps://t.co/0r5maYEjPJ",
+						},
+					},
+					Includes: &TweetRawIncludes{
+						Users: []*UserObj{
+							{
+								CreatedAt: "2013-12-14T04:35:55.000Z",
+								Name:      "Twitter Dev",
+								UserName:  "TwitterDev",
+								ID:        "2244994945",
+							},
+						},
+					},
+				},
+				Meta: &UserReverseChronologicalTimelineMeta{
+					ResultCount: 5,
+					NewestID:    "1524796546306478083",
+					OldestID:    "1522642323535847424",
+					NextToken:   "7140dibdnow9c7btw421dyz6jism75z99gyxd8egarsc4",
+				},
+				RateLimit: &RateLimit{
+					Limit:     15,
+					Remaining: 12,
+					Reset:     Epoch(1644461060),
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				Authorizer: tt.fields.Authorizer,
+				Client:     tt.fields.Client,
+				Host:       tt.fields.Host,
+			}
+			got, err := c.UserTweetReverseChronologicalTimeline(context.Background(), tt.args.userID, tt.args.opts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Client.UserTweetReverseChronologicalTimeline() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Client.UserTweetReverseChronologicalTimeline() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
