@@ -742,10 +742,10 @@ func (c *Client) TweetSearchStreamDeleteRuleByID(ctx context.Context, ruleIDs []
 		return nil, fmt.Errorf("tweet search stream delete rule: rule ids are required: %w", ErrParameter)
 	}
 	type ids struct {
-		IDs tweetSeachStreamRuleIDs `json:"ids"`
+		IDs tweetSearchStreamRuleIDs `json:"ids"`
 	}
 	deleteIDs := ids{
-		IDs: tweetSeachStreamRuleIDs(ruleIDs),
+		IDs: tweetSearchStreamRuleIDs(ruleIDs),
 	}
 	if err := deleteIDs.IDs.validate(); err != nil {
 		return nil, err
@@ -889,7 +889,7 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 	req.Header.Add("Accept", "application/json")
 	c.Authorizer.Add(req)
 	if len(ruleIDs) > 0 {
-		ruleArr := tweetSeachStreamRuleIDs(ruleIDs)
+		ruleArr := tweetSearchStreamRuleIDs(ruleIDs)
 		if err := ruleArr.validate(); err != nil {
 			return nil, err
 		}
@@ -940,7 +940,7 @@ func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOp
 	switch {
 	case opts.BackfillMinutes == 0:
 	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
-		return nil, fmt.Errorf("tweet search stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
+		return nil, fmt.Errorf("tweet search stream: a max back off minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
 	default:
 	}
 
@@ -2388,7 +2388,7 @@ func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOp
 	switch {
 	case opts.BackfillMinutes == 0:
 	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
-		return nil, fmt.Errorf("tweet sample stream: a max backoff minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
+		return nil, fmt.Errorf("tweet sample stream: a max back off minutes [%d] is [current: %d]: %w", sampleStreamMaxBackOffMin, opts.BackfillMinutes, ErrParameter)
 	default:
 	}
 
@@ -2496,7 +2496,7 @@ func (c *Client) UserListLookup(ctx context.Context, userID string, opts UserLis
 		return nil, fmt.Errorf("user list lookup: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > userListMaxResults:
-		return nil, fmt.Errorf("user list lookup: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListMaxResults, ErrParameter)
+		return nil, fmt.Errorf("user list lookup: max results [%d] is greater than max [%d]: %w", opts.MaxResults, userListMaxResults, ErrParameter)
 	default:
 	}
 
@@ -2562,7 +2562,7 @@ func (c *Client) ListTweetLookup(ctx context.Context, listID string, opts ListTw
 		return nil, fmt.Errorf("list tweet lookup: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > listTweetMaxResults:
-		return nil, fmt.Errorf("list tweet lookup: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listTweetMaxResults, ErrParameter)
+		return nil, fmt.Errorf("list tweet lookup: max results [%d] is greater than max [%d]: %w", opts.MaxResults, listTweetMaxResults, ErrParameter)
 	default:
 	}
 
@@ -2926,7 +2926,7 @@ func (c *Client) ListUserMembers(ctx context.Context, listID string, opts ListUs
 		return nil, fmt.Errorf("list user members: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > listUserMemberMaxResults:
-		return nil, fmt.Errorf("list user members: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listUserMemberMaxResults, ErrParameter)
+		return nil, fmt.Errorf("list user members: max results [%d] is greater than max [%d]: %w", opts.MaxResults, listUserMemberMaxResults, ErrParameter)
 	default:
 	}
 
@@ -2992,7 +2992,7 @@ func (c *Client) UserListMemberships(ctx context.Context, userID string, opts Us
 		return nil, fmt.Errorf("user list membership: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > userListMembershipMaxResults:
-		return nil, fmt.Errorf("user list membership: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListMembershipMaxResults, ErrParameter)
+		return nil, fmt.Errorf("user list membership: max results [%d] is greater than max [%d]: %w", opts.MaxResults, userListMembershipMaxResults, ErrParameter)
 	default:
 	}
 
@@ -3369,7 +3369,7 @@ func (c *Client) UserFollowedLists(ctx context.Context, userID string, opts User
 		return nil, fmt.Errorf("user followed list: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > userListFollowedMaxResults:
-		return nil, fmt.Errorf("user followed list: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, userListFollowedMaxResults, ErrParameter)
+		return nil, fmt.Errorf("user followed list: max results [%d] is greater than max [%d]: %w", opts.MaxResults, userListFollowedMaxResults, ErrParameter)
 	default:
 	}
 
@@ -3435,7 +3435,7 @@ func (c *Client) ListUserFollowers(ctx context.Context, listID string, opts List
 		return nil, fmt.Errorf("list user followers: an id is required: %w", ErrParameter)
 	case opts.MaxResults == 0:
 	case opts.MaxResults > listUserFollowersMaxResults:
-		return nil, fmt.Errorf("list user followers: max results [%d] is greater thanmax [%d]: %w", opts.MaxResults, listUserFollowersMaxResults, ErrParameter)
+		return nil, fmt.Errorf("list user followers: max results [%d] is greater than max [%d]: %w", opts.MaxResults, listUserFollowersMaxResults, ErrParameter)
 	default:
 	}
 
@@ -4014,7 +4014,7 @@ func (c *Client) ComplianceBatchJobLookup(ctx context.Context, jobType Complianc
 	}, nil
 }
 
-// QuoteTweetsLookup returns quote tweets for a tweet specificed by the requested tweet id
+// QuoteTweetsLookup returns quote tweets for a tweet specified by the requested tweet id
 func (c *Client) QuoteTweetsLookup(ctx context.Context, tweetID string, opts QuoteTweetsLookupOpts) (*QuoteTweetsLookupResponse, error) {
 	switch {
 	case len(tweetID) == 0:
