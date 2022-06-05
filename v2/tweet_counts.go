@@ -9,7 +9,8 @@ type TweetRecentCountsResponse struct {
 
 // TweetRecentCountsMeta contains the meta data from the recent counts information
 type TweetRecentCountsMeta struct {
-	TotalTweetCount int `json:"total_tweet_count"`
+	TotalTweetCount int    `json:"total_tweet_count"`
+	NextToken       string `json:"next_token"`
 }
 
 // TweetCount is the object on the tweet counts endpoints
