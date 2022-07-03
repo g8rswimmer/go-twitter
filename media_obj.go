@@ -26,6 +26,8 @@ const (
 	MediaFieldOrganicMetrics MediaField = "organic_metrics"
 	// MediaFieldPromotedMetrics is the URL to the static placeholder preview of this content.
 	MediaFieldPromotedMetrics MediaField = "promoted_metrics"
+	// MediaFieldVariants contains multiple the display or playback variants of media object, with different resolutions or formats
+	MediaFieldVariants MediaField = "variants"
 )
 
 func mediaFieldStringArray(arr []MediaField) []string {
@@ -38,17 +40,18 @@ func mediaFieldStringArray(arr []MediaField) []string {
 
 // MediaObj refers to any image, GIF, or video attached to a Tweet
 type MediaObj struct {
-	Key              string          `json:"media_key"`
-	Type             string          `json:"type"`
-	URL              string          `json:"url"`
-	DurationMS       int             `json:"duration_ms"`
-	Height           int             `json:"height"`
-	NonPublicMetrics MediaMetricsObj `json:"non_public_metrics"`
-	OrganicMetrics   MediaMetricsObj `json:"organic_metrics"`
-	PreviewImageURL  string          `json:"preview_image_url"`
-	PromotedMetrics  MediaMetricsObj `json:"promoted_metrics"`
-	PublicMetrics    MediaMetricsObj `json:"public_metrics"`
-	Width            int             `json:"width"`
+	Key              string             `json:"media_key"`
+	Type             string             `json:"type"`
+	URL              string             `json:"url"`
+	DurationMS       int                `json:"duration_ms"`
+	Height           int                `json:"height"`
+	NonPublicMetrics MediaMetricsObj    `json:"non_public_metrics"`
+	OrganicMetrics   MediaMetricsObj    `json:"organic_metrics"`
+	PreviewImageURL  string             `json:"preview_image_url"`
+	PromotedMetrics  MediaMetricsObj    `json:"promoted_metrics"`
+	PublicMetrics    MediaMetricsObj    `json:"public_metrics"`
+	Width            int                `json:"width"`
+	Variants         []MediaVariantsObj `json:"variants"`
 }
 
 // MediaMetricsObj engagement metrics for the media content at the time of the request
@@ -59,4 +62,11 @@ type MediaMetricsObj struct {
 	Playback50  int `json:"playback_50_count"`
 	Playback75  int `json:"playback_75_count"`
 	Views       int `json:"view_count"`
+}
+
+// MediaObjVariants is the media display of playback variant
+type MediaVariantsObj struct {
+	BitRate     int64  `json:"bit_rate"`
+	ContentType string `json:"content_type"`
+	URL         string `json:"url"`
 }
