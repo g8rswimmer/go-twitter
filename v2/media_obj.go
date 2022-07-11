@@ -26,6 +26,8 @@ const (
 	MediaFieldOrganicMetrics MediaField = "organic_metrics"
 	// MediaFieldPromotedMetrics is the URL to the static placeholder preview of this content.
 	MediaFieldPromotedMetrics MediaField = "promoted_metrics"
+	// MediaFieldVariants contains multiple the display or playback variants of media object, with different resolutions or formats
+	MediaFieldVariants MediaField = "variants"
 )
 
 func mediaFieldStringArray(arr []MediaField) []string {
