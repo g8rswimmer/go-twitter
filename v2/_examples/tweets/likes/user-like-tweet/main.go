@@ -20,7 +20,7 @@ func (a authorize) Add(req *http.Request) {
 }
 
 /**
-	In order to run, the user will need to provide the bearer token and the list of user ids.
+	In order to run, the user will need to provide the bearer token, tweet id and user ids.
 **/
 func main() {
 	token := flag.String("token", "", "twitter API token")
