@@ -21,7 +21,7 @@ func (a authorize) Add(req *http.Request) {
 }
 
 /**
-	In order to run, the user will need to provide the bearer token and the list of tweet ids.
+	In order to run, the user will need to provide the bearer token, tweet id and hide boolean.
 **/
 func main() {
 	token := flag.String("token", "", "twitter API token")
@@ -29,7 +29,7 @@ func main() {
 	hide := flag.String("hide", "", "Hide replies")
 	flag.Parse()
 
-	hideBool, err := strconv.ParseBool(hide)
+	hideBool, err := strconv.ParseBool(*hide)
 	if err != nil {
 		log.Panicf("tweet hide error: %v", err)
 	}
@@ -44,7 +44,7 @@ func main() {
 
 	fmt.Println("Callout to tweet hide replies")
 
-	hideResponse, err := client.TweetHideReplies(context.Background(), *id, hideBool)
+	hideResponse, err := client.TweetHideReplies(context.Background(), *ids, hideBool)
 	if err != nil {
 		log.Panicf("tweet hide replies error: %v", err)
 	}
