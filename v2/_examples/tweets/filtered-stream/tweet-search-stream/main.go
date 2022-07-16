@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	twitter "github.com/g8rswimmer/go-twitter/v2"
 	"log"
 	"net/http"
 	"os"
-	"time"
-
-	twitter "github.com/g8rswimmer/go-twitter/v2"
+	"os/signal"
+	"syscall"
 )
 
 type authorize struct {
@@ -22,7 +22,7 @@ func (a authorize) Add(req *http.Request) {
 }
 
 /**
-	In order to run, the user will need to provide the bearer token and the list of tweet ids.
+	In order to run, the user will need to provide the bearer token and a file name to be used as a log.
 **/
 func main() {
 	token := flag.String("token", "", "twitter API token")
@@ -50,13 +50,13 @@ func main() {
 	if err != nil {
 		log.Panicf("tweet sample callout error: %v", err)
 	}
-
-	timer := time.NewTimer(20 * time.Second)
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	func() {
 		defer tweetStream.Close()
 		for {
 			select {
-			case <-timer.C:
+			case <-ch:
 				fmt.Println("closing")
 				return
 			case tm := <-tweetStream.Tweets():
