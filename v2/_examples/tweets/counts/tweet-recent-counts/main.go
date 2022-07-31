@@ -18,6 +18,10 @@ type authorize struct {
 func (a authorize) Add(req *http.Request) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
 }
+
+/**
+	In order to run, the user will need to provide the bearer token and a query.
+**/
 func main() {
 	token := flag.String("token", "", "twitter API token")
 	query := flag.String("query", "", "twitter query")
