@@ -182,7 +182,7 @@ func Test_StartTweetStreamDisconnect(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []*DisconnectionStream
+		want []*DisconnectionError
 	}{
 		{
 			name: "disconnect stream",
@@ -194,7 +194,7 @@ func Test_StartTweetStreamDisconnect(t *testing.T) {
 					return io.NopCloser(strings.NewReader(stream))
 				}(),
 			},
-			want: []*DisconnectionStream{
+			want: []*DisconnectionError{
 				{
 					Disconnections: []*Disconnection{
 						{
@@ -224,14 +224,14 @@ func Test_StartTweetStreamDisconnect(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			stream := StartTweetStream(tt.args.stream)
 
-			got := []*DisconnectionStream{}
+			got := []*DisconnectionError{}
 			timer := time.NewTimer(time.Second * 5)
 
 			func() {
 				defer stream.Close()
 				for {
 					select {
-					case msg := <-stream.Disconnection():
+					case msg := <-stream.DisconnectionError():
 						got = append(got, msg)
 					case <-timer.C:
 						return
@@ -258,7 +258,7 @@ func Test_StartTweetStream(t *testing.T) {
 		args           args
 		wantSystem     []map[SystemMessageType]SystemMessage
 		wantTweet      []*TweetMessage
-		wantDisconnect []*DisconnectionStream
+		wantDisconnect []*DisconnectionError
 	}{
 		{
 			name: "tweet stream",
@@ -344,7 +344,7 @@ func Test_StartTweetStream(t *testing.T) {
 					},
 				},
 			},
-			wantDisconnect: []*DisconnectionStream{
+			wantDisconnect: []*DisconnectionError{
 				{
 					Disconnections: []*Disconnection{},
 					Connections: []*Connection{
@@ -366,7 +366,7 @@ func Test_StartTweetStream(t *testing.T) {
 
 			gotSystem := []map[SystemMessageType]SystemMessage{}
 			gotTweet := []*TweetMessage{}
-			gotDisconnect := []*DisconnectionStream{}
+			gotDisconnect := []*DisconnectionError{}
 
 			timer := time.NewTimer(time.Second * 5)
 
@@ -378,7 +378,7 @@ func Test_StartTweetStream(t *testing.T) {
 						gotSystem = append(gotSystem, sysMsg)
 					case tweetMsg := <-stream.Tweets():
 						gotTweet = append(gotTweet, tweetMsg)
-					case disconnectMsg := <-stream.Disconnection():
+					case disconnectMsg := <-stream.DisconnectionError():
 						gotDisconnect = append(gotDisconnect, disconnectMsg)
 					case <-timer.C:
 						return

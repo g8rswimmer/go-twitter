@@ -37,7 +37,7 @@ const (
 	TweetErrorType StreamErrorType = "tweet"
 	// SystemErrorType represents the system stream errors
 	SystemErrorType StreamErrorType = "system"
-
+	// DisconnectErrorType represents the disconnection errors
 	DisconnectErrorType StreamErrorType = "disconnect"
 
 	disconnectionErrorsKey = "errors"
@@ -157,11 +157,13 @@ func (e *StreamError) Unwrap() error {
 	return e.Err
 }
 
-type DisconnectionStream struct {
+// DisconnectionError contains the disconnection messages
+type DisconnectionError struct {
 	Disconnections []*Disconnection
 	Connections    []*Connection
 }
 
+// Disconnection has the disconnection error
 type Disconnection struct {
 	Title          string `json:"title"`
 	DisconnectType string `json:"disconnect_type"`
@@ -169,6 +171,7 @@ type Disconnection struct {
 	Type           string `json:"type"`
 }
 
+// Connection has the connection error
 type Connection struct {
 	Title           string `json:"title"`
 	ConnectionIssue string `json:"connection_issue"`
@@ -221,7 +224,7 @@ type SystemMessage struct {
 type TweetStream struct {
 	tweets        chan *TweetMessage
 	system        chan map[SystemMessageType]SystemMessage
-	disconnection chan *DisconnectionStream
+	disconnection chan *DisconnectionError
 	close         chan bool
 	err           chan error
 	alive         bool
@@ -234,7 +237,7 @@ func StartTweetStream(stream io.ReadCloser) *TweetStream {
 	ts := &TweetStream{
 		tweets:        make(chan *TweetMessage, 10),
 		system:        make(chan map[SystemMessageType]SystemMessage, 10),
-		disconnection: make(chan *DisconnectionStream, 10),
+		disconnection: make(chan *DisconnectionError, 10),
 		close:         make(chan bool),
 		err:           make(chan error),
 		mutex:         sync.RWMutex{},
@@ -400,7 +403,7 @@ func (ts *TweetStream) handleDisconnectErrors(decoder *json.Decoder) {
 		return
 	}
 
-	ds := &DisconnectionStream{
+	ds := &DisconnectionError{
 		Disconnections: []*Disconnection{},
 		Connections:    []*Connection{},
 	}
@@ -434,7 +437,7 @@ func (ts *TweetStream) handleDisconnectError(decoder *json.Decoder) {
 		return
 	}
 
-	ds := &DisconnectionStream{
+	ds := &DisconnectionError{
 		Disconnections: []*Disconnection{},
 		Connections:    []*Connection{},
 	}
@@ -462,7 +465,8 @@ func (ts *TweetStream) SystemMessages() <-chan map[SystemMessageType]SystemMessa
 	return ts.system
 }
 
-func (ts *TweetStream) Disconnection() <-chan *DisconnectionStream {
+// DisconnectionError will return the channel to receive disconnect error messages
+func (ts *TweetStream) DisconnectionError() <-chan *DisconnectionError {
 	return ts.disconnection
 }
 
