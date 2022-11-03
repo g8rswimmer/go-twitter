@@ -33,6 +33,7 @@ type EntityURLObj struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	UnwoundURL  string `json:"unwound_url"`
+	MediaKey    string `json:"media_key"`
 }
 
 // EntityTagObj contains details about text recognized as a tag
