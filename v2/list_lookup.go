@@ -104,6 +104,9 @@ type ListTweetLookupOpts struct {
 	Expansions      []Expansion
 	TweetFields     []TweetField
 	UserFields      []UserField
+	MediaFields     []MediaField
+	PlaceFields     []PlaceField
+	PollFields      []PollField
 	MaxResults      int
 	PaginationToken string
 }
@@ -118,6 +121,15 @@ func (l ListTweetLookupOpts) addQuery(req *http.Request) {
 	}
 	if len(l.UserFields) > 0 {
 		q.Add("user.fields", strings.Join(userFieldStringArray(l.UserFields), ","))
+	}
+	if len(l.MediaFields) > 0 {
+		q.Add("media.fields", strings.Join(mediaFieldStringArray(l.MediaFields), ","))
+	}
+	if len(l.PlaceFields) > 0 {
+		q.Add("place.fields", strings.Join(placeFieldStringArray(l.PlaceFields), ","))
+	}
+	if len(l.PollFields) > 0 {
+		q.Add("poll.fields", strings.Join(pollFieldStringArray(l.PollFields), ","))
 	}
 	if l.MaxResults > 0 {
 		q.Add("max_results", strconv.Itoa(l.MaxResults))
