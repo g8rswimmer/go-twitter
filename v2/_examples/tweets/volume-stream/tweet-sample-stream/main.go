@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	twitter "github.com/g8rswimmer/go-twitter/v2"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	twitter "github.com/g8rswimmer/go-twitter/v2"
 )
 
 type authorize struct {
@@ -52,7 +53,7 @@ func main() {
 	}
 
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	func() {
 		defer tweetStream.Close()
 		for {
@@ -76,6 +77,14 @@ func main() {
 				outputFile.WriteString(fmt.Sprintf("system: %s\n\n", string(smb)))
 				outputFile.Sync()
 				fmt.Println("system")
+			case de := <-tweetStream.DisconnectionError():
+				ded, err := json.Marshal(de)
+				if err != nil {
+					fmt.Printf("error decoding disconnect message %v", err)
+				}
+				outputFile.WriteString(fmt.Sprintf("disconnect: %s\n\n", string(ded)))
+				outputFile.Sync()
+				fmt.Println("disconnect")
 			case strErr := <-tweetStream.Err():
 				outputFile.WriteString(fmt.Sprintf("error: %v\n\n", strErr))
 				outputFile.Sync()

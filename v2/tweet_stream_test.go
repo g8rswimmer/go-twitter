@@ -175,15 +175,90 @@ func Test_StartTweetStreamSystem(t *testing.T) {
 	}
 }
 
+func Test_StartTweetStreamDisconnect(t *testing.T) {
+	type args struct {
+		stream io.ReadCloser
+	}
+	tests := []struct {
+		name string
+		args args
+		want []*DisconnectionError
+	}{
+		{
+			name: "disconnect stream",
+			args: args{
+				stream: func() io.ReadCloser {
+					stream := `ewoJImVycm9ycyI6IFt7CgkJInRpdGxlIjogIm9wZXJhdGlvbmFsLWRpc2Nvbm5lY3QiLAoJCSJkaXNjb25uZWN0X3R5cGUiOiAiVXBzdHJlYW1PcGVyYXRpb25hbERpc2Nvbm5lY3QiLAoJCSJkZXRhaWwiOiAiVGhpcyBzdHJlYW0gaGFzIGJlZW4gZGlzY29ubmVjdGVkIHVwc3RyZWFtIGZvciBvcGVyYXRpb25hbCByZWFzb25zLiIsCgkJInR5cGUiOiAiaHR0cHM6Ly9hcGkudHdpdHRlci5jb20vMi9wcm9ibGVtcy9vcGVyYXRpb25hbC1kaXNjb25uZWN0IgoJfV0KfQ==`
+					stream += "\r\n"
+					stream += `ewoJInRpdGxlIjogIkNvbm5lY3Rpb25FeGNlcHRpb24iLAoJImRldGFpbCI6ICJUaGlzIHN0cmVhbSBpcyBjdXJyZW50bHkgYXQgdGhlIG1heGltdW0gYWxsb3dlZCBjb25uZWN0aW9uIGxpbWl0LiIsCgkiY29ubmVjdGlvbl9pc3N1ZSI6ICJUb29NYW55Q29ubmVjdGlvbnMiLAoJInR5cGUiOiAiaHR0cHM6Ly9hcGkudHdpdHRlci5jb20vMi9wcm9ibGVtcy9zdHJlYW1pbmctY29ubmVjdGlvbiIKfQ==`
+					return io.NopCloser(strings.NewReader(stream))
+				}(),
+			},
+			want: []*DisconnectionError{
+				{
+					Disconnections: []*Disconnection{
+						{
+							Title:          "operational-disconnect",
+							DisconnectType: "UpstreamOperationalDisconnect",
+							Detail:         "This stream has been disconnected upstream for operational reasons.",
+							Type:           "https://api.twitter.com/2/problems/operational-disconnect",
+						},
+					},
+					Connections: []*Connection{},
+				},
+				{
+					Disconnections: []*Disconnection{},
+					Connections: []*Connection{
+						{
+							Title:           "ConnectionException",
+							ConnectionIssue: "TooManyConnections",
+							Detail:          "This stream is currently at the maximum allowed connection limit.",
+							Type:            "https://api.twitter.com/2/problems/streaming-connection",
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			stream := StartTweetStream(tt.args.stream)
+
+			got := []*DisconnectionError{}
+			timer := time.NewTimer(time.Second * 5)
+
+			func() {
+				defer stream.Close()
+				for {
+					select {
+					case msg := <-stream.DisconnectionError():
+						got = append(got, msg)
+					case <-timer.C:
+						return
+					case err := <-stream.Err():
+						t.Errorf("Test_StartTweetStreamDisconnect error %v", err)
+						return
+					}
+				}
+			}()
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Test_StartTweetStreamDisconnect = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_StartTweetStream(t *testing.T) {
 	type args struct {
 		stream io.ReadCloser
 	}
 	tests := []struct {
-		name       string
-		args       args
-		wantSystem []map[SystemMessageType]SystemMessage
-		wantTweet  []*TweetMessage
+		name           string
+		args           args
+		wantSystem     []map[SystemMessageType]SystemMessage
+		wantTweet      []*TweetMessage
+		wantDisconnect []*DisconnectionError
 	}{
 		{
 			name: "tweet stream",
@@ -203,6 +278,8 @@ func Test_StartTweetStream(t *testing.T) {
 					stream += `{"error":{"message":"Invalid date format for query parameter 'fromDate'. Expected format is 'yyyyMMddHHmm'. For example, '201701012315' for January 1st, 11:15 pm 2017 UTC.\n\n","sent":"2017-01-11T17:04:13+00:00"}}`
 					stream += "\r\n"
 					stream += `{"error":{"message":"Force closing connection to because it reached the maximum allowed backup (buffer size is ).","sent":"2017-01-11T17:04:13+00:00"}}`
+					stream += "\r\n"
+					stream += `ewoJInRpdGxlIjogIkNvbm5lY3Rpb25FeGNlcHRpb24iLAoJImRldGFpbCI6ICJUaGlzIHN0cmVhbSBpcyBjdXJyZW50bHkgYXQgdGhlIG1heGltdW0gYWxsb3dlZCBjb25uZWN0aW9uIGxpbWl0LiIsCgkiY29ubmVjdGlvbl9pc3N1ZSI6ICJUb29NYW55Q29ubmVjdGlvbnMiLAoJInR5cGUiOiAiaHR0cHM6Ly9hcGkudHdpdHRlci5jb20vMi9wcm9ibGVtcy9zdHJlYW1pbmctY29ubmVjdGlvbiIKfQ==`
 					return io.NopCloser(strings.NewReader(stream))
 				}(),
 			},
@@ -267,6 +344,19 @@ func Test_StartTweetStream(t *testing.T) {
 					},
 				},
 			},
+			wantDisconnect: []*DisconnectionError{
+				{
+					Disconnections: []*Disconnection{},
+					Connections: []*Connection{
+						{
+							Title:           "ConnectionException",
+							ConnectionIssue: "TooManyConnections",
+							Detail:          "This stream is currently at the maximum allowed connection limit.",
+							Type:            "https://api.twitter.com/2/problems/streaming-connection",
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -276,6 +366,8 @@ func Test_StartTweetStream(t *testing.T) {
 
 			gotSystem := []map[SystemMessageType]SystemMessage{}
 			gotTweet := []*TweetMessage{}
+			gotDisconnect := []*DisconnectionError{}
+
 			timer := time.NewTimer(time.Second * 5)
 
 			func() {
@@ -286,6 +378,8 @@ func Test_StartTweetStream(t *testing.T) {
 						gotSystem = append(gotSystem, sysMsg)
 					case tweetMsg := <-stream.Tweets():
 						gotTweet = append(gotTweet, tweetMsg)
+					case disconnectMsg := <-stream.DisconnectionError():
+						gotDisconnect = append(gotDisconnect, disconnectMsg)
 					case <-timer.C:
 						return
 					case err := <-stream.Err():
@@ -302,6 +396,11 @@ func Test_StartTweetStream(t *testing.T) {
 			if !reflect.DeepEqual(gotTweet, tt.wantTweet) {
 				t.Errorf("StartTweetStreamMessage system= %v, want %v", gotTweet, tt.wantTweet)
 			}
+
+			if !reflect.DeepEqual(gotDisconnect, tt.wantDisconnect) {
+				t.Errorf("StartTweetStreamMessage system= %v, want %v", gotDisconnect, tt.wantDisconnect)
+			}
+
 		})
 	}
 }

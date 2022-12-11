@@ -3,6 +3,7 @@ package twitter
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,6 +20,8 @@ type SystemMessageType string
 // StreamErrorType is the type of streaming error
 type StreamErrorType string
 
+type streamType int
+
 const (
 	// InfoMessageType is the information system message type
 	InfoMessageType SystemMessageType = "info"
@@ -34,6 +37,17 @@ const (
 	TweetErrorType StreamErrorType = "tweet"
 	// SystemErrorType represents the system stream errors
 	SystemErrorType StreamErrorType = "system"
+	// DisconnectErrorType represents the disconnection errors
+	DisconnectErrorType StreamErrorType = "disconnect"
+
+	disconnectionErrorsKey = "errors"
+	disconnectionTitleKey  = "title"
+
+	decodeErrStream   streamType = -1
+	tweetStream       streamType = 1
+	systemMsgStream   streamType = 2
+	disconnectionErrs streamType = 3
+	disconnectionErr  streamType = 4
 )
 
 // TweetSampleStreamOpts are the options for sample tweet stream
@@ -143,6 +157,58 @@ func (e *StreamError) Unwrap() error {
 	return e.Err
 }
 
+// DisconnectionError contains the disconnection messages
+type DisconnectionError struct {
+	Disconnections []*Disconnection
+	Connections    []*Connection
+}
+
+// Disconnection has the disconnection error
+type Disconnection struct {
+	Title          string `json:"title"`
+	DisconnectType string `json:"disconnect_type"`
+	Detail         string `json:"detail"`
+	Type           string `json:"type"`
+}
+
+// Connection has the connection error
+type Connection struct {
+	Title           string `json:"title"`
+	ConnectionIssue string `json:"connection_issue"`
+	Detail          string `json:"detail"`
+	Type            string `json:"type"`
+}
+
+type disconnection struct {
+	Title           string `json:"title"`
+	DisconnectType  string `json:"disconnect_type"`
+	ConnectionIssue string `json:"connection_issue"`
+	Detail          string `json:"detail"`
+	Type            string `json:"type"`
+}
+
+func (d disconnection) disconnectType() bool {
+	return d.DisconnectType != ""
+}
+
+func (d disconnection) toDisconnection() *Disconnection {
+	return &Disconnection{
+		Title:          d.Title,
+		DisconnectType: d.DisconnectType,
+		Detail:         d.Detail,
+		Type:           d.Type,
+	}
+}
+
+func (d disconnection) toConnection() *Connection {
+	return &Connection{
+		Title:           d.Title,
+		ConnectionIssue: d.ConnectionIssue,
+		Detail:          d.Detail,
+		Type:            d.Type,
+	}
+}
+
 // TweetMessage is the tweet stream message
 type TweetMessage struct {
 	Raw *TweetRaw
@@ -156,24 +222,26 @@ type SystemMessage struct {
 
 // TweetStream is the stream handler
 type TweetStream struct {
-	tweets    chan *TweetMessage
-	system    chan map[SystemMessageType]SystemMessage
-	close     chan bool
-	err       chan error
-	alive     bool
-	mutex     sync.RWMutex
-	RateLimit *RateLimit
+	tweets        chan *TweetMessage
+	system        chan map[SystemMessageType]SystemMessage
+	disconnection chan *DisconnectionError
+	close         chan bool
+	err           chan error
+	alive         bool
+	mutex         sync.RWMutex
+	RateLimit     *RateLimit
 }
 
 // StartTweetStream will start the tweet streaming
 func StartTweetStream(stream io.ReadCloser) *TweetStream {
 	ts := &TweetStream{
-		tweets: make(chan *TweetMessage, 10),
-		system: make(chan map[SystemMessageType]SystemMessage, 10),
-		close:  make(chan bool),
-		err:    make(chan error),
-		mutex:  sync.RWMutex{},
-		alive:  true,
+		tweets:        make(chan *TweetMessage, 10),
+		system:        make(chan map[SystemMessageType]SystemMessage, 10),
+		disconnection: make(chan *DisconnectionError, 10),
+		close:         make(chan bool),
+		err:           make(chan error),
+		mutex:         sync.RWMutex{},
+		alive:         true,
 	}
 
 	go ts.handle(stream)
@@ -227,64 +295,164 @@ func (ts *TweetStream) handle(stream io.ReadCloser) {
 			continue
 		}
 
-		msgMap := map[string]interface{}{}
-		if err := json.Unmarshal(msg, &msgMap); err != nil {
+		reader, err := normalizeStream(msg)
+		if err != nil {
+			select {
+			case ts.err <- fmt.Errorf("stream error: normalize error %w", err):
+			default:
+			}
+			continue
+		}
+
+		sType, err := decodeStreamType(reader)
+		if err != nil {
 			select {
 			case ts.err <- fmt.Errorf("stream error: unmarshal error %w", err):
 			default:
 			}
 			continue
 		}
-
-		if _, tweet := msgMap[tweetStart]; tweet {
-			single := &tweetraw{}
-			if err := json.Unmarshal(msg, single); err != nil {
-				sErr := &StreamError{
-					Type: TweetErrorType,
-					Msg:  "unmarshal tweet stream",
-					Err:  err,
-				}
-				select {
-				case ts.err <- sErr:
-				default:
-				}
-				continue
-			}
-			raw := &TweetRaw{}
-			raw.Tweets = make([]*TweetObj, 1)
-			raw.Tweets[0] = single.Tweet
-			raw.Includes = single.Includes
-			raw.Errors = single.Errors
-
-			tweetMsg := &TweetMessage{
-				Raw: raw,
-			}
-
+		if _, err := reader.Seek(0, io.SeekStart); err != nil {
 			select {
-			case ts.tweets <- tweetMsg:
+			case ts.err <- fmt.Errorf("stream error: seek error %w", err):
 			default:
 			}
 			continue
 		}
+		decoder := json.NewDecoder(reader)
 
-		sysMsg := map[SystemMessageType]SystemMessage{}
-		if err := json.Unmarshal(msg, &sysMsg); err != nil {
-			sErr := &StreamError{
-				Type: SystemErrorType,
-				Msg:  "unmarshal system stream",
-				Err:  err,
-			}
-			select {
-			case ts.err <- sErr:
-			default:
-			}
-			continue
-		}
-		select {
-		case ts.system <- sysMsg:
+		switch sType {
+		case tweetStream:
+			ts.handleTweet(decoder)
+		case systemMsgStream:
+			ts.handleSystemMessage(decoder)
+		case disconnectionErrs:
+			ts.handleDisconnectErrors(decoder)
+		case disconnectionErr:
+			ts.handleDisconnectError(decoder)
 		default:
 		}
 	}
+}
+
+func (ts *TweetStream) handleTweet(decoder *json.Decoder) {
+	single := &tweetraw{}
+	if err := decoder.Decode(single); err != nil {
+		sErr := &StreamError{
+			Type: TweetErrorType,
+			Msg:  "unmarshal tweet stream",
+			Err:  err,
+		}
+		select {
+		case ts.err <- sErr:
+		default:
+		}
+		return
+	}
+	raw := &TweetRaw{}
+	raw.Tweets = make([]*TweetObj, 1)
+	raw.Tweets[0] = single.Tweet
+	raw.Includes = single.Includes
+	raw.Errors = single.Errors
+
+	tweetMsg := &TweetMessage{
+		Raw: raw,
+	}
+
+	select {
+	case ts.tweets <- tweetMsg:
+	default:
+	}
+}
+
+func (ts *TweetStream) handleSystemMessage(decoder *json.Decoder) {
+	sysMsg := map[SystemMessageType]SystemMessage{}
+	if err := decoder.Decode(&sysMsg); err != nil {
+		sErr := &StreamError{
+			Type: SystemErrorType,
+			Msg:  "unmarshal system stream",
+			Err:  err,
+		}
+		select {
+		case ts.err <- sErr:
+		default:
+		}
+		return
+	}
+	select {
+	case ts.system <- sysMsg:
+	default:
+	}
+
+}
+
+func (ts *TweetStream) handleDisconnectErrors(decoder *json.Decoder) {
+	disErrs := struct {
+		Errors []disconnection `json:"errors"`
+	}{}
+	if err := decoder.Decode(&disErrs); err != nil {
+		sErr := &StreamError{
+			Type: DisconnectErrorType,
+			Msg:  "unmarshal disconnect stream",
+			Err:  err,
+		}
+		select {
+		case ts.err <- sErr:
+		default:
+		}
+		return
+	}
+
+	ds := &DisconnectionError{
+		Disconnections: []*Disconnection{},
+		Connections:    []*Connection{},
+	}
+	for _, d := range disErrs.Errors {
+		switch {
+		case d.disconnectType():
+			ds.Disconnections = append(ds.Disconnections, d.toDisconnection())
+		default:
+			ds.Connections = append(ds.Connections, d.toConnection())
+		}
+	}
+
+	select {
+	case ts.disconnection <- ds:
+	default:
+	}
+}
+
+func (ts *TweetStream) handleDisconnectError(decoder *json.Decoder) {
+	d := disconnection{}
+	if err := decoder.Decode(&d); err != nil {
+		sErr := &StreamError{
+			Type: DisconnectErrorType,
+			Msg:  "unmarshal disconnect stream",
+			Err:  err,
+		}
+		select {
+		case ts.err <- sErr:
+		default:
+		}
+		return
+	}
+
+	ds := &DisconnectionError{
+		Disconnections: []*Disconnection{},
+		Connections:    []*Connection{},
+	}
+	switch {
+	case d.disconnectType():
+		ds.Disconnections = append(ds.Disconnections, d.toDisconnection())
+	default:
+		ds.Connections = append(ds.Connections, d.toConnection())
+	}
+
+	select {
+	case ts.disconnection <- ds:
+	default:
+	}
+
 }
 
 // Tweets will return the channel to receive tweet stream messages
@@ -295,6 +463,11 @@ func (ts *TweetStream) Tweets() <-chan *TweetMessage {
 // SystemMessages will return the channel to receive system stream messages
 func (ts *TweetStream) SystemMessages() <-chan map[SystemMessageType]SystemMessage {
 	return ts.system
+}
+
+// DisconnectionError will return the channel to receive disconnect error messages
+func (ts *TweetStream) DisconnectionError() <-chan *DisconnectionError {
+	return ts.disconnection
 }
 
 // Err will return the channel to receive any stream errors
@@ -318,4 +491,39 @@ func streamSeparator(data []byte, atEOF bool) (int, []byte, error) {
 		return len(data), data, nil
 	}
 	return 0, nil, nil
+}
+
+func decodeStreamType(reader io.Reader) (streamType, error) {
+	mm := map[string]interface{}{}
+	if err := json.NewDecoder(reader).Decode(&mm); err != nil {
+		return decodeErrStream, fmt.Errorf("decode stream type: %w", err)
+	}
+	for k := range mm {
+		switch k {
+		case tweetStart:
+			return tweetStream, nil
+		case string(InfoMessageType), string(WarnMessageType), string(ErrorMessageType):
+			return systemMsgStream, nil
+		case disconnectionErrorsKey:
+			return disconnectionErrs, nil
+		case disconnectionTitleKey:
+			return disconnectionErr, nil
+		default:
+		}
+	}
+	return decodeErrStream, fmt.Errorf("decode stream message")
+}
+
+func normalizeStream(msg []byte) (*bytes.Reader, error) {
+	str := string(msg)
+	switch {
+	case strings.Contains(str, ":"):
+		return bytes.NewReader(msg), nil
+	default:
+		decodedMsg, err := base64.StdEncoding.DecodeString(str)
+		if err != nil {
+			return nil, fmt.Errorf("stream normalize stream base64: %w", err)
+		}
+		return bytes.NewReader(decodedMsg), nil
+	}
 }
