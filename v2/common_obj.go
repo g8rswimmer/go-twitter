@@ -26,14 +26,22 @@ type EntityAnnotationObj struct {
 // EntityURLObj contains details about text recognized as a URL.
 type EntityURLObj struct {
 	EntityObj
-	URL         string `json:"url"`
-	ExpandedURL string `json:"expanded_url"`
-	DisplayURL  string `json:"display_url"`
-	Status      int    `json:"status"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	UnwoundURL  string `json:"unwound_url"`
-	MediaKey    string `json:"media_key"`
+	URL         string              `json:"url"`
+	ExpandedURL string              `json:"expanded_url"`
+	DisplayURL  string              `json:"display_url"`
+	Status      int                 `json:"status"`
+	Title       string              `json:"title"`
+	Description string              `json:"description"`
+	UnwoundURL  string              `json:"unwound_url"`
+	MediaKey    string              `json:"media_key"`
+	Images      []EntityURLImageObj `json:"images"`
+}
+
+// EntityURLImageObj defines the array of images that are associated with the entity URL object
+type EntityURLImageObj struct {
+	URL    string `json:"url"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
 }
 
 // EntityTagObj contains details about text recognized as a tag
