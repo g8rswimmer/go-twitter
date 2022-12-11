@@ -42,22 +42,28 @@ func userFieldStringArray(arr []UserField) []string {
 	return strs
 }
 
+// User entities structure as defined at https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
+type UserEntitiesObj struct {
+	URL         *EntitiesObj `json:"url,omitempty"`
+	Description *EntitiesObj `json:"description,omitempty"`
+}
+
 // UserObj contains Twitter user account metadata describing the referenced user
 type UserObj struct {
-	ID              string          `json:"id"`
-	Name            string          `json:"name"`
-	UserName        string          `json:"username"`
-	CreatedAt       string          `json:"created_at,omitempty"`
-	Description     string          `json:"description,omitempty"`
-	Entities        *EntitiesObj    `json:"entities,omitempty"`
-	Location        string          `json:"location,omitempty"`
-	PinnedTweetID   string          `json:"pinned_tweet_id,omitempty"`
-	ProfileImageURL string          `json:"profile_image_url,omitempty"`
-	Protected       bool            `json:"protected,omitempty"`
-	PublicMetrics   *UserMetricsObj `json:"public_metrics,omitempty"`
-	URL             string          `json:"url,omitempty"`
-	Verified        bool            `json:"verified,omitempty"`
-	WithHeld        *WithHeldObj    `json:"withheld,omitempty"`
+	ID              string           `json:"id"`
+	Name            string           `json:"name"`
+	UserName        string           `json:"username"`
+	CreatedAt       string           `json:"created_at,omitempty"`
+	Description     string           `json:"description,omitempty"`
+	Entities        *UserEntitiesObj `json:"entities,omitempty"`
+	Location        string           `json:"location,omitempty"`
+	PinnedTweetID   string           `json:"pinned_tweet_id,omitempty"`
+	ProfileImageURL string           `json:"profile_image_url,omitempty"`
+	Protected       bool             `json:"protected,omitempty"`
+	PublicMetrics   *UserMetricsObj  `json:"public_metrics,omitempty"`
+	URL             string           `json:"url,omitempty"`
+	Verified        bool             `json:"verified,omitempty"`
+	WithHeld        *WithHeldObj     `json:"withheld,omitempty"`
 }
 
 // UserMetricsObj contains details about activity for this user
