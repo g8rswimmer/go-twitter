@@ -24,6 +24,7 @@ type TweetRecentCountsOpts struct {
 	SinceID     string
 	UntilID     string
 	Granularity Granularity
+	NextToken   string
 }
 
 func (t TweetRecentCountsOpts) addQuery(req *http.Request) {
@@ -42,6 +43,9 @@ func (t TweetRecentCountsOpts) addQuery(req *http.Request) {
 	}
 	if len(t.Granularity) > 0 {
 		q.Add("granularity", string(t.Granularity))
+	}
+	if len(t.NextToken) > 0 {
+		q.Add("next_token", t.NextToken)
 	}
 	if len(q) > 0 {
 		req.URL.RawQuery = q.Encode()
