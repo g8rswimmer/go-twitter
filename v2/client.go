@@ -935,8 +935,7 @@ func (c *Client) TweetSearchStreamRules(ctx context.Context, ruleIDs []TweetSear
 	return ruleResponse, nil
 }
 
-// TweetSearchStream will stream in real-time based on a specific set of filter rules
-func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
+func (c *Client) tweetSearchStreamRequest(ctx context.Context, opts TweetSearchStreamOpts) (*http.Response, error) {
 	switch {
 	case opts.BackfillMinutes == 0:
 	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
@@ -974,9 +973,32 @@ func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOp
 		e.RateLimit = rl
 		return nil, e
 	}
+	return resp, nil
+}
+
+// TweetSearchStream will stream in real-time based on a specific set of filter rules
+func (c *Client) TweetSearchStream(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStream, error) {
+	resp, err := c.tweetSearchStreamRequest(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
 
 	stream := StartTweetStream(resp.Body)
-	stream.RateLimit = rl
+	stream.RateLimit = rateFromHeader(resp.Header)
+	return stream, nil
+}
+
+// TweetSearchStreamV2 will stream in real-time based on a specific set of filter rules.
+// The user must call Run() method on the returned object in order to start the
+// event loop and actually receive tweets.
+func (c *Client) TweetSearchStreamV2(ctx context.Context, opts TweetSearchStreamOpts) (*TweetStreamV2, error) {
+	resp, err := c.tweetSearchStreamRequest(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	stream := StartTweetStreamV2(resp.Body)
+	stream.RateLimit = rateFromHeader(resp.Header)
 	return stream, nil
 }
 
@@ -2383,8 +2405,7 @@ func (c *Client) DeleteUserLikes(ctx context.Context, userID, tweetID string) (*
 	return raw, nil
 }
 
-// TweetSampleStream will return a streamer for streaming 1% of all tweets real-time
-func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOpts) (*TweetStream, error) {
+func (c *Client) tweetSampleStreamRequest(ctx context.Context, opts TweetSampleStreamOpts) (*http.Response, error) {
 	switch {
 	case opts.BackfillMinutes == 0:
 	case opts.BackfillMinutes > sampleStreamMaxBackOffMin:
@@ -2422,9 +2443,32 @@ func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOp
 		e.RateLimit = rl
 		return nil, e
 	}
+	return resp, nil
+}
+
+// TweetSampleStream will return a streamer for streaming 1% of all tweets real-time
+func (c *Client) TweetSampleStream(ctx context.Context, opts TweetSampleStreamOpts) (*TweetStream, error) {
+	resp, err := c.tweetSampleStreamRequest(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
 
 	stream := StartTweetStream(resp.Body)
-	stream.RateLimit = rl
+	stream.RateLimit = rateFromHeader(resp.Header)
+	return stream, nil
+}
+
+// TweetSampleStreamV2 will return a streamer for streaming 1% of all tweets real-time
+// The user must call Run() method on the returned object in order to start the
+// event loop and actually receive tweets.
+func (c *Client) TweetSampleStreamV2(ctx context.Context, opts TweetSampleStreamOpts) (*TweetStreamV2, error) {
+	resp, err := c.tweetSampleStreamRequest(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	stream := StartTweetStreamV2(resp.Body)
+	stream.RateLimit = rateFromHeader(resp.Header)
 	return stream, nil
 }
 

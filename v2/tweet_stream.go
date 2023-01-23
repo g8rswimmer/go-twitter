@@ -163,6 +163,17 @@ type DisconnectionError struct {
 	Connections    []*Connection
 }
 
+func (e *DisconnectionError) Error() string {
+	r := []string{}
+	for _, d := range e.Disconnections {
+		r = append(r, fmt.Sprintf("disconnection error: %s", d))
+	}
+	for _, c := range e.Connections {
+		r = append(r, fmt.Sprintf("connection issue: %s", c))
+	}
+	return strings.Join(r, "\n")
+}
+
 // Disconnection has the disconnection error
 type Disconnection struct {
 	Title          string `json:"title"`
@@ -171,12 +182,20 @@ type Disconnection struct {
 	Type           string `json:"type"`
 }
 
+func (d Disconnection) String() string {
+	return fmt.Sprintf("%q %q %q %q", d.Type, d.DisconnectType, d.Title, d.Detail)
+}
+
 // Connection has the connection error
 type Connection struct {
 	Title           string `json:"title"`
 	ConnectionIssue string `json:"connection_issue"`
 	Detail          string `json:"detail"`
 	Type            string `json:"type"`
+}
+
+func (c Connection) String() string {
+	return fmt.Sprintf("%q %q %q %q", c.Type, c.ConnectionIssue, c.Title, c.Detail)
 }
 
 type disconnection struct {
