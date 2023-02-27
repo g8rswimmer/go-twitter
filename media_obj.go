@@ -3,6 +3,31 @@ package twitter
 // MediaField can expand the fields that are returned in the media object
 type MediaField string
 
+type MediaType string
+
+// MediaType which is used to store values that can be any of two options, photo or video.
+// This type can then be used to distinguish between the two media types in various contexts.
+const (
+	Photo MediaType = "photo"
+	Video MediaType = "video"
+)
+
+// MediaPublicMetrics is the public engagement metrics for the media content at the time of the request.
+// This includes engagement metrics tracked at the account level and engagement metrics tracked at the URL level.
+// View count is the sum of view counts from both contexts.
+type MediaPublicMetrics struct {
+	ViewCount int64 `json:"view_count"`
+}
+
+// Variant is a video variant object that contains information about a specific video format.
+// The variant with the highest bitrate is the format that is used when a video is played in the Twitter player.
+// The other variants are provided for users who have slower connections or who have chosen to use data-saving mode.
+type Variant struct {
+	BitRate     *int64 `json:"bit_rate,omitempty"`
+	ContentType string `json:"content_type"`
+	URL         string `json:"url"`
+}
+
 const (
 	// MediaFieldDurationMS available when type is video. Duration in milliseconds of the video.
 	MediaFieldDurationMS MediaField = "duration_ms"
@@ -26,6 +51,8 @@ const (
 	MediaFieldOrganicMetrics MediaField = "organic_metrics"
 	// MediaFieldPromotedMetrics is the URL to the static placeholder preview of this content.
 	MediaFieldPromotedMetrics MediaField = "promoted_metrics"
+	// MediaFieldVariants is the variants of the media content.
+	MediaFieldVariants MediaField = "variants"
 )
 
 func mediaFieldStringArray(arr []MediaField) []string {
@@ -49,6 +76,7 @@ type MediaObj struct {
 	PromotedMetrics  MediaMetricsObj `json:"promoted_metrics"`
 	PublicMetrics    MediaMetricsObj `json:"public_metrics"`
 	Width            int             `json:"width"`
+	Variants         []Variant       `json:"variants,omitempty"`
 }
 
 // MediaMetricsObj engagement metrics for the media content at the time of the request
