@@ -57,9 +57,10 @@ type UserTimelineMeta struct {
 }
 
 type tweetraw struct {
-	Tweet    *TweetObj         `json:"data"`
-	Includes *TweetRawIncludes `json:"includes"`
-	Errors   []*ErrorObj       `json:"errors"`
+	Tweet         *TweetObj         `json:"data"`
+	Includes      *TweetRawIncludes `json:"includes"`
+	Errors        []*ErrorObj       `json:"errors"`
+	MatchingRules []*MatchingRule   `json:"matching_rules"`
 }
 
 type MatchingRule struct {
@@ -72,7 +73,7 @@ type TweetRaw struct {
 	Tweets        []*TweetObj       `json:"data"`
 	Includes      *TweetRawIncludes `json:"includes,omitempty"`
 	Errors        []*ErrorObj       `json:"errors,omitempty"`
-	MatchingRules []MatchingRule    `json:"matching_rules"`
+	MatchingRules []*MatchingRule   `json:"matching_rules"`
 	dictionaries  map[string]*TweetDictionary
 }
 
