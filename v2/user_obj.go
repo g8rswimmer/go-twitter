@@ -30,6 +30,8 @@ const (
 	UserFieldUserName UserField = "username"
 	// UserFieldVerified indicates if this user is a verified Twitter User.
 	UserFieldVerified UserField = "verified"
+	// UserFieldVerified indicates the type of verification for the Twitter account.
+	UserFieldVerifiedType UserField = "verified_type"
 	// UserFieldWithHeld contains withholding details
 	UserFieldWithHeld UserField = "withheld"
 )
@@ -57,6 +59,7 @@ type UserObj struct {
 	PublicMetrics   *UserMetricsObj `json:"public_metrics,omitempty"`
 	URL             string          `json:"url,omitempty"`
 	Verified        bool            `json:"verified,omitempty"`
+	VerifiedType    string          `json:"verified_type,omitempty"`
 	WithHeld        *WithHeldObj    `json:"withheld,omitempty"`
 }
 
