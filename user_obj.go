@@ -30,6 +30,8 @@ const (
 	UserFieldUserName UserField = "username"
 	// UserFieldVerified indicates if this user is a verified Twitter User.
 	UserFieldVerified UserField = "verified"
+	// UserFieldVerified indicates the type of verification for the Twitter account.
+	UserFieldVerifiedType UserField = "verified_type"
 	// UserFieldWithHeld contains withholding details
 	UserFieldWithHeld UserField = "withheld"
 )

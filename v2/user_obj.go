@@ -57,6 +57,7 @@ type UserObj struct {
 	PublicMetrics   *UserMetricsObj `json:"public_metrics,omitempty"`
 	URL             string          `json:"url,omitempty"`
 	Verified        bool            `json:"verified,omitempty"`
+	VerifiedType    string          `json:"verified_type,omitempty"`
 	WithHeld        *WithHeldObj    `json:"withheld,omitempty"`
 }
 
